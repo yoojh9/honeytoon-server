@@ -1,3 +1,4 @@
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import './providers/honeytoon_content_provider.dart';
 import './screens/setting_myinfo_screen.dart';
@@ -19,6 +20,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   KakaoContext.clientId = "a34461bb86a5d8782ab16e75419d5955";
   KakaoContext.javascriptClientId = "38549e1d4f65d4c9c19ac37cad047400";
+  FirebaseAdMob.instance.initialize(appId: FirebaseAdMob.testAppId);
   runApp(MyApp());
 }
 

@@ -10,6 +10,11 @@
         android:label="honeytoon"
         android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/ic_launcher">
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-6013376310231208~8843617638"/>
+
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

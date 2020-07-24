@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:honeytoon/screens/point/point_earn_screen.dart';
 import './point_screen.dart';
 
 class PointTemplateScreen extends StatefulWidget {
@@ -34,13 +35,13 @@ class _PointTemplateScreenState extends State<PointTemplateScreen>
                 child: SafeArea(
                   child: TabBar(
                     controller: _controller,
-                    tabs: <Widget>[Tab(text: '포인트'), Tab(text: '출석하기'), Tab(text: '쇼핑하기')],
+                    tabs: <Widget>[Tab(text: '포인트'), Tab(text: '적립하기'), Tab(text: '쇼핑하기')],
                   ),
                 )),
           ),
           body: TabBarView(
               controller: _controller,
-              children: <Widget>[PointScreen(), Center(child: Text('출석하기')), Center(child: Text('쇼핑하기'))])),
+              children: <Widget>[PointScreen(), Center(child: PointEarnScreen()), Center(child: Text('쇼핑하기'))])),
     );
   }
 }
