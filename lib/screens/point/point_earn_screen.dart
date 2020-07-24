@@ -1,5 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_admob/firebase_admob.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:honeytoon/models/point.dart';
+import 'package:honeytoon/providers/point_provider.dart';
+import 'package:provider/provider.dart';
 
 // test device id for production
 const String testDevice = null;
@@ -10,6 +15,8 @@ class PointEarnScreen extends StatefulWidget {
 }
 
 class _PointEarnScreenState extends State<PointEarnScreen> with TickerProviderStateMixin {
+  PointProvider _pointProvider;
+  
   static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
     testDevices: testDevice != null ? <String>[testDevice] : null,
     keywords: <String>['fun'],
@@ -17,14 +24,11 @@ class _PointEarnScreenState extends State<PointEarnScreen> with TickerProviderSt
     childDirected: true,
     nonPersonalizedAds: true,
   );
-
   int _coins = 0;
   bool _videoLoaded = false;
 
-
   @override
   void initState() {
-
     super.initState();
   }
 
@@ -35,10 +39,11 @@ class _PointEarnScreenState extends State<PointEarnScreen> with TickerProviderSt
 
   void rewardVideo() async {
     print('rewardVideo()');
-
+    final _user = await FirebaseAuth.instance.currentUser();
     RewardedVideoAd.instance.listener = (RewardedVideoAdEvent event, {String rewardType, int rewardAmount}) async {
       print('RewardedVideoAd event $event');
       if(event == RewardedVideoAdEvent.rewarded){
+        _pointProvider.setPoint(Point(uid: _user.uid, point: rewardAmount.toDouble(), createTime: Timestamp.now()));
         setState(() {
           _coins += rewardAmount;
           _videoLoaded = true;
@@ -56,6 +61,9 @@ class _PointEarnScreenState extends State<PointEarnScreen> with TickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+    final Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
+    _pointProvider = Provider.of<PointProvider>(context);
+
     return Column(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,

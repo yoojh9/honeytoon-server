@@ -1,5 +1,6 @@
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
+import 'package:honeytoon/providers/point_provider.dart';
 import './providers/honeytoon_content_provider.dart';
 import './screens/setting_myinfo_screen.dart';
 import 'package:kakao_flutter_sdk/link.dart';
@@ -39,6 +40,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (ctx) => HoneytoonContentProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => PointProvider(),
         )
       ],
       child: MaterialApp(

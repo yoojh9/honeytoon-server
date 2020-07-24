@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:honeytoon/screens/point/point_earn_screen.dart';
+import './point_earn_screen.dart';
 import './point_screen.dart';
 
 class PointTemplateScreen extends StatefulWidget {
