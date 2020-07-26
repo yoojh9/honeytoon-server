@@ -14,9 +14,10 @@ class PointEarnScreen extends StatefulWidget {
   _PointEarnScreenState createState() => _PointEarnScreenState();
 }
 
-class _PointEarnScreenState extends State<PointEarnScreen> with TickerProviderStateMixin {
+class _PointEarnScreenState extends State<PointEarnScreen>
+    with TickerProviderStateMixin {
   PointProvider _pointProvider;
-  
+
   static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
     testDevices: testDevice != null ? <String>[testDevice] : null,
     keywords: <String>['fun'],
@@ -40,24 +41,28 @@ class _PointEarnScreenState extends State<PointEarnScreen> with TickerProviderSt
   void rewardVideo() async {
     print('rewardVideo()');
     final _user = await FirebaseAuth.instance.currentUser();
-    RewardedVideoAd.instance.listener = (RewardedVideoAdEvent event, {String rewardType, int rewardAmount}) async {
+    RewardedVideoAd.instance.listener = (RewardedVideoAdEvent event,
+        {String rewardType, int rewardAmount}) async {
       print('RewardedVideoAd event $event');
-      if(event == RewardedVideoAdEvent.rewarded){
-        _pointProvider.setPoint(Point(uid: _user.uid, point: rewardAmount.toDouble(), createTime: Timestamp.now()));
+      if (event == RewardedVideoAdEvent.rewarded) {
+        _pointProvider.setPoint(Point(
+            uid: _user.uid,
+            type: PointType.REWARD,
+            point: rewardAmount.toDouble(),
+            createTime: Timestamp.now()));
         setState(() {
           _coins += rewardAmount;
           _videoLoaded = true;
           print('coins:$_coins');
         });
-      } 
-      else if(event == RewardedVideoAdEvent.loaded) {
+      } else if (event == RewardedVideoAdEvent.loaded) {
         print('loaded');
         await RewardedVideoAd.instance.show();
       }
     };
-    await RewardedVideoAd.instance.load(adUnitId: RewardedVideoAd.testAdUnitId, targetingInfo: targetingInfo);
+    await RewardedVideoAd.instance.load(
+        adUnitId: RewardedVideoAd.testAdUnitId, targetingInfo: targetingInfo);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -69,8 +74,11 @@ class _PointEarnScreenState extends State<PointEarnScreen> with TickerProviderSt
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         (!_videoLoaded)
-        ? RaisedButton(child: Text('출석하기'), onPressed: rewardVideo, color: Theme.of(context).primaryColor)
-        : Text('리워드 완료')
+            ? RaisedButton(
+                child: Text('출석하기'),
+                onPressed: rewardVideo,
+                color: Theme.of(context).primaryColor)
+            : Text('리워드 완료')
         // Row(
         //   mainAxisAlignment: MainAxisAlignment.center,
         //   children: [

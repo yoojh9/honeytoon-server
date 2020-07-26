@@ -9,30 +9,30 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../models/user.dart';
 
-class Auth with ChangeNotifier {
-
-  final _auth = FirebaseAuth.instance;
-  final _db = Firestore.instance;
+class AuthProvider with ChangeNotifier {
+  static final _auth = FirebaseAuth.instance;
+  static final _db = Firestore.instance;
 
   Future<FirebaseUser> kakaoLogin() async {
     try {
       print('kakao login start');
       final installed = await isKakaoTalkInstalled();
-      final authCode = installed ? await AuthCodeClient.instance.requestWithTalk() : await AuthCodeClient.instance.request();
+      final authCode = installed
+          ? await AuthCodeClient.instance.requestWithTalk()
+          : await AuthCodeClient.instance.request();
       final token = await AuthApi.instance.issueAccessToken(authCode);
-    
+
       print('accessToken:${token.accessToken}');
 
       final firebaseToken = await getFirebaseToken(token.accessToken);
       final firebaseUser = await signInWithCustomToken(firebaseToken);
 
       return firebaseUser;
-
-    } on KakaoAuthException catch(error) {
+    } on KakaoAuthException catch (error) {
       print(error);
     } on KakaoClientException catch (error) {
       print(error);
-    } catch(error){
+    } catch (error) {
       print(error);
     }
   }
@@ -40,10 +40,11 @@ class Auth with ChangeNotifier {
   Future<FirebaseUser> facebookLogin() async {
     try {
       final FacebookLogin facebookSignIn = FacebookLogin();
-      final FacebookLoginResult result = await facebookSignIn.logIn(['email', 'public_profile']);
+      final FacebookLoginResult result =
+          await facebookSignIn.logIn(['email', 'public_profile']);
       FacebookAccessToken accessToken;
 
-      switch(result.status) {
+      switch (result.status) {
         case FacebookLoginStatus.loggedIn:
           accessToken = result.accessToken;
           break;
@@ -52,8 +53,9 @@ class Auth with ChangeNotifier {
         case FacebookLoginStatus.error:
           break;
       }
-      
-      AuthCredential credential = FacebookAuthProvider.getCredential(accessToken: accessToken.token);
+
+      AuthCredential credential =
+          FacebookAuthProvider.getCredential(accessToken: accessToken.token);
       AuthResult authResult = await _auth.signInWithCredential(credential);
 
       print(authResult.user.displayName);
@@ -68,42 +70,46 @@ class Auth with ChangeNotifier {
         'rank': -1,
         'works': []
       });
-  
+
       return authResult.user;
-    } on PlatformException catch(error){
+    } on PlatformException catch (error) {
       var message = 'An error occurred, please check your credentials!';
       print(error);
-    } catch(error) {
+    } catch (error) {
       print(error);
     }
   }
 
   Future<User> getUserFromDB() async {
     final firebaseUser = await _auth.currentUser();
-    if(firebaseUser == null || firebaseUser.uid == null) {
+    if (firebaseUser == null || firebaseUser.uid == null) {
       return null;
     }
-    final userData = await _db.collection('users').document(firebaseUser.uid).get();
-    User user = User(userData.data['uid'], userData.data['displayName'], userData.data['email'], 
-        userData.data['provider'], userData.data['thumbnail'], userData.data['honey'],
-        userData.data['rank'], userData.data['works']);
+    final userData =
+        await _db.collection('users').document(firebaseUser.uid).get();
+    User user = User(
+        uid: userData.documentID,
+        displayName: userData.data['displayName'],
+        email: userData.data['email'],
+        provider: userData.data['provider'],
+        thumbnail: userData.data['thumbnail'],
+        honey: userData.data['honey'],
+        rank: userData.data['rank'],
+        works: userData.data['works']);
 
     return user;
   }
 
-
-
   Future<String> getFirebaseToken(String kakaoToken) async {
     print('kakaoToken: $kakaoToken');
-    const url = "https://asia-northeast1-honeytoon-server.cloudfunctions.net/app/custom-token";
-    final response = await http.post(
-      url, 
-      headers: {"Content-Type": "application/json"}, 
-      body: json.encode({"token": kakaoToken})
-    );
+    const url =
+        "https://asia-northeast1-honeytoon-server.cloudfunctions.net/app/custom-token";
+    final response = await http.post(url,
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({"token": kakaoToken}));
     final data = json.decode(response.body) as Map<String, dynamic>;
     print('data=$data');
-    
+
     return data['firebase_token'];
   }
 
@@ -112,5 +118,14 @@ class Auth with ChangeNotifier {
     print(authResult.user);
     return authResult.user;
   }
-}
 
+  static Future<FirebaseUser> getCurrentFirebaseUser() async {
+    FirebaseUser currentUser = await _auth.currentUser();
+    return currentUser;
+  }
+
+  static Future<String> getCurrentFirebaseUserUid() async {
+    FirebaseUser currentUser = await _auth.currentUser();
+    return currentUser.uid;
+  }
+}

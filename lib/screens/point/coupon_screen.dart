@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../auth_screen.dart';
+import 'package:honeytoon/widgets/login_button_page.dart';
 
 class CouponScreen extends StatefulWidget {
   static final routeName = 'coupon-screen';
@@ -10,16 +10,6 @@ class CouponScreen extends StatefulWidget {
 }
 
 class _CouponScreenState extends State<CouponScreen> {
-  var _user;
-
-  void _loginPage(BuildContext ctx) async {
-    final authUser = await Navigator.of(ctx).pushNamed(AuthScreen.routeName);
-
-    setState(() {
-      _user = authUser;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final mediaQueryData = MediaQuery.of(context);
@@ -36,15 +26,7 @@ class _CouponScreenState extends State<CouponScreen> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return CircularProgressIndicator();
               } else if (!snapshot.hasData) {
-                return Center(
-                  child: RaisedButton(
-                      color: Theme.of(context).primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: Text('로그인'),
-                      onPressed: () => _loginPage(context)),
-                );
+                return LoginButtonPage();
               } else {
                 return SafeArea(
                   child: SingleChildScrollView(

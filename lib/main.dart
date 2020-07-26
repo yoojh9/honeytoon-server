@@ -13,7 +13,7 @@ import './screens/honeytoon_comment_screen.dart';
 import './screens/honeytoon_detail_screen.dart';
 import './screens/my/add_contentmeta_screen.dart';
 import './screens/my/add_content_screen.dart';
-import './providers/auth.dart';
+import './providers/auth_provider.dart';
 import './providers/honeytoon_meta_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -26,14 +26,13 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (ctx) => Auth(),
+          create: (ctx) => AuthProvider(),
         ),
         ChangeNotifierProvider(
           create: (ctx) => HoneytoonMetaProvider(),

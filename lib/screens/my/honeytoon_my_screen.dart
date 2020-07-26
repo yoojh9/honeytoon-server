@@ -4,10 +4,9 @@ import '../auth_screen.dart';
 import '../../widgets/my_honeytoon_listview.dart';
 import '../../widgets/my_honeytoon_info.dart';
 import 'package:provider/provider.dart';
-import '../../providers/auth.dart';
+import '../../providers/auth_provider.dart';
 
 class HoneytoonMyScreen extends StatelessWidget {
-
   Future<void> _loginPage(BuildContext ctx) async {
     await Navigator.of(ctx).pushNamed(AuthScreen.routeName);
   }
@@ -19,7 +18,8 @@ class HoneytoonMyScreen extends StatelessWidget {
         (mediaQueryData.padding.top + mediaQueryData.padding.bottom + 50);
 
     return FutureBuilder(
-        future: Provider.of<Auth>(context, listen: false).getUserFromDB(),
+        future:
+            Provider.of<AuthProvider>(context, listen: false).getUserFromDB(),
         builder: (context, futureSnapshot) {
           if (futureSnapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -29,10 +29,17 @@ class HoneytoonMyScreen extends StatelessWidget {
                 child: Column(children: [
                   MyHonetoonInfo(height: height, user: futureSnapshot.data),
                   FlatButton.icon(
-                    icon: Icon(Icons.add, color: Colors.grey,),
-                    label: Text('작품 추가', style: TextStyle(color: Colors.grey),),
-                    onPressed: (){
-                      Navigator.of(context).pushNamed(AddContentMetaScreen.routeName);
+                    icon: Icon(
+                      Icons.add,
+                      color: Colors.grey,
+                    ),
+                    label: Text(
+                      '작품 추가',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context)
+                          .pushNamed(AddContentMetaScreen.routeName);
                     },
                   ),
                   MyHoneytoonListView(height: height),
