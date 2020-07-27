@@ -4,7 +4,7 @@ class User {
   String email;
   String provider;
   String thumbnail;
-  double honey = 0;
+  int honey = 0;
   int rank = -1;
   var works = [];
 

@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:honeytoon/models/point.dart';
 import 'package:honeytoon/models/user.dart';
@@ -88,13 +87,14 @@ class PointScreen extends StatelessWidget {
       case PointType.GIFT:
         return Text('선물전달');
         break;
+      case PointType.REGIST:
+        return Text('허니툰생성');
       default:
         return null;
     }
   }
 
   Widget _buildPointHeader(ctx, height, data) {
-    print('data:$data');
     return Container(
       margin: EdgeInsets.symmetric(vertical: 15),
       alignment: Alignment.center,

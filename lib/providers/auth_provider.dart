@@ -119,12 +119,12 @@ class AuthProvider with ChangeNotifier {
     return authResult.user;
   }
 
-  static Future<FirebaseUser> getCurrentFirebaseUser() async {
+  Future<FirebaseUser> getCurrentFirebaseUser() async {
     FirebaseUser currentUser = await _auth.currentUser();
     return currentUser;
   }
 
-  static Future<String> getCurrentFirebaseUserUid() async {
+  Future<String> getCurrentFirebaseUserUid() async {
     FirebaseUser currentUser = await _auth.currentUser();
     return currentUser.uid;
   }

@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-enum PointType { REWARD, CHEER, GIFT }
+enum PointType { REWARD, CHEER, GIFT, REGIST }
 
 class Point {
   String uid;
   String pointId;
   PointType type;
-  double point;
+  int point;
   String targetUid;
   Timestamp createTime;
 
@@ -40,7 +40,7 @@ class Point {
     if (snapshot['type'] != null) {
       this.type = PointType.values[snapshot['type']];
     }
-    if (snapshot['point'] > 0) {
+    if (snapshot['point'] != 0) {
       this.point = snapshot['point'];
     }
     if (snapshot['target_uid'] != null) {

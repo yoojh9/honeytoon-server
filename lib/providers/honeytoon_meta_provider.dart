@@ -1,16 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../helpers/collections.dart';
+import 'package:honeytoon/helpers/database.dart';
 import '../models/honeytoonMeta.dart';
 
 class HoneytoonMetaProvider extends ChangeNotifier {
-  static final _firestore = Firestore.instance;
-  static final _metaRef = _firestore.collection(Collections.TOON);
-  static final _userRef = _firestore.collection(Collections.USER);
+
   List<HoneytoonMeta> _metaList;
 
   Future<List<HoneytoonMeta>> getHoneytoonMetaList() async {
-    QuerySnapshot result = await _metaRef.getDocuments();
+    QuerySnapshot result = await Database.metaRef.getDocuments();
     _metaList = result.documents
         .map((document) =>
             HoneytoonMeta.fromMap(document.data, document.documentID))
@@ -19,17 +17,17 @@ class HoneytoonMetaProvider extends ChangeNotifier {
   }
 
   Future<HoneytoonMeta> getHoneytoonMeta(String id) async {
-    DocumentSnapshot snapshot = await _metaRef.document(id).get();
+    DocumentSnapshot snapshot = await Database.metaRef.document(id).get();
     HoneytoonMeta honeytoonMeta = HoneytoonMeta.fromMap(snapshot.data, snapshot.documentID);
     return honeytoonMeta;
   }
 
   Future<void> createHoneytoonMeta(HoneytoonMeta meta) async {
     Map data = meta.toJson();
-    final DocumentReference metaReference = _metaRef.document();
-    final DocumentReference userReference = _userRef.document(meta.uid);
+    final DocumentReference metaReference = Database.metaRef.document();
+    final DocumentReference userReference = Database.userRef.document(meta.uid);
 
-    _firestore.runTransaction((transaction) async {
+    Database.firestore.runTransaction((transaction) async {
       await transaction.set(metaReference, data);
       await transaction.update(userReference, {'works':  FieldValue.arrayUnion([metaReference.documentID]) });
     }).then((_){
@@ -41,10 +39,10 @@ class HoneytoonMetaProvider extends ChangeNotifier {
 
   Future<void> updateHoneytoonMeta(HoneytoonMeta meta) async {
     Map data = meta.toJson();
-     await _metaRef.document(meta.workId).updateData(data);
+     await Database.metaRef.document(meta.workId).updateData(data);
   }
 
   Stream<QuerySnapshot> streamMeta() {
-    return _metaRef.getDocuments().asStream();
+    return Database.metaRef.getDocuments().asStream();
   }
 }

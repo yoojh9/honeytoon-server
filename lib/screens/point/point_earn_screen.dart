@@ -48,7 +48,7 @@ class _PointEarnScreenState extends State<PointEarnScreen>
         _pointProvider.setPoint(Point(
             uid: _user.uid,
             type: PointType.REWARD,
-            point: rewardAmount.toDouble(),
+            point: rewardAmount,
             createTime: Timestamp.now()));
         setState(() {
           _coins += rewardAmount;
