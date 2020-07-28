@@ -16,8 +16,8 @@ class PointScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mediaQueryData = MediaQuery.of(context);
-    final height = mediaQueryData.size.height -
-        (kToolbarHeight + kBottomNavigationBarHeight);
+
+    final height = mediaQueryData.size.height - (kToolbarHeight + kBottomNavigationBarHeight + kTextTabBarHeight);
 
     return FutureBuilder<User>(
         future: Provider.of<AuthProvider>(context).getUserFromDB(),
@@ -59,7 +59,7 @@ class PointScreen extends StatelessWidget {
                         leading: CircleAvatar(
                             child: ClipRRect(
                           borderRadius: BorderRadius.circular(50),
-                          child: Image.asset('assets/images/honey_pot.png'),
+                          child: Image.asset('assets/images/honey_pot.png',),
                         )),
                         title: Text('${snapshot.data[index].point}꿀'),
                         subtitle: Row(children: [
@@ -131,8 +131,8 @@ class PointScreen extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: AssetImage('assets/images/honey_pot.png'),
-                    fit: BoxFit.contain)),
+                  image: AssetImage('assets/images/honey_pot.png'),
+                  fit: BoxFit.contain)),
             child: null,
           ),
         ),

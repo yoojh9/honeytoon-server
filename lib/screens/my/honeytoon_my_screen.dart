@@ -42,7 +42,7 @@ class HoneytoonMyScreen extends StatelessWidget {
                           .pushNamed(AddContentMetaScreen.routeName);
                     },
                   ),
-                  MyHoneytoonListView(height: height),
+                  MyHoneytoonListView(height: height, uid: futureSnapshot.data.uid),
                 ]),
               ),
             );

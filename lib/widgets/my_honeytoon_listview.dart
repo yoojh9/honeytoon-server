@@ -8,9 +8,11 @@ class MyHoneytoonListView extends StatelessWidget {
   const MyHoneytoonListView({
     Key key,
     @required this.height,
+    @required this.uid
   }) : super(key: key);
 
   final double height;
+  final String uid;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +20,7 @@ class MyHoneytoonListView extends StatelessWidget {
 
     return Container(
       child: FutureBuilder(
-          future: _metaProvider.getHoneytoonMetaList(),
+          future: _metaProvider.getMyHoneytoonMetaList(uid),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(
