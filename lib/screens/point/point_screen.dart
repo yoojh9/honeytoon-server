@@ -17,7 +17,7 @@ class PointScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final mediaQueryData = MediaQuery.of(context);
     final height = mediaQueryData.size.height -
-        (kToolbarHeight + kTextTabBarHeight + kBottomNavigationBarHeight);
+        (kToolbarHeight + kBottomNavigationBarHeight);
 
     return FutureBuilder<User>(
         future: Provider.of<AuthProvider>(context).getUserFromDB(),
@@ -113,7 +113,7 @@ class PointScreen extends StatelessWidget {
                 Text(
                   '${data.honey}',
                   style: TextStyle(
-                    fontSize: 40,
+                    fontSize: 30,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

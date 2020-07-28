@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:honeytoon/models/user.dart';
@@ -89,10 +90,14 @@ class _SettingMyinfoScreenState extends State<SettingMyinfoScreen> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceAround,
                                   children: <Widget>[
-                                    CircleAvatar(
-                                      backgroundImage: NetworkImage(
-                                          futureSnapshot.data.thumbnail),
-                                      radius: 40,
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(50),
+                                      child: CachedNetworkImage(
+                                        imageUrl: futureSnapshot.data.thumbnail,
+                                        placeholder: (context, url) => Image.asset('assets/images/avatar_placeholder.png', width: 100,),
+                                        errorWidget: (context, url, error) => Image.asset('assets/images/avatar_placeholder.png', width: 100,),
+                                        fit: BoxFit.cover
+                                      ),   
                                     ),
                                     Text(futureSnapshot.data.displayName,
                                         style: TextStyle(

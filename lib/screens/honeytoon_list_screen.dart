@@ -91,11 +91,11 @@ class _HoneyToonListScreenState extends State<HoneyToonListScreen> {
                                                       "${_metaList[index].title}",
                                                       maxLines: 1,
                                                       style: TextStyle(
-                                                          fontSize: 16)),
+                                                          fontSize: 12)),
                                                   Text(
                                                     "${_metaList[index].displayName}",
                                                     style: TextStyle(
-                                                        fontSize: 14,
+                                                        fontSize: 10,
                                                         color: Colors.grey),
                                                   )
                                                   // Text('제목2')

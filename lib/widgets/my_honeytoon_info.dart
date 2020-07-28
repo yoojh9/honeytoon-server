@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../models/user.dart';
 
@@ -21,7 +22,7 @@ class MyHonetoonInfo extends StatelessWidget {
             padding:
             EdgeInsets.only(top: circleRadius/2.0 + 8, bottom: 16, right: 16, left: 16 ),  ///here we create space for the circle avatar to get ut of the box
             child: Container(
-              height: height * 0.28,
+              height: height * 0.35,
               width: double.infinity,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15.0),
@@ -37,28 +38,28 @@ class MyHonetoonInfo extends StatelessWidget {
               child: Column(
                   children: <Widget>[
                     SizedBox(height: circleRadius/2,),
-                    Text(user.displayName, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25.0),),
+                    Text(user.displayName, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),),
                     Padding(
-                      padding: const EdgeInsets.only(left: 16, right: 16, top: 30),
+                      padding: const EdgeInsets.only(left: 16, right: 16, top: 20),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Column(
                             children: <Widget>[
-                              Text('작가랭킹', style: TextStyle( fontSize: 18.0,  color: Colors.black54,),),
-                              Text("${user.rank==-1? '-': user.rank}위"  , style: TextStyle( fontSize: 20.0, color: Colors.black87, fontFamily: ''),),
+                              Text('작가랭킹', style: TextStyle( fontSize: 16.0,  color: Colors.black54,),),
+                              Text("${user.rank==-1? '-': user.rank}위"  , style: TextStyle( fontSize: 16.0, color: Colors.black87, fontFamily: ''),),
                             ],
                           ),
                           Column(
                             children: <Widget>[
-                              Text('작품정보', style: TextStyle( fontSize: 18.0,  color: Colors.black54),),
-                              Text("${user.works.length==0? '-': user.works.length}개", style: TextStyle( fontSize: 20.0, color: Colors.black87, fontFamily: ''),),
+                              Text('작품정보', style: TextStyle( fontSize: 16.0,  color: Colors.black54),),
+                              Text("${user.works.length==0? '-': user.works.length}개", style: TextStyle( fontSize: 16.0, color: Colors.black87, fontFamily: ''),),
                             ],
                           ),
                           Column(
                             children: <Widget>[
-                              Text('꿀단지', style: TextStyle( fontSize: 18.0,  color: Colors.black54),),
-                              Text("${user.honey}꿀", style: TextStyle( fontSize: 20.0, color: Colors.black87, fontFamily: ''),),
+                              Text('꿀단지', style: TextStyle( fontSize: 16.0,  color: Colors.black54),),
+                              Text("${user.honey}꿀", style: TextStyle( fontSize: 16.0, color: Colors.black87, fontFamily: ''),),
                             ],
                           ),
                         ],
@@ -86,10 +87,15 @@ class MyHonetoonInfo extends StatelessWidget {
             child: Center(
                 child: Container(
                   padding: EdgeInsets.all(4.0),
-                  child: CircleAvatar(
-                    backgroundImage: NetworkImage(user.thumbnail),
-                    radius: circleRadius
-                  )
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(circleRadius),
+                    child: CachedNetworkImage(
+                      imageUrl: user.thumbnail,
+                      placeholder: (context, url) => Image.asset('assets/images/avatar_placeholder.png',),
+                      errorWidget: (context, url, error) => Image.asset('assets/images/avatar_placeholder.png'),
+                      fit: BoxFit.cover
+                    ),   
+                  ),
                 ),
               ),
             ),
