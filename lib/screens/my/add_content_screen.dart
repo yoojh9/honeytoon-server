@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:honeytoon/models/user.dart';
+import 'package:honeytoon/providers/honeytoon_meta_provider.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
@@ -21,7 +22,9 @@ class AddContentScreen extends StatefulWidget {
 class _AddContentScreenState extends State<AddContentScreen> {
   HoneytoonContentProvider _contentProvider;
   AuthProvider _authProvider;
-  
+  HoneytoonMetaProvider _metaProvider;
+
+  var total;
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -34,10 +37,8 @@ class _AddContentScreenState extends State<AddContentScreen> {
     if (!_formKey.currentState.validate()) return;
     _formKey.currentState.save();
 
-
     try {
       final id = args['id'];
-      final count = args['total']+1;
       User user =  await _authProvider.getUserFromDB();
       bool _result = await checkPoint(user);
 
@@ -45,23 +46,36 @@ class _AddContentScreenState extends State<AddContentScreen> {
         _showErrorSnackbar(ctx, '작품을 등록할 포인트가 부족합니다.');
         return;
       }
-
-      setState(() {
-        _isLoading = true;
-      });
+      if(mounted){
+        setState(() {
+          _isLoading = true;
+        });
+      }
+       print('total:$total');
 
       final downloadUrl = await Storage.uploadImageToStorage(StorageType.CONTENT_COVER, id, _coverImage);
+      print('downloadUrl');
       final List<String> contentImageList = await uploadContentImage(id, _images);
-      final contentItem = HoneytoonContentItem(times: count.toString(), coverImgUrl: downloadUrl, contentImgUrls: contentImageList,);
-      final content = HoneytoonContent(toonId: id, content: contentItem, count: count);
+      final contentItem = HoneytoonContentItem(times: total.toString(), coverImgUrl: downloadUrl, contentImgUrls: contentImageList,);
+      final content = HoneytoonContent(toonId: id, content: contentItem, count: total);
   
-      await _contentProvider.createHoneytoonContent(content, user.uid);
+      _contentProvider.createHoneytoonContent(content, user.uid);
+      print('createHoneytoonContent');
 
-      setState(() {
-        _isLoading = false;
-      });
+      if(mounted){
+        setState(() {
+          _isLoading = false;
+        });
+      }
+      print('after setState()');
 
       Navigator.of(ctx).pop();
+
+      // if(args['page']!=null){
+      //   Navigator.of(ctx).pushNamed(args['page']);
+      // } else {
+      //   Navigator.of(ctx).pop();
+      // }
 
     } catch (error){
       print('error: $error');
@@ -141,6 +155,7 @@ class _AddContentScreenState extends State<AddContentScreen> {
 
     _contentProvider = Provider.of<HoneytoonContentProvider>(context, listen: false);
     _authProvider = Provider.of<AuthProvider>(context, listen: false);
+    _metaProvider = Provider.of<HoneytoonMetaProvider>(context, listen: false);
 
     return Scaffold(
         appBar: _buildAppBar(context, args),
@@ -152,8 +167,6 @@ class _AddContentScreenState extends State<AddContentScreen> {
   }
 
   Widget _buildForm(Map<String, dynamic> args){
-    final total = (args['total'] + 1).toString();
-
     return SafeArea(
       child: Container(
       alignment: Alignment.topCenter,
@@ -167,20 +180,33 @@ class _AddContentScreenState extends State<AddContentScreen> {
             ),
             Expanded(
               flex: 1,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Text(args['title'], style: Theme.of(context).textTheme.headline6),
-                  Text('$total 화', style: Theme.of(context).textTheme.subtitle1),
-                  RaisedButton(
-                    color: Theme.of(context).primaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: Text('허니툰 선택'),
-                    onPressed: loadAssets
-                  ),
-                ],
+              child: FutureBuilder(
+                future: _metaProvider.getHoneytoonMeta(args['id']),
+                builder: (context, snapshot) {  
+                  if(snapshot.hasData){
+                    var count = snapshot.data.totalCount == 0 ? "1" : (snapshot.data.totalCount+1);
+                    total = count;
+
+                    print('count=$count');
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Text(snapshot.data.title, style: Theme.of(context).textTheme.headline6),
+                        Text('$count 화', style: Theme.of(context).textTheme.subtitle1),
+                        RaisedButton(
+                          color: Theme.of(context).primaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: Text('허니툰 선택'),
+                          onPressed: loadAssets
+                        ),
+                      ],
+                    );
+                  } else {
+                    return Container();
+                  }
+                }
               ),
             ),
             Expanded(

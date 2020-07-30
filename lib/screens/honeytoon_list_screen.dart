@@ -16,10 +16,6 @@ class _HoneyToonListScreenState extends State<HoneyToonListScreen> {
   HoneytoonMetaProvider _metaProvider;
   List<dynamic> _metaList = [];
 
-  void _onTabEvent(BuildContext ctx) {
-    Navigator.of(ctx).pushNamed(HoneytoonDetailScreen.routeName);
-  }
-
   @override
   Widget build(BuildContext context) {
     _metaProvider = Provider.of<HoneytoonMetaProvider>(context);
@@ -61,7 +57,9 @@ class _HoneyToonListScreenState extends State<HoneyToonListScreen> {
                             itemCount: _metaList.length,
                             itemBuilder: (_, index) {
                               return GestureDetector(
-                                onTap: (){Navigator.of(context).pushNamed(HoneytoonDetailScreen.routeName, arguments: {'id': _metaList[index].workId});},
+                                onTap: (){Navigator.of(context).pushNamed(HoneytoonDetailScreen.routeName, 
+                                  arguments: {'id': _metaList[index].workId, 'uid': _metaList[index].uid});
+                                },
                                 child: Card(
                                   clipBehavior: Clip.antiAlias,
                                   child: Column(

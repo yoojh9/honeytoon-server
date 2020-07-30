@@ -65,10 +65,7 @@ class AuthProvider with ChangeNotifier {
         'displayName': authResult.user.displayName,
         'email': authResult.user.email,
         'provider': 'FACEBOOK',
-        'thumbnail': authResult.user.photoUrl,
-        'honey': 0,
-        'rank': -1,
-        'works': []
+        'thumbnail': authResult.user.photoUrl
       });
 
       return authResult.user;

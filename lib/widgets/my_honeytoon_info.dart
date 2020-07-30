@@ -47,19 +47,19 @@ class MyHonetoonInfo extends StatelessWidget {
                           Column(
                             children: <Widget>[
                               Text('작가랭킹', style: TextStyle( fontSize: 16.0,  color: Colors.black54,),),
-                              Text("${user.rank==-1? '-': user.rank}위"  , style: TextStyle( fontSize: 16.0, color: Colors.black87, fontFamily: ''),),
+                              Text("${user.rank==null? '-': user.rank}위"  , style: TextStyle( fontSize: 16.0, color: Colors.black87, fontFamily: ''),),
                             ],
                           ),
                           Column(
                             children: <Widget>[
                               Text('작품정보', style: TextStyle( fontSize: 16.0,  color: Colors.black54),),
-                              Text("${user.works.length==0? '-': user.works.length}개", style: TextStyle( fontSize: 16.0, color: Colors.black87, fontFamily: ''),),
+                              Text("${user.works==null || user.works.length==0 ? '-': user.works.length}개", style: TextStyle( fontSize: 16.0, color: Colors.black87, fontFamily: ''),),
                             ],
                           ),
                           Column(
                             children: <Widget>[
                               Text('꿀단지', style: TextStyle( fontSize: 16.0,  color: Colors.black54),),
-                              Text("${user.honey}꿀", style: TextStyle( fontSize: 16.0, color: Colors.black87, fontFamily: ''),),
+                              Text("${user.honey==null ? 0 : user.honey}꿀", style: TextStyle( fontSize: 16.0, color: Colors.black87, fontFamily: ''),),
                             ],
                           ),
                         ],

@@ -1,5 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:honeytoon/screens/my/honeytoon_my_screen.dart';
+import '../screens/honeytoon_detail_screen.dart';
 import 'package:provider/provider.dart';
 import '../screens/my/add_content_screen.dart';
 import '../providers/honeytoon_meta_provider.dart';
@@ -13,6 +15,10 @@ class MyHoneytoonListView extends StatelessWidget {
 
   final double height;
   final String uid;
+
+  void _navigateToDetail(BuildContext ctx, String uid, String workId){
+    Navigator.of(ctx).pushNamed(HoneytoonDetailScreen.routeName, arguments: {'uid': uid, 'id': workId});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,48 +44,9 @@ class MyHoneytoonListView extends StatelessWidget {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                     child: Row(children: [
-                      Expanded(
-                        flex: 2,
-                        child: AspectRatio(
-                            aspectRatio: 4 / 3,
-                            child: CachedNetworkImage(
-                              imageUrl: data.coverImgUrl,
-                              placeholder: (context, url) => Image.asset('assets/images/image_spinner.gif'),
-                              errorWidget: (context, url, error) => Icon(Icons.error),
-                              fit: BoxFit.cover
-                            )
-                        ),
-                      ),
-                      Expanded(
-                          flex: 3,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    '${data.title}',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                    ),
-                                  ),
-                                  Text((data.totalCount == 0)
-                                      ? "- 화"
-                                      : '${data.totalCount}화'),
-                                  Text('3일전'),
-                                ]),
-                          )),
-                      Expanded(
-                          flex: 1,
-                          child: IconButton(
-                              icon: Icon(
-                                Icons.add,
-                              ),
-                              onPressed: () {
-                                Navigator.of(context)
-                                    .pushNamed(AddContentScreen.routeName, arguments: {'id': data.workId, 'title': data.title, 'total': data.totalCount});
-                              }))
+                      _buildCoverImage(context, data),
+                      _buildHoneytoonInfo(context, uid, data),
+                      _buildAddIcon(context, data)
                     ]),
                   );
                 },
@@ -88,6 +55,70 @@ class MyHoneytoonListView extends StatelessWidget {
               return Center(child: Text('허니툰을 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요'));
             }
           }),
+    );
+  }
+
+  Widget _buildCoverImage(ctx, data){
+    return Expanded(
+      flex: 2,
+      child: AspectRatio(
+          aspectRatio: 4 / 3,
+          child: GestureDetector(
+            onTap: (){
+              _navigateToDetail(ctx, uid, data.workId);
+            },
+            child: CachedNetworkImage(
+              imageUrl: data.coverImgUrl,
+              placeholder: (context, url) => Image.asset('assets/images/image_spinner.gif'),
+              errorWidget: (context, url, error) => Icon(Icons.error),
+              fit: BoxFit.cover
+            ),
+          )
+      ),
+    );
+  }
+
+  Widget _buildHoneytoonInfo(ctx, uid, data){
+    return Expanded(
+      flex: 3,
+      child: GestureDetector(
+        onTap: (){
+          _navigateToDetail(ctx, uid, data.workId);
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '${data.title}',
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),
+                ),
+                Text((data.totalCount == 0)
+                    ? "- 화"
+                    : '${data.totalCount}화'),
+                Text('3일전'),
+              ]),
+        ),
+      )
+    );
+  }
+
+  Widget _buildAddIcon(ctx, data){
+   return Expanded(
+      flex: 1,
+      child: IconButton(
+          icon: Icon(
+            Icons.add,
+          ),
+          onPressed: () {
+            Navigator.of(ctx)
+                .pushNamed(AddContentScreen.routeName, arguments: {'id': data.workId, 'page': HoneytoonDetailScreen.routeName});
+          }
+      )
     );
   }
 }
