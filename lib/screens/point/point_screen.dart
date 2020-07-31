@@ -66,7 +66,7 @@ class PointScreen extends StatelessWidget {
                           _buildPointType(snapshot.data[index]),
                           Spacer(),
                           Text(
-                              '${DateFormatHelper.getDate(snapshot.data[index].createTime)}'),
+                              '${DateFormatHelper.getDateTime(snapshot.data[index].createTime)}'),
                         ])),
                   ),
                 );

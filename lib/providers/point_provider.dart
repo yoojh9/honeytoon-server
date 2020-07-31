@@ -26,7 +26,7 @@ class PointProvider extends ChangeNotifier {
   Future<List<Point>> getPoints(String uid) async {
     List<Point> _points;
     QuerySnapshot snapshot =
-        await Database.pointRef.document(uid).collection('point').getDocuments();
+        await Database.pointRef.document(uid).collection('point').orderBy('create_time' ,descending: true).getDocuments();
     print(snapshot.documents.length);
     _points = snapshot.documents
         .map((document) => Point.fromMap(document.documentID, document.data))
