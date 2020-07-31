@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:honeytoon/models/honeytoonContentItem.dart';
 import 'package:honeytoon/providers/auth_provider.dart';
 import 'package:honeytoon/providers/honeytoon_content_provider.dart';
 import 'package:honeytoon/providers/honeytoon_meta_provider.dart';
@@ -21,6 +22,7 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
   HoneytoonContentProvider _contentProvider;
   HoneytoonMetaProvider _metaProvider;
   AuthProvider _authProvider;
+  List<dynamic> _contentList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -113,19 +115,29 @@ Widget _buildHoneytoonMetaInfo(id, height) {
   }
   
   Widget _buildHoneytoonContentList(id, ){
-  return FutureBuilder(
-    future: _contentProvider.getHoneytoonContentList(id),
+  return StreamBuilder(
+    stream: _contentProvider.streamHoneytoonContents(id),
     builder: (context, snapshot) {
+      print('data:${snapshot.data}');
       if(snapshot.connectionState == ConnectionState.waiting) {
         return Center(
           child: CircularProgressIndicator(),
         );
       } else if(snapshot.hasData) {
+         if(snapshot.data.documents.length > 0) {
+            _contentList = snapshot.data.documents
+            .map((item) => HoneytoonContentItem.fromMap(
+                item.documentID, item.data))
+            .toList();
+            print('length:${_contentList.length}');
+            print('images:${_contentList[0].contentImgUrls}');
+         }
+
         return Container(
           child: GridView.builder(
             primary: false,
             shrinkWrap: true,
-            itemCount: snapshot.data.length,
+            itemCount: _contentList.length,
             itemBuilder: (ctx, index) => ClipRRect(
               borderRadius: BorderRadius.circular(5),
               child: GridTile(
@@ -133,12 +145,12 @@ Widget _buildHoneytoonMetaInfo(id, height) {
                   onTap: (){ Navigator.of(context).pushNamed(HoneytoonViewScreen.routeName, 
                     arguments: {
                       'id': id, 
-                      'images': snapshot.data[index].contentImgUrls,
-                      'times': snapshot.data[index].times,
+                      'images': _contentList[index].contentImgUrls,
+                      'times': _contentList[index].times,
                     }); 
                   },
                   child: CachedNetworkImage(
-                    imageUrl: snapshot.data[index].coverImgUrl,
+                    imageUrl: _contentList[index].coverImgUrl,
                     placeholder: (context, url) => Image.asset('assets/images/image_spinner.gif'),
                     errorWidget: (context, url, error) => Icon(Icons.error),
                     fit: BoxFit.cover
@@ -146,7 +158,7 @@ Widget _buildHoneytoonMetaInfo(id, height) {
                 ),
                 footer: GridTileBar(
                   backgroundColor: Colors.white70,
-                  title: Text('${snapshot.data[index].times}화', textAlign: TextAlign.start, style: TextStyle(color: Colors.black),),
+                  title: Text('${_contentList[index].times}화', textAlign: TextAlign.start, style: TextStyle(color: Colors.black),),
                 ),
               ),
                 

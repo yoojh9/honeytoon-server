@@ -59,7 +59,7 @@ class _AddContentScreenState extends State<AddContentScreen> {
       final contentItem = HoneytoonContentItem(times: total.toString(), coverImgUrl: downloadUrl, contentImgUrls: contentImageList,);
       final content = HoneytoonContent(toonId: id, content: contentItem, count: total);
   
-      _contentProvider.createHoneytoonContent(content, user.uid);
+      await _contentProvider.createHoneytoonContent(content, user.uid);
       print('createHoneytoonContent');
 
       if(mounted){

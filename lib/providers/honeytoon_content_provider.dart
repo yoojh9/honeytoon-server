@@ -49,4 +49,8 @@ class HoneytoonContentProvider extends ChangeNotifier {
   Stream<QuerySnapshot> streamMeta() {
     return Database.contentRef.getDocuments().asStream();
   }
+
+  Stream<QuerySnapshot> streamHoneytoonContents(String toonId) {
+    return Database.contentRef.document(toonId).collection('items').orderBy('create_time' ,descending: true).getDocuments().asStream();
+  }
 }
