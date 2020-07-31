@@ -34,11 +34,11 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
     });
   }
 
-  void _onTap(BuildContext context, String id, int index){
+  void _onTap(BuildContext context, String contentId, int index){
     setState(() {
       print(index);
       if(index==1){
-        Navigator.of(context).pushNamed(HoneytoonCommentScreen.routeName, arguments: {'id': id });
+        Navigator.of(context).pushNamed(HoneytoonCommentScreen.routeName, arguments: {'id': contentId });
       }
     });
   }
@@ -88,11 +88,11 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
            
           ]
         ),
-        bottomNavigationBar: _buildBottonNavigationBar(width, args['id']) 
+        bottomNavigationBar: _buildBottonNavigationBar(width, args['contentId']) 
       );
   }
 
-  Widget _buildBottonNavigationBar(width, id){
+  Widget _buildBottonNavigationBar(width, contentId){
     return AnimatedContainer(
         duration: Duration(milliseconds: 500),
         height: _isVisible ? 60 : 0,
@@ -107,7 +107,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
             ],
             currentIndex: _currentIndex,
             onTap: (index) {
-              _onTap(context, id, index);
+              _onTap(context, contentId, index);
             },
             ),
           ]

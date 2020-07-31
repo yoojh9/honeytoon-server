@@ -105,7 +105,7 @@ class _HoneytoonCommentScreenState extends State<HoneytoonCommentScreen> {
                 title: Container(
                   child: Row(
                     children: <Widget>[
-                      Text('유저혀', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                      Text('${snapshot.data[index].username}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                       SizedBox(width: 25,),
                       Text('${DateFormatHelper.getDateTime(snapshot.data[index].createTime)}', style: TextStyle(color: Colors.grey))
                   ],)

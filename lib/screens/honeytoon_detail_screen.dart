@@ -144,7 +144,8 @@ Widget _buildHoneytoonMetaInfo(id, height) {
                 child: GestureDetector(
                   onTap: (){ Navigator.of(context).pushNamed(HoneytoonViewScreen.routeName, 
                     arguments: {
-                      'id': id, 
+                      'id': id,
+                      'contentId': _contentList[index].contentId,
                       'images': _contentList[index].contentImgUrls,
                       'times': _contentList[index].times,
                     }); 

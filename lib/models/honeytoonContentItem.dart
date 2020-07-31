@@ -2,6 +2,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HoneytoonContentItem {
+  String contentId;
   String times;
   String coverImgUrl;
   Timestamp createTime;
@@ -21,6 +22,7 @@ class HoneytoonContentItem {
   }
 
   HoneytoonContentItem.fromMap(String documentId, Map snapshot){
+    this.contentId = documentId;
     this.times = snapshot['times'];
     this.coverImgUrl = snapshot['cover_img'];
     this.contentImgUrls = List<String>.from(snapshot['content_imgs']);
