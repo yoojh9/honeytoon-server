@@ -6,6 +6,7 @@ class Database {
   static final metaRef = firestore.collection(Collections.TOON);
   static final userRef = firestore.collection(Collections.USER);
   static final pointRef = firestore.collection(Collections.POINT);
+  static final commentRef = firestore.collection(Collections.COMMENT);
 }
 
 class Collections {
@@ -13,4 +14,5 @@ class Collections {
   static const USER = 'users';
   static const CONTENT = 'contents';
   static const POINT = 'points';
+  static const COMMENT = 'comments';
 }

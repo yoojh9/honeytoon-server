@@ -1,7 +1,7 @@
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
+import 'package:honeytoon/providers/comment_provider.dart';
 import 'package:honeytoon/providers/point_provider.dart';
-import 'package:honeytoon/widgets/my_honeytoon_listview.dart';
 import './providers/honeytoon_content_provider.dart';
 import './screens/setting_myinfo_screen.dart';
 import 'package:kakao_flutter_sdk/link.dart';
@@ -9,8 +9,8 @@ import './screens/honeytoon_list_screen.dart';
 import './screens/auth_screen.dart';
 import './screens/template_screen.dart';
 import './screens/point/coupon_screen.dart';
-import './screens/honeytoon_view_screen.dart';
-import './screens/honeytoon_comment_screen.dart';
+import './screens/toon/honeytoon_view_screen.dart';
+import './screens/toon/honeytoon_comment_screen.dart';
 import './screens/honeytoon_detail_screen.dart';
 import './screens/my/add_contentmeta_screen.dart';
 import './screens/my/add_content_screen.dart';
@@ -43,6 +43,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (ctx) => PointProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => CommentProvider(),
         )
       ],
       child: MaterialApp(

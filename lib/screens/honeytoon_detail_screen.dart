@@ -4,8 +4,8 @@ import 'package:honeytoon/models/honeytoonContentItem.dart';
 import 'package:honeytoon/providers/auth_provider.dart';
 import 'package:honeytoon/providers/honeytoon_content_provider.dart';
 import 'package:honeytoon/providers/honeytoon_meta_provider.dart';
-import '../screens/honeytoon_view_screen.dart';
-import '../screens/my/add_content_screen.dart';
+import './toon/honeytoon_view_screen.dart';
+import './my/add_content_screen.dart';
 import 'package:provider/provider.dart';
 
 

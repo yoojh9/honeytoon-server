@@ -34,11 +34,11 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
     });
   }
 
-  void _onTap(BuildContext context, int index){
+  void _onTap(BuildContext context, String id, int index){
     setState(() {
       print(index);
       if(index==1){
-        Navigator.of(context).pushNamed(HoneytoonCommentScreen.routeName);
+        Navigator.of(context).pushNamed(HoneytoonCommentScreen.routeName, arguments: {'id': id });
       }
     });
   }
@@ -62,6 +62,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
     final Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
     final mediaQueryData = MediaQuery.of(context);
     final height = mediaQueryData.size.height - (mediaQueryData.padding.top + mediaQueryData.padding.bottom + 160 );
+    final width = mediaQueryData.size.width - (mediaQueryData.padding.left + mediaQueryData.padding.right);
 
     return Scaffold(
         body: CustomScrollView(
@@ -87,33 +88,34 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
            
           ]
         ),
-        bottomNavigationBar: 
-        
-        AnimatedContainer(
-            duration: Duration(milliseconds: 500),
-            height: _isVisible ? 60 : 0,
-            child: _isVisible
-            ? Wrap(
-                children: [ BottomNavigationBar(
-                type: BottomNavigationBarType.fixed,
-                items: const <BottomNavigationBarItem>[
-                  BottomNavigationBarItem(icon: Icon(Icons.arrow_back), title: Text('이전화')),
-                  BottomNavigationBarItem(icon: Icon(Icons.mode_comment), title: Text('댓글')),
-                  BottomNavigationBarItem(icon: Icon(Icons.arrow_forward), title: Text('다음화')),
-                ],
-                currentIndex: _currentIndex,
-                onTap: (index) {
-                  _onTap(context, index);
-                },
-                ),
-              ]
-            ) 
-            : Container(
-              color: Colors.transparent,
-              width: mediaQueryData.size.width
-            )
-        ), 
-
+        bottomNavigationBar: _buildBottonNavigationBar(width, args['id']) 
       );
+  }
+
+  Widget _buildBottonNavigationBar(width, id){
+    return AnimatedContainer(
+        duration: Duration(milliseconds: 500),
+        height: _isVisible ? 60 : 0,
+        child: _isVisible
+        ? Wrap(
+            children: [ BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(icon: Icon(Icons.arrow_back), title: Text('이전화')),
+              BottomNavigationBarItem(icon: Icon(Icons.mode_comment), title: Text('댓글')),
+              BottomNavigationBarItem(icon: Icon(Icons.arrow_forward), title: Text('다음화')),
+            ],
+            currentIndex: _currentIndex,
+            onTap: (index) {
+              _onTap(context, id, index);
+            },
+            ),
+          ]
+        ) 
+        : Container(
+          color: Colors.transparent,
+          width: width
+        )
+    );
   }
 }
