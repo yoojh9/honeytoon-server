@@ -16,6 +16,7 @@ import './screens/my/add_contentmeta_screen.dart';
 import './screens/my/add_content_screen.dart';
 import './providers/auth_provider.dart';
 import './providers/honeytoon_meta_provider.dart';
+import './providers/my_provider.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -46,6 +47,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (ctx) => CommentProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => MyProvider(),
         )
       ],
       child: MaterialApp(

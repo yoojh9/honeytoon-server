@@ -4,7 +4,6 @@ import 'package:honeytoon/helpers/database.dart';
 import '../models/honeytoonMeta.dart';
 
 class HoneytoonMetaProvider extends ChangeNotifier {
-
   List<HoneytoonMeta> _metaList;
 
   Future<List<HoneytoonMeta>> getHoneytoonMetaList() async {
@@ -21,14 +20,15 @@ class HoneytoonMetaProvider extends ChangeNotifier {
     _metaList = result.documents
         .map((document) =>
             HoneytoonMeta.fromMap(document.data, document.documentID))
-            .where((data) => data.uid==uid)
+        .where((data) => data.uid == uid)
         .toList();
     return _metaList;
   }
 
   Future<HoneytoonMeta> getHoneytoonMeta(String id) async {
     DocumentSnapshot snapshot = await Database.metaRef.document(id).get();
-    HoneytoonMeta honeytoonMeta = HoneytoonMeta.fromMap(snapshot.data, snapshot.documentID);
+    HoneytoonMeta honeytoonMeta =
+        HoneytoonMeta.fromMap(snapshot.data, snapshot.documentID);
     return honeytoonMeta;
   }
 
@@ -39,17 +39,19 @@ class HoneytoonMetaProvider extends ChangeNotifier {
 
     Database.firestore.runTransaction((transaction) async {
       await transaction.set(metaReference, data);
-      await transaction.update(userReference, {'works':  FieldValue.arrayUnion([metaReference.documentID]) });
-    }).then((_){
+      await transaction.update(userReference, {
+        'works': FieldValue.arrayUnion([metaReference.documentID])
+      });
+    }).then((_) {
       print('success');
-    }).catchError((error){
+    }).catchError((error) {
       print(error.message);
     });
   }
 
   Future<void> updateHoneytoonMeta(HoneytoonMeta meta) async {
     Map data = meta.toJson();
-     await Database.metaRef.document(meta.workId).updateData(data);
+    await Database.metaRef.document(meta.workId).updateData(data);
   }
 
   Stream<QuerySnapshot> streamMeta() {
