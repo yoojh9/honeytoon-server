@@ -16,7 +16,12 @@ class MyProvider extends ChangeNotifier {
         .runTransaction((transaction) async {
           await transaction.update(metaReference,
               {'likes': FieldValue.increment(like.like ? 1 : -1)});
-          await transaction.set(likeReference, like.toJson());
+          print('like:${like.like}');
+          if(like.like){
+            await transaction.set(likeReference, like.toJson());
+          } else {
+            await transaction.delete(likeReference);
+          }
         })
         .then((value) => {print('success')})
         .catchError((error) {
@@ -31,6 +36,7 @@ class MyProvider extends ChangeNotifier {
         .document(like.workId);
 
     DocumentSnapshot snapshot = await likeReference.get();
+    print('exists: ${snapshot.exists}');
     return snapshot.exists;
   }
 

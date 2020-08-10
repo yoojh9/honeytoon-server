@@ -1,3 +1,4 @@
+import 'package:async/async.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -19,13 +20,40 @@ class HoneytoonDetailScreen extends StatefulWidget {
 }
 
 class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
+  final AsyncMemoizer _memoizer = AsyncMemoizer();
   HoneytoonContentProvider _contentProvider;
   HoneytoonMetaProvider _metaProvider;
-  AuthProvider _authProvider;
   MyProvider _myProvider;
   bool like = false;
-
+  String userId;
   List<dynamic> _contentList = [];
+
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    print('didChangeDependencies()');
+    super.didChangeDependencies();
+    final Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
+    _myProvider = Provider.of<MyProvider>(context, listen: false);
+
+    this._memoizer.runOnce(() async {
+      final uid = await AuthProvider.getCurrentFirebaseUserUid();
+      setState(() {
+        userId = uid;
+      });
+
+      final result = await _myProvider.ifLikeHoneytoon(Likes(uid: uid, workId: args['id']));
+      setState(() {
+        like = result;
+      });
+    });
+  }
+
 
   Future<void> _tabLikeButton(String workId, String uid) async {
     setState(() {
@@ -36,19 +64,10 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
     await _myProvider.likeHoneytoon(likeObj);
   }
 
-  Future<void> _ifLikeHoneytoon(String workId, String uid) async {
-    bool result =
-        await _myProvider.ifLikeHoneytoon(Likes(uid: uid, workId: workId));
-    like = result;
-  }
-
   @override
   Widget build(BuildContext context) {
-    _contentProvider =
-        Provider.of<HoneytoonContentProvider>(context, listen: false);
+    _contentProvider = Provider.of<HoneytoonContentProvider>(context, listen: false);
     _metaProvider = Provider.of<HoneytoonMetaProvider>(context, listen: false);
-    _authProvider = Provider.of<AuthProvider>(context, listen: false);
-    _myProvider = Provider.of<MyProvider>(context, listen: false);
 
     final Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
     final mediaQueryData = MediaQuery.of(context);
@@ -64,30 +83,8 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
               onPressed: () {
                 Navigator.of(context).pop();
               }),
-          actions: <Widget>[
-            FutureBuilder(
-                future: _authProvider.getCurrentFirebaseUserUid(),
-                builder: (ctx, snapshot) {
-                  _ifLikeHoneytoon(snapshot.data, args['uid']);
-                  if (snapshot.hasData && snapshot.data == args['uid']) {
-                    return IconButton(
-                        icon: Icon(Icons.add),
-                        onPressed: () {
-                          Navigator.of(ctx).pushNamed(
-                              AddContentScreen.routeName,
-                              arguments: {'id': args['id']});
-                        });
-                  } else {
-                    return IconButton(
-                      icon: like
-                          ? Icon(Icons.favorite)
-                          : Icon(Icons.favorite_border),
-                      onPressed: () {
-                        _tabLikeButton(args['id'], args['uid']);
-                      },
-                    );
-                  }
-                })
+          actions: <Widget>[             
+            _buildHeaderIcon(userId, args)
           ],
         ),
         body: SafeArea(
@@ -98,6 +95,28 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
                   _buildHoneytoonMetaInfo(args['id'], height),
                   _buildHoneytoonContentList(args['id'])
                 ])))));
+  }
+
+  Widget _buildHeaderIcon(userId, args) {
+    return 
+    (userId!=null && userId == args['uid']) ?
+      IconButton(
+        icon: Icon(Icons.add),
+        onPressed: () {
+          Navigator.of(context).pushNamed(
+              AddContentScreen.routeName,
+              arguments: {'id': args['id']});
+        }
+      )
+    :
+    IconButton(
+      icon: (like) 
+          ? Icon(Icons.favorite)
+          : Icon(Icons.favorite_border),
+      onPressed: () {
+        _tabLikeButton(args['id'], userId);
+      },
+    );
   }
 
   Widget _buildHoneytoonMetaInfo(id, height) {
@@ -140,9 +159,7 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
         });
   }
 
-  Widget _buildHoneytoonContentList(
-    id,
-  ) {
+  Widget _buildHoneytoonContentList(id) {
     return StreamBuilder(
       stream: _contentProvider.streamHoneytoonContents(id),
       builder: (context, snapshot) {
