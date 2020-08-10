@@ -163,7 +163,6 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
     return StreamBuilder(
       stream: _contentProvider.streamHoneytoonContents(id),
       builder: (context, snapshot) {
-        print('data:${snapshot.data}');
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
             child: CircularProgressIndicator(),
@@ -174,8 +173,6 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
                 .map((item) =>
                     HoneytoonContentItem.fromMap(item.documentID, item.data))
                 .toList();
-            print('length:${_contentList.length}');
-            print('images:${_contentList[0].contentImgUrls}');
           }
 
           return Container(

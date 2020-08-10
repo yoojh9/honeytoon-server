@@ -51,23 +51,19 @@ class _AddContentScreenState extends State<AddContentScreen> {
           _isLoading = true;
         });
       }
-       print('total:$total');
 
       final downloadUrl = await Storage.uploadImageToStorage(StorageType.CONTENT_COVER, id, _coverImage);
-      print('downloadUrl');
       final List<String> contentImageList = await uploadContentImage(id, _images);
       final contentItem = HoneytoonContentItem(times: total.toString(), coverImgUrl: downloadUrl, contentImgUrls: contentImageList,);
       final content = HoneytoonContent(toonId: id, content: contentItem, count: total);
   
       await _contentProvider.createHoneytoonContent(content, user.uid);
-      print('createHoneytoonContent');
 
       if(mounted){
         setState(() {
           _isLoading = false;
         });
       }
-      print('after setState()');
 
       Navigator.of(ctx).pop();
 
@@ -83,7 +79,6 @@ class _AddContentScreenState extends State<AddContentScreen> {
   }
 
   Future<bool> checkPoint(User user) async {
-    print('honey:${user.honey}');
     if(user.honey < 10){
       return false;
     }
@@ -97,7 +92,6 @@ class _AddContentScreenState extends State<AddContentScreen> {
       final downloadUrl = await Storage.uploadContentImage(id, image);
       contentsImageList.add(downloadUrl);
     }
-    print('contentImageList:$contentsImageList');
     return contentsImageList;
   }
 

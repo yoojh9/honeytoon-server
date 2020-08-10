@@ -48,7 +48,6 @@ class _SettingMyinfoScreenState extends State<SettingMyinfoScreen> {
         body: StreamBuilder(
             stream: FirebaseAuth.instance.onAuthStateChanged,
             builder: (_, snapshot) {
-              print('hasData: ${!snapshot.hasData}');
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator());
               } else if (!(snapshot.hasData)) {
