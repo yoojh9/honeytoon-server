@@ -123,7 +123,9 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
     return FutureBuilder(
         future: _metaProvider.getHoneytoonMeta(id),
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Container();
+          } else if (snapshot.hasData) {
             return Container(
                 height: height * 0.4,
                 child: Column(

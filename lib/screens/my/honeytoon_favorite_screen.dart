@@ -56,7 +56,7 @@ class _HoneytoonFavoriteScreenState extends State<HoneytoonFavoriteScreen> {
       FutureBuilder(
         future: _myProvider.getLikeHoneytoon(userId),
         builder: (context, snapshot) {
-          if(snapshot.hasData && snapshot.data!=null){
+          if(snapshot.hasData && snapshot.data!=null && snapshot.data.length > 0){
              print('data:${snapshot.data}');
           return  SingleChildScrollView(
             child: 
@@ -66,7 +66,7 @@ class _HoneytoonFavoriteScreenState extends State<HoneytoonFavoriteScreen> {
               shrinkWrap: true,
               itemBuilder: (ctx, index) => 
                 Padding(padding: const EdgeInsets.all(16),
-                child: FavoriteToonItem(height: height, data: snapshot.data[index]),
+                child: FavoriteToonItem(height: height, data: snapshot.data[index], uid: userId,),
               ),
             )
           );

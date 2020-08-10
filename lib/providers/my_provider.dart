@@ -39,12 +39,12 @@ class MyProvider extends ChangeNotifier {
     return snapshot.exists;
   }
 
-  /**
-   * 내가 좋아한 작품 리스트 get
+  /*
+   * 내가 좋아한 작품 리스트
    */
   Future<List<Likes>> getLikeHoneytoon(String uid) async {
     List<Likes> _likes;
-    QuerySnapshot snapshot  = await Database.myRef.document(uid).collection('likes').getDocuments();
+    QuerySnapshot snapshot  = await Database.myRef.document(uid).collection('likes').orderBy('like_time', descending: true).getDocuments();
     _likes = await Future.wait(snapshot.documents.map((likeSnapshot) async {
         DocumentSnapshot toonSnapshot = await Database.metaRef.document(likeSnapshot.documentID).get();
         return Likes.fromMap(likeSnapshot.documentID, likeSnapshot.data['like_time'], toonSnapshot.data);
