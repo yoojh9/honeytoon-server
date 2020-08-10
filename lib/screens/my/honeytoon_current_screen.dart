@@ -5,38 +5,29 @@ import '../../screens/auth_screen.dart';
 import '../../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import '../../providers/my_provider.dart';
-import './honeytoon_favorite_item.dart';
+import './honeytoon_current_item.dart';
 
-class HoneytoonFavoriteScreen extends StatefulWidget {
+class HoneytoonCurrentScreen extends StatefulWidget {
   @override
-  _HoneytoonFavoriteScreenState createState() => _HoneytoonFavoriteScreenState();
+  _HoneytoonCurrentScreenState createState() => _HoneytoonCurrentScreenState();
 }
 
-class _HoneytoonFavoriteScreenState extends State<HoneytoonFavoriteScreen> {
+class _HoneytoonCurrentScreenState extends State<HoneytoonCurrentScreen> {
   final AsyncMemoizer _memoizer = AsyncMemoizer();
-  Future future;
   MyProvider _myProvider;
   String userId;
-  bool _disposed = false;
 
   @override
   void initState() {
+    super.initState();
+
     this._memoizer.runOnce(() async {
       final uid = await AuthProvider.getCurrentFirebaseUserUid();
-      if(!_disposed){
-        setState(() {
-          userId = uid;
-          print('setUserId');
-        });
-      }
+      setState(() {
+        userId = uid;
+        print('setUserId');
+      });
     });
-    super.initState();
-  }
-
-  @override
-  void dispose(){
-    _disposed = true;
-    super.dispose();
   }
 
   Future<void> _loginPage(BuildContext ctx) async {
@@ -63,7 +54,7 @@ class _HoneytoonFavoriteScreenState extends State<HoneytoonFavoriteScreen> {
       : 
 
       FutureBuilder(
-        future: _myProvider.getLikeHoneytoon(userId),
+        future: _myProvider.getCurrentHoneytoon(userId),
         builder: (context, snapshot) {
           if(snapshot.hasData && snapshot.data!=null && snapshot.data.length > 0){
              print('data:${snapshot.data}');
@@ -75,7 +66,7 @@ class _HoneytoonFavoriteScreenState extends State<HoneytoonFavoriteScreen> {
               shrinkWrap: true,
               itemBuilder: (ctx, index) => 
                 Padding(padding: const EdgeInsets.all(16),
-                child: FavoriteToonItem(height: height, data: snapshot.data[index], uid: userId,),
+                child: CurrentToonItem(height: height, data: snapshot.data[index], uid: userId,),
               ),
             )
           );
@@ -87,7 +78,7 @@ class _HoneytoonFavoriteScreenState extends State<HoneytoonFavoriteScreen> {
             );
           } else {
             return Center(
-              child: Text('아직 관심툰이 없습니다. 관심툰을 추가해보세요'),
+              child: Text('아직 최근 본 허니툰이 없습니다. 허니툰을 구경해보세요'),
             );
           }
 

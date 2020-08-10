@@ -1,7 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:honeytoon/models/current.dart';
+import '../../providers/auth_provider.dart';
+import '../../providers/my_provider.dart';
+import 'package:provider/provider.dart';
 import './honeytoon_comment_screen.dart';
+import 'package:async/async.dart';
 
 class HoneytoonViewScreen extends StatefulWidget {
   static final routeName = 'honeytoon-view';
@@ -11,9 +17,12 @@ class HoneytoonViewScreen extends StatefulWidget {
 }
 
 class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTickerProviderStateMixin{
+  final AsyncMemoizer _memoizer = AsyncMemoizer();
   ScrollController _scrollController;
   var _isVisible = true;
   int _currentIndex = 0;
+  String userId;
+  MyProvider _myProvider;
 
   @override
   void initState() {
@@ -34,6 +43,25 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
     });
   }
 
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    final Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
+    _myProvider = Provider.of<MyProvider>(context, listen: false);
+
+    this._memoizer.runOnce(() async {
+      final uid = await AuthProvider.getCurrentFirebaseUserUid();
+      setState(() {
+        userId = uid;
+      });
+
+      Current current = Current(uid: userId, workId: args['id'], contentId: args['contentId'], times: args['times'], updateTime: Timestamp.now());
+      await _myProvider.addCurrentHoneytoon(current);
+    });
+
+  }
+
   void _onTap(BuildContext context, String contentId, int index){
     setState(() {
       print(index);
@@ -44,17 +72,29 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
   }
 
   Widget buildImage(List<String> images){
-    return Container(
-      child: Column(
-          children: 
-            images.map((image) => CachedNetworkImage(
-              imageUrl: image,
-              placeholder: (context, url) => Image.asset('assets/images/image_spinner.gif'),
-              errorWidget: (context, url, error) => Icon(Icons.error),
-              fit: BoxFit.cover
-            )).toList()
-        )
-    );
+    if(images!=null){
+      return FutureBuilder(
+        future: null,
+        builder: (context, snapshot) {
+          return Container(
+            child: Column(
+                children: 
+                  images.map((image) => CachedNetworkImage(
+                    imageUrl: image,
+                    placeholder: (context, url) => Image.asset('assets/images/image_spinner.gif'),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
+                    fit: BoxFit.cover
+                  )).toList()
+              )
+          );
+        }
+      );
+    } else {
+      return Container(
+        // @TODO
+        child: Text('TODO')
+      );
+    }
   }
 
   @override

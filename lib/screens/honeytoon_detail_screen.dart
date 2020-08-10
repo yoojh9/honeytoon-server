@@ -2,6 +2,7 @@ import 'package:async/async.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:honeytoon/models/current.dart';
 import 'package:honeytoon/models/honeytoonContentItem.dart';
 import 'package:honeytoon/models/likes.dart';
 import 'package:honeytoon/providers/auth_provider.dart';
@@ -62,6 +63,18 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
     Likes likeObj =
         Likes(uid: uid, workId: workId, like: like, likeTime: Timestamp.now());
     await _myProvider.likeHoneytoon(likeObj);
+  }
+
+  void _navigateViewPage(BuildContext ctx, String workId, HoneytoonContentItem data) {
+    Navigator.of(ctx).pushNamed(
+      HoneytoonViewScreen.routeName,
+      arguments: {
+        'id': workId,
+        'contentId': data.contentId,
+        'images': data.contentImgUrls,
+        'times': data.times,
+      }
+    );
   }
 
   @override
@@ -187,14 +200,7 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
                 child: GridTile(
                   child: GestureDetector(
                       onTap: () {
-                        Navigator.of(context).pushNamed(
-                            HoneytoonViewScreen.routeName,
-                            arguments: {
-                              'id': id,
-                              'contentId': _contentList[index].contentId,
-                              'images': _contentList[index].contentImgUrls,
-                              'times': _contentList[index].times,
-                            });
+                        _navigateViewPage(ctx, id, _contentList[index]);
                       },
                       child: CachedNetworkImage(
                           imageUrl: _contentList[index].coverImgUrl,

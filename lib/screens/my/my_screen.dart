@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import './honeytoon_current_screen.dart';
 import './honeytoon_my_screen.dart';
 import 'honeytoon_favorite_screen.dart';
 
@@ -50,7 +51,7 @@ class _MyScreenState extends State<MyScreen>
             children: <Widget>[
               HoneytoonMyScreen(),
               HoneytoonFavoriteScreen(),
-              Center(child: Text('최근본'))
+              HoneytoonCurrentScreen(),
             ],
           ),
         ));
