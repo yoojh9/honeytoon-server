@@ -123,6 +123,6 @@ class AuthProvider with ChangeNotifier {
 
   static Future<String> getCurrentFirebaseUserUid() async {
     FirebaseUser currentUser = await _auth.currentUser();
-    return currentUser.uid;
+    return currentUser == null ? null : currentUser.uid;
   }
 }
