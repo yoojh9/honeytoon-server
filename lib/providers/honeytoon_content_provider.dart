@@ -53,4 +53,12 @@ class HoneytoonContentProvider extends ChangeNotifier {
   Stream<QuerySnapshot> streamHoneytoonContents(String toonId) {
     return Database.contentRef.document(toonId).collection('items').orderBy('create_time' ,descending: true).getDocuments().asStream();
   }
+
+  Future<HoneytoonContentItem> getHoneytoonContentByTimes(String toonId, String times) async {
+    HoneytoonContentItem _contentItem;
+    QuerySnapshot snapshot =  await Database.contentRef.document(toonId).collection('items').where('times', isEqualTo: times).getDocuments();
+    DocumentSnapshot document = snapshot.documents.firstWhere((element) => element['times'] == times);
+    _contentItem = HoneytoonContentItem.fromMap(document.documentID, document.data);
+    return _contentItem;
+  }
 }

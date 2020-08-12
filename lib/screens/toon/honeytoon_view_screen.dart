@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:honeytoon/models/current.dart';
+import 'package:honeytoon/providers/honeytoon_content_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/my_provider.dart';
 import 'package:provider/provider.dart';
@@ -23,6 +24,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
   int _currentIndex = 0;
   String userId;
   MyProvider _myProvider;
+  HoneytoonContentProvider _contentProvider;
 
   @override
   void initState() {
@@ -71,28 +73,50 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
     });
   }
 
-  Widget buildImage(List<String> images){
+  Widget buildImage(args){
+    List<String> images = args['images'];
     if(images!=null){
-      return FutureBuilder(
-        future: null,
-        builder: (context, snapshot) {
-          return Container(
-            child: Column(
-                children: 
-                  images.map((image) => CachedNetworkImage(
-                    imageUrl: image,
-                    placeholder: (context, url) => Image.asset('assets/images/image_spinner.gif'),
-                    errorWidget: (context, url, error) => Icon(Icons.error),
-                    fit: BoxFit.cover
-                  )).toList()
-              )
-          );
-        }
+      return Container(
+        child: Column(
+            children: 
+              images.map((image) => CachedNetworkImage(
+                imageUrl: image,
+                placeholder: (context, url) => Image.asset('assets/images/image_spinner.gif'),
+                errorWidget: (context, url, error) => Icon(Icons.error),
+                fit: BoxFit.cover
+              )).toList()
+          )
       );
     } else {
-      return Container(
-        // @TODO
-        child: Text('TODO')
+      return FutureBuilder(
+        future: _contentProvider.getHoneytoonContentByTimes(args['id'], args['times']),
+        builder: (context, snapshot) {
+          if(snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator(),);
+          } else if(snapshot.hasData){
+            print('image:${snapshot.data.contentImgUrls}');
+            return Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  ListView.builder(
+                    padding: EdgeInsets.zero,
+                    shrinkWrap: true,
+                    itemCount: snapshot.data.contentImgUrls.length,
+                    itemBuilder: (ctx, index) => CachedNetworkImage(
+                        imageUrl: snapshot.data.contentImgUrls[index],
+                        placeholder: (context, url) => Image.asset('assets/images/image_spinner.gif'),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
+                        fit: BoxFit.cover
+                      )  
+                    )
+                  ]
+                )
+            );
+          } else {
+            return Center(child: Text('허니툰을 불러오는데 문제가 발생했습니다. 잠시 후 다시 시도해주세요'),);
+          } 
+        }
       );
     }
   }
@@ -103,6 +127,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
     final mediaQueryData = MediaQuery.of(context);
     final height = mediaQueryData.size.height - (mediaQueryData.padding.top + mediaQueryData.padding.bottom + 160 );
     final width = mediaQueryData.size.width - (mediaQueryData.padding.left + mediaQueryData.padding.right);
+    _contentProvider = Provider.of<HoneytoonContentProvider>(context, listen: false);
 
     return Scaffold(
         body: CustomScrollView(
@@ -122,7 +147,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
  
             SliverList(
               delegate: SliverChildListDelegate([
-                buildImage(args['images'])
+                buildImage(args)
               ])
             )
            
