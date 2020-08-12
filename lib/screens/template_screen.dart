@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import './point/point_template_screen.dart';
 import './my/my_screen.dart';
 import './honeytoon_list_screen.dart';
-import './setting_screen.dart';
+import './settings/setting_screen.dart';
 
 class TemplateScreen extends StatefulWidget {
   @override

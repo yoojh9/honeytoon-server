@@ -2,12 +2,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:honeytoon/models/user.dart';
-import '../providers/auth_provider.dart';
+import '../../providers/auth_provider.dart';
 import 'package:honeytoon/screens/settings/setting_section.dart';
 import 'package:provider/provider.dart';
-import './settings/setting_list.dart';
-import './settings/setting_tile.dart';
-import './auth_screen.dart';
+import 'setting_list.dart';
+import 'setting_tile.dart';
+import '../auth_screen.dart';
 
 class SettingMyinfoScreen extends StatefulWidget {
   static const routeName = 'setting-myinfo';

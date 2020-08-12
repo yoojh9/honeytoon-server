@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import './shopping_screen.dart';
 import './point_earn_screen.dart';
 import './point_screen.dart';
 
@@ -41,7 +42,7 @@ class _PointTemplateScreenState extends State<PointTemplateScreen>
           ),
           body: TabBarView(
               controller: _controller,
-              children: <Widget>[PointScreen(), Center(child: PointEarnScreen()), Center(child: Text('쇼핑하기'))])),
+              children: <Widget>[PointScreen(), Center(child: PointEarnScreen()), ShoppingScreen()])),
     );
   }
 }

@@ -1,9 +1,5 @@
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
-import 'package:honeytoon/providers/comment_provider.dart';
-import 'package:honeytoon/providers/point_provider.dart';
-import './providers/honeytoon_content_provider.dart';
-import './screens/setting_myinfo_screen.dart';
 import 'package:kakao_flutter_sdk/link.dart';
 import './screens/honeytoon_list_screen.dart';
 import './screens/auth_screen.dart';
@@ -14,9 +10,13 @@ import './screens/toon/honeytoon_comment_screen.dart';
 import './screens/honeytoon_detail_screen.dart';
 import './screens/my/add_contentmeta_screen.dart';
 import './screens/my/add_content_screen.dart';
+import './screens/settings/setting_myinfo_screen.dart';
+import './providers/honeytoon_content_provider.dart';
 import './providers/auth_provider.dart';
 import './providers/honeytoon_meta_provider.dart';
 import './providers/my_provider.dart';
+import './providers/comment_provider.dart';
+import './providers/point_provider.dart';
 import 'package:provider/provider.dart';
 
 void main() {
