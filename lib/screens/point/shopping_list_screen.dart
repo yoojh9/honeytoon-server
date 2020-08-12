@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import './shopping_item_screen.dart';
 
-class ShoppingScreen extends StatelessWidget {
+class ShoppingListScreen extends StatelessWidget {
   final test_data = [
     {'name': '스타벅스', 'img': 'https://biz.giftishow.com/Resource/brand/BR_20140605_164826_3.jpg'},
     {'name': '투썸플레이스', 'img': 'https://biz.giftishow.com/Resource/brand/20190819_095358914.jpg'},
@@ -56,21 +57,24 @@ class ShoppingScreen extends StatelessWidget {
                   itemCount: test_product.length,
                   itemBuilder: (ctx, index) => Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: ListTile(
-                        leading: CircleAvatar(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(50),
-                            child: Image.network(test_product[index]['img']),
-                          )
-                        ),
-                        title: Row(children: [
-                          Text('${test_product[index]['brand']}'),
-                          Spacer(),
-                          Text('${test_product[index]['price']}원'),
-                          ]
-                        ),
-                        subtitle: Text('${test_product[index]['name']}'),
+                    child: GestureDetector(
+                      onTap: (){Navigator.of(ctx).pushNamed(ShoppingItemScreen.routeName);},
+                      child: ListTile(
+                          leading: CircleAvatar(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(50),
+                              child: Image.network(test_product[index]['img']),
+                            )
+                          ),
+                          title: Row(children: [
+                            Text('${test_product[index]['brand']}'),
+                            Spacer(),
+                            Text('${test_product[index]['price']}원'),
+                            ]
+                          ),
+                          subtitle: Text('${test_product[index]['name']}'),
                   ),
+                    ),
                 )
             )
           )

@@ -18,6 +18,8 @@ class _CouponScreenState extends State<CouponScreen> {
 
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
           title: Text('내 쿠폰함'),
         ),
         body: StreamBuilder<FirebaseUser>(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/link.dart';
 import './screens/honeytoon_list_screen.dart';
 import './screens/auth_screen.dart';
+import './screens/point/shopping_item_screen.dart';
 import './screens/template_screen.dart';
 import './screens/point/coupon_screen.dart';
 import './screens/toon/honeytoon_view_screen.dart';
@@ -67,6 +68,7 @@ class MyApp extends StatelessWidget {
         routes: {
           "list": (context) => HoneyToonListScreen(),
           CouponScreen.routeName: (context) => CouponScreen(),
+          ShoppingItemScreen.routeName: (context) => ShoppingItemScreen(),
           HoneytoonViewScreen.routeName: (context) => HoneytoonViewScreen(),
           HoneytoonDetailScreen.routeName: (context) => HoneytoonDetailScreen(),
           AddContentMetaScreen.routeName: (context) => AddContentMetaScreen(),
