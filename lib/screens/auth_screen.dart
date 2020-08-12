@@ -38,48 +38,23 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text('로그인')),
+        resizeToAvoidBottomInset : false,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          title: Text('로그인')
+        ),
         body: Padding(
-          padding: EdgeInsets.symmetric(vertical: 48, horizontal: 16),
+          padding: EdgeInsets.symmetric(vertical: 18, horizontal: 16),
           child: Column(
             children: <Widget>[
-              Text('SNS 계정으로 로그인 / 가입',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               Expanded(
                 flex: 1,
                 child: Container(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 30),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          GestureDetector(
-                              child: CircleAvatar(
-                                backgroundImage: AssetImage(
-                                    'assets/images/kakao_login_icon.png'),
-                                radius: 30,
-                              ),
-                              onTap: () => _loginKakao(context)),
-                          SizedBox(width: 20),
-                          GestureDetector(
-                              child: CircleAvatar(
-                                backgroundImage: AssetImage(
-                                    'assets/images/facebook_login_icon.png'),
-                                radius: 30,
-                              ),
-                              onTap: () => _loginFacebook(context)),
-                          SizedBox(width: 20),
-                        ]),
-                  ),
-                ),
-              ),
-              Text('이메일로 로그인 / 가입',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              Expanded(
-                flex: 2,
-                child: Container(
                     margin: const EdgeInsets.symmetric(vertical: 16),
                     child: Column(children: [
+                      Text('이메일로 로그인 / 가입',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,)),
                       TextFormField(
                         decoration: InputDecoration(
                           labelText: "이메일",
@@ -101,9 +76,46 @@ class _AuthScreenState extends State<AuthScreen> {
                               style: TextStyle(fontSize: 16),
                             ),
                             onPressed: () {}),
-                      )
+                      ),
+                      Row(children: <Widget>[
+                        FlatButton(onPressed: (){}, child: Text('비밀번호를 잊으셨나요?', style: TextStyle(decoration: TextDecoration.underline))),
+                        Spacer(),
+                        FlatButton(onPressed: (){}, child: Text('회원가입', style: TextStyle(decoration: TextDecoration.underline)))
+                      ],)
                     ])),
-              )
+              ),
+              Expanded(
+                flex: 1,
+                child: Container(
+                    child: Column(
+                      children: 
+                      [ 
+                        Text('SNS 계정으로 로그인 / 가입', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                        SizedBox(height: 10,),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            GestureDetector(
+                                child: CircleAvatar(
+                                  backgroundImage: AssetImage(
+                                      'assets/images/kakao_login_icon.png'),
+                                  radius: 30,
+                                ),
+                                onTap: () => _loginKakao(context)),
+                            SizedBox(width: 20),
+                            GestureDetector(
+                                child: CircleAvatar(
+                                  backgroundImage: AssetImage(
+                                      'assets/images/facebook_login_icon.png'),
+                                  radius: 30,
+                                ),
+                                onTap: () => _loginFacebook(context)),
+                            SizedBox(width: 20),
+                          ]),
+                      ]
+                    ),
+                ),
+              ),
             ],
           ),
         )

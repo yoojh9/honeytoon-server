@@ -180,8 +180,6 @@ class _AddContentScreenState extends State<AddContentScreen> {
                   if(snapshot.hasData){
                     var count = snapshot.data.totalCount == 0 ? "1" : (snapshot.data.totalCount+1);
                     total = count;
-
-                    print('count=$count');
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [

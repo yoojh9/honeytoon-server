@@ -57,11 +57,13 @@ class MyApp extends StatelessWidget {
         title: 'Honey Toon',
         theme: ThemeData(
           primarySwatch: themeColor,
+          primaryColor: themeColor,
           visualDensity: VisualDensity.adaptivePlatformDensity,
           brightness: Brightness.light,
         ),
         darkTheme: ThemeData(
-          primarySwatch: themeColor,
+          primaryColor: themeColor,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
           brightness: Brightness.dark,
         ),
         home: TemplateScreen(),
