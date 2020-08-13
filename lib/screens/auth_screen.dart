@@ -12,17 +12,20 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   var user;
 
   void _loginKakao(BuildContext ctx) async {
-    user = await FirebaseAuth.instance.currentUser();
-
-    if (user == null) {
-      user =
-          await Provider.of<AuthProvider>(context, listen: false).kakaoLogin();
+    try {
+      user = await FirebaseAuth.instance.currentUser();
+      if (user == null) {
+        user = await Provider.of<AuthProvider>(context, listen: false).kakaoLogin();
+      }
+      Navigator.of(ctx).pop(user);
+    } catch(error){
+      _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('카카오톡으로 로그인을 진행할 수 없습니다.'), duration: Duration(seconds: 2),));
+      print(error);
     }
-
-    Navigator.of(ctx).pop(user);
   }
 
   void _loginFacebook(BuildContext ctx) async {
@@ -39,6 +42,7 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        key: _scaffoldKey,
         resizeToAvoidBottomInset : false,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -53,39 +57,40 @@ class _AuthScreenState extends State<AuthScreen> {
                 flex: 1,
                 child: Container(
                     margin: const EdgeInsets.symmetric(vertical: 16),
-                    child: Column(children: [
-                      Text('이메일로 로그인',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,)),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          labelText: "이메일",
+                    child: Column(
+                      children: [
+                        Text('이메일로 로그인',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,)),
+                        TextFormField(
+                          decoration: InputDecoration(
+                            labelText: "이메일",
+                          ),
                         ),
-                      ),
-                      TextFormField(
-                        decoration: InputDecoration(labelText: "비밀번호"),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      ButtonTheme(
-                        minWidth: double.infinity,
-                        height: 40,
-                        child: RaisedButton(
-                            color: Theme.of(context).primaryColor,
-                            child: Text(
-                              '이메일로 로그인',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            onPressed: () {}),
-                      ),
-                      Row(children: <Widget>[
-                        FlatButton(onPressed: (){}, child: Text('비밀번호를 잊으셨나요?', style: TextStyle(decoration: TextDecoration.underline))),
-                        Spacer(),
-                        FlatButton(onPressed: (){
-                          Navigator.of(context).pushNamed(AuthJoinScreen.routeName);
-                        }, child: Text('회원가입', style: TextStyle(decoration: TextDecoration.underline)))
-                      ],)
-                    ])),
+                        TextFormField(
+                          decoration: InputDecoration(labelText: "비밀번호"),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        ButtonTheme(
+                          minWidth: double.infinity,
+                          height: 40,
+                          child: RaisedButton(
+                              color: Theme.of(context).primaryColor,
+                              child: Text(
+                                '이메일로 로그인',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              onPressed: () {}),
+                        ),
+                        Row(children: <Widget>[
+                          FlatButton(onPressed: (){}, child: Text('비밀번호를 잊으셨나요?', style: TextStyle(decoration: TextDecoration.underline))),
+                          Spacer(),
+                          FlatButton(onPressed: (){
+                            Navigator.of(context).pushNamed(AuthJoinScreen.routeName);
+                          }, child: Text('회원가입', style: TextStyle(decoration: TextDecoration.underline)))
+                        ],)
+                      ])),
               ),
               Expanded(
                 flex: 1,

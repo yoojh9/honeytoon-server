@@ -91,11 +91,11 @@ class _SettingMyinfoScreenState extends State<SettingMyinfoScreen> {
                                   children: <Widget>[
                                     ClipOval(
                                       child: CachedNetworkImage(
-                                        width: 100,
-                                        height: 100,
+                                        width: height * 0.15,
+                                        height: height * 0.15,
                                         imageUrl: futureSnapshot.data.thumbnail,
-                                        placeholder: (context, url) => Image.asset('assets/images/avatar_placeholder.png',),
-                                        errorWidget: (context, url, error) => Image.asset('assets/images/avatar_placeholder.png'),
+                                        placeholder: (context, url) => Image.asset('assets/images/avatar_placeholder.png', width: height * 0.15),
+                                        errorWidget: (context, url, error) => Image.asset('assets/images/avatar_placeholder.png', width: height * 0.15),
                                         fit: BoxFit.cover,
                                       ),
                                     ),

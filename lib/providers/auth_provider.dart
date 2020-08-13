@@ -14,7 +14,6 @@ class AuthProvider with ChangeNotifier {
   static final _db = Firestore.instance;
 
   Future<FirebaseUser> kakaoLogin() async {
-    try {
       print('kakao login start');
       final installed = await isKakaoTalkInstalled();
       final authCode = installed
@@ -28,13 +27,27 @@ class AuthProvider with ChangeNotifier {
       final firebaseUser = await signInWithCustomToken(firebaseToken);
 
       return firebaseUser;
-    } on KakaoAuthException catch (error) {
-      print(error);
-    } on KakaoClientException catch (error) {
-      print(error);
-    } catch (error) {
-      print(error);
-    }
+    // try {
+    //   print('kakao login start');
+    //   final installed = await isKakaoTalkInstalled();
+    //   final authCode = installed
+    //       ? await AuthCodeClient.instance.requestWithTalk()
+    //       : await AuthCodeClient.instance.request();
+    //   final token = await AuthApi.instance.issueAccessToken(authCode);
+
+    //   print('accessToken:${token.accessToken}');
+
+    //   final firebaseToken = await getFirebaseToken(token.accessToken);
+    //   final firebaseUser = await signInWithCustomToken(firebaseToken);
+
+    //   return firebaseUser;
+    // } on KakaoAuthException catch (error) {
+    //   print(error);
+    // } on KakaoClientException catch (error) {
+    //   print(error);
+    // } catch (error) {
+    //   print(error);
+    // }
   }
 
   Future<FirebaseUser> facebookLogin() async {
@@ -81,8 +94,6 @@ class AuthProvider with ChangeNotifier {
 
   Future<AuthResult> createUserWithEmailAndPassword(User user) async {
     AuthResult authResult = await _auth.createUserWithEmailAndPassword(email: user.email, password: user.password);
-    print(authResult.user.displayName);
-
     return authResult;
   }
 
