@@ -41,7 +41,7 @@ class _HoneytoonCommentScreenState extends State<HoneytoonCommentScreen> {
     final Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
     final mediaQueryData = MediaQuery.of(context);
     final height = mediaQueryData.size.height - (kToolbarHeight + mediaQueryData.padding.top + mediaQueryData.padding.bottom);
-    _commentProvider = Provider.of<CommentProvider>(context, listen: false);
+    _commentProvider = Provider.of<CommentProvider>(context);
 
     return Scaffold(
       resizeToAvoidBottomInset : false,
