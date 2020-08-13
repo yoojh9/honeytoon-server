@@ -22,7 +22,7 @@ class MyHonetoonInfo extends StatelessWidget {
             padding:
             EdgeInsets.only(top: circleRadius/2.0 + 8, bottom: 16, right: 16, left: 16 ),  ///here we create space for the circle avatar to get ut of the box
             child: Container(
-              height: height * 0.35,
+              height: height * 0.3,
               width: double.infinity,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15.0),
@@ -86,10 +86,12 @@ class MyHonetoonInfo extends StatelessWidget {
             ),
             child: Center(
                 child: Container(
-                  padding: EdgeInsets.all(4.0),
+                  padding: EdgeInsets.all(5),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(circleRadius),
                     child: CachedNetworkImage(
+                      width: circleRadius,
+                      height: circleRadius,
                       imageUrl: user.thumbnail,
                       placeholder: (context, url) => Image.asset('assets/images/avatar_placeholder.png',),
                       errorWidget: (context, url, error) => Image.asset('assets/images/avatar_placeholder.png'),

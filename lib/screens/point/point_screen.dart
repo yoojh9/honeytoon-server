@@ -111,7 +111,7 @@ class PointScreen extends StatelessWidget {
                   )),
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 Text(
-                  '${data.honey}',
+                  '${data.honey == null ? "0" : data.honey}',
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
