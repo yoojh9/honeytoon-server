@@ -6,22 +6,27 @@ import 'package:uuid/uuid.dart';
 
 enum StorageType {
   META_COVER,
-  CONTENT_COVER
+  CONTENT_COVER,
+  USER_THUMBNAIL
 }
 
 class Storage {
   static final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
 
   static Future<String> uploadImageToStorage(StorageType type, String id, File image) async {
-    final storagePath = 
-      (type == StorageType.META_COVER) ? 'cover/$id/${Uuid().v4()}' :'content/$id/cover/${Uuid().v4()}';
-      
+    final storagePath = getStoragePath(type, id);
 
     final StorageReference storageReference = _firebaseStorage.ref().child(storagePath);
     final StorageUploadTask storageUploadTask = storageReference.putFile(image);
     await storageUploadTask.onComplete;
     String downloadUrl = await storageReference.getDownloadURL();
     return downloadUrl;
+  }
+
+  static String getStoragePath(type, id){
+    if(type == StorageType.META_COVER) return 'cover/$id/${Uuid().v4()}';
+    else if(type == StorageType.USER_THUMBNAIL) return 'thumb/$id/${Uuid().v4()}';
+    else return 'content/$id/cover/${Uuid().v4()}'; 
   }
 
   static Future<String> uploadContentImage(String id, Asset asset) async {

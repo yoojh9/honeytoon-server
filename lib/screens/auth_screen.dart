@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
+import 'auth_join_screen.dart';
 
 class AuthScreen extends StatefulWidget {
   static final routeName = 'auth-screen';
@@ -53,7 +54,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 child: Container(
                     margin: const EdgeInsets.symmetric(vertical: 16),
                     child: Column(children: [
-                      Text('이메일로 로그인 / 가입',
+                      Text('이메일로 로그인',
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,)),
                       TextFormField(
                         decoration: InputDecoration(
@@ -80,7 +81,9 @@ class _AuthScreenState extends State<AuthScreen> {
                       Row(children: <Widget>[
                         FlatButton(onPressed: (){}, child: Text('비밀번호를 잊으셨나요?', style: TextStyle(decoration: TextDecoration.underline))),
                         Spacer(),
-                        FlatButton(onPressed: (){}, child: Text('회원가입', style: TextStyle(decoration: TextDecoration.underline)))
+                        FlatButton(onPressed: (){
+                          Navigator.of(context).pushNamed(AuthJoinScreen.routeName);
+                        }, child: Text('회원가입', style: TextStyle(decoration: TextDecoration.underline)))
                       ],)
                     ])),
               ),

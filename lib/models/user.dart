@@ -2,6 +2,7 @@ class User {
   String uid;
   String displayName;
   String email;
+  String password;
   String provider;
   String thumbnail;
   int honey = 0;
@@ -12,6 +13,7 @@ class User {
       {this.uid,
       this.displayName,
       this.email,
+      this.password,
       this.provider,
       this.thumbnail,
       this.honey,

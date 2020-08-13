@@ -61,6 +61,8 @@ class AuthProvider with ChangeNotifier {
       print(authResult.user.displayName);
       print(authResult.user);
 
+      await addUserToDB(authResult, 'FACEBOOK', null);
+
       await _db.collection('users').document(authResult.user.uid).setData({
         'displayName': authResult.user.displayName,
         'email': authResult.user.email,
@@ -75,6 +77,22 @@ class AuthProvider with ChangeNotifier {
     } catch (error) {
       print(error);
     }
+  }
+
+  Future<AuthResult> createUserWithEmailAndPassword(User user) async {
+    AuthResult authResult = await _auth.createUserWithEmailAndPassword(email: user.email, password: user.password);
+    print(authResult.user.displayName);
+
+    return authResult;
+  }
+
+  Future<void> addUserToDB(AuthResult authResult, String providerType, User user) async {
+    await _db.collection('users').document(authResult.user.uid).setData({
+        'displayName': user.displayName,
+        'email': user.email,
+        'provider': providerType,
+        'thumbnail':  user.thumbnail
+    });
   }
 
   Future<User> getUserFromDB() async {

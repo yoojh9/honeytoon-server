@@ -1,5 +1,6 @@
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
+import 'package:honeytoon/screens/auth_join_screen.dart';
 import 'package:kakao_flutter_sdk/link.dart';
 import './screens/honeytoon_list_screen.dart';
 import './screens/auth_screen.dart';
@@ -68,7 +69,7 @@ class MyApp extends StatelessWidget {
         ),
         home: TemplateScreen(),
         routes: {
-          "list": (context) => HoneyToonListScreen(),
+          HoneyToonListScreen.routeName : (context) => HoneyToonListScreen(),
           CouponScreen.routeName: (context) => CouponScreen(),
           ShoppingItemScreen.routeName: (context) => ShoppingItemScreen(),
           HoneytoonViewScreen.routeName: (context) => HoneytoonViewScreen(),
@@ -76,6 +77,7 @@ class MyApp extends StatelessWidget {
           AddContentMetaScreen.routeName: (context) => AddContentMetaScreen(),
           AddContentScreen.routeName: (context) => AddContentScreen(),
           AuthScreen.routeName: (context) => AuthScreen(),
+          AuthJoinScreen.routeName: (context) => AuthJoinScreen(),
           HoneytoonCommentScreen.routeName: (context) =>
               HoneytoonCommentScreen(),
           SettingMyinfoScreen.routeName: (context) => SettingMyinfoScreen(),

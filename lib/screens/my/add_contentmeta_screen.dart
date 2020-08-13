@@ -20,7 +20,6 @@ class _AddContentMetaScreenState extends State<AddContentMetaScreen> {
   HoneytoonMetaProvider _metaProvider; 
   final _formKey = GlobalKey<FormState>();
   File _coverImage;
-  //var _isLoading = false;
   var honeytoonMeta = HoneytoonMeta();
   final _descriptionFocusNode = FocusNode();
 
@@ -131,16 +130,16 @@ class _AddContentMetaScreenState extends State<AddContentMetaScreen> {
                       focusNode: _descriptionFocusNode,
                       decoration: InputDecoration(
                         alignLabelWithHint: true, hintText: '작품 설명'),
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return '작품 설명을 입력해주세요';
-                          } else {
-                            return null;
-                          }
-                        },
-                        onSaved: (value) {
-                          honeytoonMeta.description = value;
-                        },
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return '작품 설명을 입력해주세요';
+                        } else {
+                          return null;
+                        }
+                      },
+                      onSaved: (value) {
+                        honeytoonMeta.description = value;
+                      },
                     ),
                     SizedBox(height: 30),
                     Container(

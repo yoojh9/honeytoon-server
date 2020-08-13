@@ -8,6 +8,8 @@ import '../widgets/honeytoon_list_header.dart';
 import '../widgets/honeytoon_list_sort.dart';
 
 class HoneyToonListScreen extends StatefulWidget {
+  static final routeName = 'list';
+
   @override
   _HoneyToonListScreenState createState() => _HoneyToonListScreenState();
 }

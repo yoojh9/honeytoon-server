@@ -1,0 +1,211 @@
+import 'dart:io';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:honeytoon/helpers/storage.dart';
+import 'package:honeytoon/models/user.dart';
+import 'package:honeytoon/providers/auth_provider.dart';
+import 'package:honeytoon/screens/honeytoon_list_screen.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+
+
+class AuthJoinScreen extends StatefulWidget {
+  static final routeName = 'join-screen';
+
+  @override
+  _AuthJoinScreenState createState() => _AuthJoinScreenState();
+}
+
+class _AuthJoinScreenState extends State<AuthJoinScreen> {
+  AuthProvider _authProvider;
+  final _formKey = GlobalKey<FormState>();
+  File _thumbnail;
+  final _descriptionFocusNode = FocusNode();
+  var user = User();
+
+
+  Future _getImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    _thumbnail = File(pickedFile.path);
+    _setImage(_thumbnail);
+  }
+
+
+  void _setImage(thumbnail){
+    setState(() {
+      _thumbnail = thumbnail;
+    });
+  }
+
+  void _submitForm(BuildContext ctx) async {
+    print('submitForm');
+    AuthResult authResult;
+    try {
+    final _isValid = _formKey.currentState.validate();
+    if(!_isValid) return;
+
+    _formKey.currentState.save();
+
+    authResult = await _authProvider.createUserWithEmailAndPassword(user);
+    print('authResult:$authResult');
+    String thumbnailUrl = await Storage.uploadImageToStorage(StorageType.USER_THUMBNAIL, authResult.user.uid, _thumbnail);
+
+    print('thumbnail:$thumbnailUrl');
+    user.thumbnail = thumbnailUrl;
+
+    await _authProvider.addUserToDB(authResult, 'EMAIL', user);
+
+    Navigator.of(ctx).pushNamed(HoneyToonListScreen.routeName);
+
+    } catch(error){
+      print(error);
+    }
+
+  }
+
+  @override
+  void dispose() {
+    _descriptionFocusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    return Scaffold(
+        resizeToAvoidBottomInset : false,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          title: Text('회원가입')
+        ),
+        body: Padding(
+          padding: EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                flex: 1,
+                child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 16),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          _thumbnail == null 
+                          ? GestureDetector(
+                              child: CircleAvatar(
+                                backgroundImage: AssetImage('assets/images/avatar_placeholder.png'),
+                                radius: 50,
+                              ),
+                              onTap: _getImage,
+                            )
+                          : GestureDetector(
+                              child: CircleAvatar(
+                                backgroundImage: FileImage(_thumbnail),
+                                radius: 50,
+                              ),
+                              onTap: _getImage,
+                            ),
+                          TextFormField(
+                            decoration: InputDecoration(labelText: "닉네임"),
+                            textInputAction: TextInputAction.next,
+                            onFieldSubmitted: (_){
+                              FocusScope.of(context).requestFocus(_descriptionFocusNode);
+                            },
+                            validator: (value){
+                              if(value.isEmpty){
+                                return '닉네임을 입력해주세요';
+                              } else {
+                                return null;
+                              }
+                            },
+                            onSaved: (value) {
+                              user.displayName = value;
+                            },
+                          ),
+                          TextFormField(
+                            keyboardType: TextInputType.emailAddress,
+                            textInputAction: TextInputAction.next,
+                            onFieldSubmitted: (_){
+                              FocusScope.of(context).requestFocus(_descriptionFocusNode);
+                            },
+                            decoration: InputDecoration(
+                              labelText: "이메일",
+                            ),
+                            validator: (value){
+                              if(value.isEmpty) {
+                                return '이메일을 입력해주세요';
+                              } else {
+                                return null;
+                              }
+                            },
+                            onSaved: (value) {
+                              user.email = value;
+                            },
+                          ),
+                          TextFormField(
+                            obscureText: true,
+                            textInputAction: TextInputAction.next,
+                            decoration: InputDecoration(labelText: "비밀번호"),
+                            onFieldSubmitted: (_){
+                              FocusScope.of(context).requestFocus(_descriptionFocusNode);
+                            },
+                            validator: (value){
+                              if(value.isEmpty) {
+                                return '비밀번호를 입력해주세요';
+                              } else {
+                                return null;
+                              }
+                            },
+                            onSaved: (value) {
+                              user.password = value;
+                            },
+                          ),
+                          TextFormField(
+                            obscureText: true,
+                            textInputAction: TextInputAction.done,
+                            decoration: InputDecoration(labelText: "비밀번호 확인"),
+                            focusNode: _descriptionFocusNode,
+                            onFieldSubmitted: (_){
+                              FocusScope.of(context).requestFocus(_descriptionFocusNode);
+                            },
+                            validator: (value){
+                              if(value.isEmpty) {
+                                return '비밀번호를 입력해주세요';
+                              } else {
+                                return null;
+                              }
+                            },
+                          ),
+
+                          SizedBox(
+                            height: 30,
+                          ),
+                          ButtonTheme(
+                            minWidth: double.infinity,
+                            height: 40,
+                            child: RaisedButton(
+                                color: Theme.of(context).primaryColor,
+                                child: Text(
+                                  '회원가입',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                onPressed: (){
+                                  _submitForm(context);
+                                },
+                            )
+                          ),
+                        ]
+                      ),
+                    )),
+              )
+            ],
+          ),
+        )
+
+        );
+  }
+}
