@@ -89,14 +89,15 @@ class _SettingMyinfoScreenState extends State<SettingMyinfoScreen> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceAround,
                                   children: <Widget>[
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(50),
+                                    ClipOval(
                                       child: CachedNetworkImage(
+                                        width: 100,
+                                        height: 100,
                                         imageUrl: futureSnapshot.data.thumbnail,
-                                        placeholder: (context, url) => Image.asset('assets/images/avatar_placeholder.png', width: 100,),
-                                        errorWidget: (context, url, error) => Image.asset('assets/images/avatar_placeholder.png', width: 100,),
-                                        fit: BoxFit.cover
-                                      ),   
+                                        placeholder: (context, url) => Image.asset('assets/images/avatar_placeholder.png',),
+                                        errorWidget: (context, url, error) => Image.asset('assets/images/avatar_placeholder.png'),
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                                     Text(futureSnapshot.data.displayName,
                                         style: TextStyle(
