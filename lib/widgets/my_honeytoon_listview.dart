@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:honeytoon/screens/my/honeytoon_my_screen.dart';
 import '../screens/honeytoon_detail_screen.dart';
 import 'package:provider/provider.dart';
 import '../screens/my/add_content_screen.dart';
@@ -10,15 +9,26 @@ class MyHoneytoonListView extends StatelessWidget {
   const MyHoneytoonListView({
     Key key,
     @required this.height,
-    @required this.uid
+    @required this.uid,
+    this.scaffoldKey
   }) : super(key: key);
 
   final double height;
   final String uid;
+  final GlobalKey<ScaffoldState> scaffoldKey;
 
   void _navigateToDetail(BuildContext ctx, String uid, String workId){
     Navigator.of(ctx).pushNamed(HoneytoonDetailScreen.routeName, arguments: {'uid': uid, 'id': workId});
   }
+
+  void _navigateToAddContentPage(BuildContext ctx, data) async{
+    var result = await Navigator.of(ctx)
+                .pushNamed(AddContentScreen.routeName, arguments: {'id': data.workId, 'page': HoneytoonDetailScreen.routeName});
+    if(result!=null){
+      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(result), duration: Duration(seconds: 2),));
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -115,8 +125,7 @@ class MyHoneytoonListView extends StatelessWidget {
             Icons.add,
           ),
           onPressed: () {
-            Navigator.of(ctx)
-                .pushNamed(AddContentScreen.routeName, arguments: {'id': data.workId, 'page': HoneytoonDetailScreen.routeName});
+           _navigateToAddContentPage(ctx, data);
           }
       )
     );

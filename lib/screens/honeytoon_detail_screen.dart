@@ -21,6 +21,7 @@ class HoneytoonDetailScreen extends StatefulWidget {
 }
 
 class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   final AsyncMemoizer _memoizer = AsyncMemoizer();
   HoneytoonContentProvider _contentProvider;
   HoneytoonMetaProvider _metaProvider;
@@ -55,6 +56,14 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
     });
   }
 
+  void _navigateToAddContentPage(BuildContext ctx, args) async{
+    var result = await Navigator.of(ctx).pushNamed(
+              AddContentScreen.routeName,
+              arguments: {'id': args['id']});
+    if(result!=null){
+      _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(result), duration: Duration(seconds: 2),));
+    }
+  }
 
   Future<void> _tabLikeButton(String workId, String uid) async {
     setState(() {
@@ -88,6 +97,7 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
         (mediaQueryData.padding.top + mediaQueryData.padding.bottom);
 
     return Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -97,7 +107,7 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
                 Navigator.of(context).pop();
               }),
           actions: <Widget>[             
-            _buildHeaderIcon(userId, args)
+            _buildHeaderIcon(context, userId, args)
           ],
         ),
         body: SafeArea(
@@ -110,15 +120,13 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
                 ])))));
   }
 
-  Widget _buildHeaderIcon(userId, args) {
+  Widget _buildHeaderIcon(ctx, userId, args) {
     return 
     (userId!=null && userId == args['uid']) ?
       IconButton(
         icon: Icon(Icons.add),
         onPressed: () {
-          Navigator.of(context).pushNamed(
-              AddContentScreen.routeName,
-              arguments: {'id': args['id']});
+          _navigateToAddContentPage(ctx, args);
         }
       )
     :

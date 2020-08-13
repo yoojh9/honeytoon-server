@@ -6,9 +6,23 @@ import '../../widgets/my_honeytoon_info.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 
-class HoneytoonMyScreen extends StatelessWidget {
+class HoneytoonMyScreen extends StatefulWidget {
+  @override
+  _HoneytoonMyScreenState createState() => _HoneytoonMyScreenState();
+}
+
+class _HoneytoonMyScreenState extends State<HoneytoonMyScreen> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
   Future<void> _loginPage(BuildContext ctx) async {
     await Navigator.of(ctx).pushNamed(AuthScreen.routeName);
+  }
+
+  void _navigateToAddContentMetaPage(BuildContext ctx) async{
+    var result = await Navigator.of(ctx).pushNamed(AddContentMetaScreen.routeName);
+    if(result!=null){
+     _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(result), duration: Duration(seconds: 2),));
+    }
   }
 
   @override
@@ -25,6 +39,7 @@ class HoneytoonMyScreen extends StatelessWidget {
             return Center(child: CircularProgressIndicator());
           } else if (futureSnapshot.hasData) {
             return Scaffold(
+              key: _scaffoldKey,
               body: SingleChildScrollView(
                 child: Column(children: [
                   MyHonetoonInfo(height: height, user: futureSnapshot.data),
@@ -38,11 +53,10 @@ class HoneytoonMyScreen extends StatelessWidget {
                       style: TextStyle(color: Colors.grey),
                     ),
                     onPressed: () {
-                      Navigator.of(context)
-                          .pushNamed(AddContentMetaScreen.routeName);
+                      _navigateToAddContentMetaPage(context);
                     },
                   ),
-                  MyHoneytoonListView(height: height, uid: futureSnapshot.data.uid),
+                  MyHoneytoonListView(height: height, uid: futureSnapshot.data.uid, scaffoldKey: _scaffoldKey),
                 ]),
               ),
             );

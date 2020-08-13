@@ -20,34 +20,34 @@ class _AddContentMetaScreenState extends State<AddContentMetaScreen> {
   HoneytoonMetaProvider _metaProvider; 
   final _formKey = GlobalKey<FormState>();
   File _coverImage;
-  var _isLoading = false;
+  //var _isLoading = false;
   var honeytoonMeta = HoneytoonMeta();
   final _descriptionFocusNode = FocusNode();
 
   Future<void> _submitForm(BuildContext ctx) async {
-    final user = await FirebaseAuth.instance.currentUser();
-    final _isValid = _formKey.currentState.validate();
-    if (!_isValid) return;
 
-    _formKey.currentState.save();
-    setState(() {
-      _isLoading = true;
-    });
+    try {
+      final user = await FirebaseAuth.instance.currentUser();
+      final _isValid = _formKey.currentState.validate();
+      if (!_isValid) return;
 
-    String downloadUrl = await Storage.uploadImageToStorage(StorageType.META_COVER, user.uid, _coverImage);
-    honeytoonMeta.coverImgUrl = downloadUrl;
-    honeytoonMeta.displayName = user.displayName;
-    honeytoonMeta.uid = user.uid;
-    honeytoonMeta.createTime = Timestamp.now();
-    honeytoonMeta.totalCount = 0;
+      _formKey.currentState.save();
 
-    _metaProvider.createHoneytoonMeta(honeytoonMeta);
+      String downloadUrl = await Storage.uploadImageToStorage(StorageType.META_COVER, user.uid, _coverImage);
+      honeytoonMeta.coverImgUrl = downloadUrl;
+      honeytoonMeta.displayName = user.displayName;
+      honeytoonMeta.uid = user.uid;
+      honeytoonMeta.createTime = Timestamp.now();
+      honeytoonMeta.totalCount = 0;
 
-    setState(() {
-      _isLoading = false;
-    });
+      await _metaProvider.createHoneytoonMeta(honeytoonMeta);
 
-    Navigator.of(ctx).pop();
+      Navigator.of(ctx).pop('작품 등록이 완료되었습니다');
+    } catch (error) {
+      print('add content meta error : ${error}');
+      Navigator.of(ctx).pop('작품 등록에 실패했습니다.');
+    }
+
   }
 
   void setImage(coverImage){
@@ -76,6 +76,7 @@ class _AddContentMetaScreenState extends State<AddContentMetaScreen> {
 
     return Scaffold(
         resizeToAvoidBottomInset : false,
+        
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -97,9 +98,7 @@ class _AddContentMetaScreenState extends State<AddContentMetaScreen> {
             )
           ],
         ),
-        body: _isLoading
-            ? Center(child: CircularProgressIndicator())
-            : SafeArea(
+        body: SafeArea(
                 child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 32),
                 child: Form(

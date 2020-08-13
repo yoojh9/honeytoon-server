@@ -37,6 +37,7 @@ class HoneytoonContentProvider extends ChangeNotifier {
     }).then((_){
       print('success');
     }).catchError((error){
+      print('createHoneytoonContent Error');
       print(error.message);
     });
   }

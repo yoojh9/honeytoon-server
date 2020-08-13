@@ -24,13 +24,12 @@ class _AddContentScreenState extends State<AddContentScreen> {
   AuthProvider _authProvider;
   HoneytoonMetaProvider _metaProvider;
 
-  var total;
+  int total;
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   List<Asset> _images = List<Asset>();
   File _coverImage;
-  var _isLoading = false;
 
 
   Future<void> _submitForm(ctx, args) async {
@@ -46,26 +45,15 @@ class _AddContentScreenState extends State<AddContentScreen> {
         _showErrorSnackbar(ctx, '작품을 등록할 포인트가 부족합니다.');
         return;
       }
-      if(mounted){
-        setState(() {
-          _isLoading = true;
-        });
-      }
+      Navigator.of(ctx).pop('허니툰 등록 진행중입니다. 잠시 후 다시 확인해주세요');
 
       final downloadUrl = await Storage.uploadImageToStorage(StorageType.CONTENT_COVER, id, _coverImage);
       final List<String> contentImageList = await uploadContentImage(id, _images);
+      print(total.runtimeType);
       final contentItem = HoneytoonContentItem(times: total.toString(), coverImgUrl: downloadUrl, contentImgUrls: contentImageList,);
       final content = HoneytoonContent(toonId: id, content: contentItem, count: total);
   
       await _contentProvider.createHoneytoonContent(content, user.uid);
-
-      if(mounted){
-        setState(() {
-          _isLoading = false;
-        });
-      }
-
-      Navigator.of(ctx).pop();
 
       // if(args['page']!=null){
       //   Navigator.of(ctx).pushNamed(args['page']);
@@ -75,6 +63,7 @@ class _AddContentScreenState extends State<AddContentScreen> {
 
     } catch (error){
       print('error: $error');
+      Navigator.of(ctx).pop('허니툰 등록에 실패하였습니다.');
     }
   }
 
@@ -154,9 +143,7 @@ class _AddContentScreenState extends State<AddContentScreen> {
     return Scaffold(
         appBar: _buildAppBar(context, args),
         key: _scaffoldKey,
-        body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : _buildForm(args)
+        body: _buildForm(args)
         );
   }
 
@@ -178,7 +165,7 @@ class _AddContentScreenState extends State<AddContentScreen> {
                 future: _metaProvider.getHoneytoonMeta(args['id']),
                 builder: (context, snapshot) {  
                   if(snapshot.hasData){
-                    var count = snapshot.data.totalCount == 0 ? "1" : (snapshot.data.totalCount+1);
+                    var count = snapshot.data.totalCount == 0 ? 1 : (snapshot.data.totalCount+1);
                     total = count;
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
