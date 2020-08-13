@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:honeytoon/helpers/storage.dart';
 import 'package:honeytoon/models/user.dart';
 import 'package:honeytoon/providers/auth_provider.dart';
-import 'package:honeytoon/screens/honeytoon_list_screen.dart';
+import 'package:honeytoon/screens/template_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -72,7 +72,7 @@ class _AuthJoinScreenState extends State<AuthJoinScreen> {
         });
       }
 
-      Navigator.of(ctx).pushNamed(HoneyToonListScreen.routeName);
+      Navigator.of(ctx).pushNamed(TemplateScreen.routeName);
 
     } catch(error){
       print(error);

@@ -5,6 +5,7 @@ import './honeytoon_list_screen.dart';
 import './settings/setting_screen.dart';
 
 class TemplateScreen extends StatefulWidget {
+  static final routeName = 'main';
   @override
   _TemplateScreenState createState() => _TemplateScreenState();
 }

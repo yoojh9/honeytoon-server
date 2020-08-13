@@ -69,6 +69,7 @@ class MyApp extends StatelessWidget {
         ),
         home: TemplateScreen(),
         routes: {
+          TemplateScreen.routeName : (context) => TemplateScreen(),
           HoneyToonListScreen.routeName : (context) => HoneyToonListScreen(),
           CouponScreen.routeName: (context) => CouponScreen(),
           ShoppingItemScreen.routeName: (context) => ShoppingItemScreen(),
