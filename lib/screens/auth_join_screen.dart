@@ -54,15 +54,9 @@ class _AuthJoinScreenState extends State<AuthJoinScreen> {
           _isLoading = true;
         });
       }
-
       _formKey.currentState.save();
-
-
       authResult = await _authProvider.createUserWithEmailAndPassword(user);
-      print('authResult:$authResult');
       String thumbnailUrl = await Storage.uploadImageToStorage(StorageType.USER_THUMBNAIL, authResult.user.uid, _thumbnail);
-
-      print('thumbnail:$thumbnailUrl');
       user.thumbnail = thumbnailUrl;
 
       await _authProvider.addUserToDB(authResult, 'EMAIL', user);
