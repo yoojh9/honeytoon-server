@@ -1,5 +1,6 @@
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
+import 'package:honeytoon/providers/product_provider.dart';
 import 'package:honeytoon/screens/auth_join_screen.dart';
 import 'package:kakao_flutter_sdk/link.dart';
 import './screens/honeytoon_list_screen.dart';
@@ -52,6 +53,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (ctx) => MyProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => ProductProvider()
         )
       ],
       child: MaterialApp(

@@ -8,6 +8,7 @@ class Database {
   static final pointRef = firestore.collection(Collections.POINT);
   static final commentRef = firestore.collection(Collections.COMMENT);
   static final myRef = firestore.collection(Collections.MY);
+  static final productRef = firestore.collection(Collections.PRODUCT);
 }
 
 class Collections {
@@ -17,4 +18,5 @@ class Collections {
   static const POINT = 'points';
   static const COMMENT = 'comments';
   static const MY = 'my';
+  static const PRODUCT = 'product';
 }
