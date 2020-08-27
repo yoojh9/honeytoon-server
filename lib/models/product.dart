@@ -6,6 +6,7 @@ class Product {
   String brandName;
   String content;
   String contentAddDesc;
+  int realPrice;
   String image;
 
   Product(
@@ -15,6 +16,7 @@ class Product {
     this.brandName,
     this.content,
     this.contentAddDesc,
+    this.realPrice,
     this.image}
   );
 
@@ -34,6 +36,9 @@ class Product {
     }
     if(snapshot['contentAddDesc'] != null){
       this.contentAddDesc = snapshot['contentAddDesc'];
+    }
+    if(snapshot['realPrice'] != null){
+      this.realPrice = snapshot['realPrice'];
     }
     if(snapshot['goodsImgS'] != null){
       this.image = snapshot['goodsImgS'];

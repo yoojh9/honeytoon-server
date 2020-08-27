@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:honeytoon/providers/product_provider.dart';
+import 'package:provider/provider.dart';
 import './shopping_item_screen.dart';
 
 class ShoppingListScreen extends StatelessWidget {
@@ -51,31 +53,43 @@ class ShoppingListScreen extends StatelessWidget {
           ),
           Expanded(
             flex: 5,
-            child: ListView.builder(
-                  primary: false,
-                  shrinkWrap: true,
-                  itemCount: test_product.length,
-                  itemBuilder: (ctx, index) => Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: GestureDetector(
-                      onTap: (){Navigator.of(ctx).pushNamed(ShoppingItemScreen.routeName);},
-                      child: ListTile(
-                          leading: CircleAvatar(
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(50),
-                              child: Image.network(test_product[index]['img']),
-                            )
-                          ),
-                          title: Row(children: [
-                            Text('${test_product[index]['brand']}'),
-                            Spacer(),
-                            Text('${test_product[index]['price']}원'),
-                            ]
-                          ),
-                          subtitle: Text('${test_product[index]['name']}'),
-                  ),
-                    ),
-                )
+            child: FutureBuilder(
+              future: Provider.of<ProductProvider>(context).getProducts(),
+              builder: (context, snapshot) {
+                if(snapshot.connectionState == ConnectionState.waiting){
+                  return Center(child: CircularProgressIndicator(),);
+                } else if(!snapshot.hasData) {
+                  return Center(child: Text('데이터를 불러오는 데 실패했습니다.'),);
+                } else {
+                  return ListView.builder(
+                      primary: false,
+                      shrinkWrap: true,
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (ctx, index) => Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: GestureDetector(
+                          onTap: (){Navigator.of(ctx).pushNamed(ShoppingItemScreen.routeName);},
+                          child: ListTile(
+                              leading: CircleAvatar(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(50),
+                                  child: Image.network(snapshot.data[index]['image']),
+                                )
+                              ),
+                              title: Row(children: [
+                                Text('${snapshot.data[index]['brandName']}'),
+                                Spacer(),
+                                Text('${snapshot.data[index]['realPrice']}원'),
+                                ]
+                              ),
+                              subtitle: Text('${snapshot.data[index]['name']}'),
+                      ),
+                        ),
+                    )
+                );
+                }
+                
+              }
             )
           )
         ]
