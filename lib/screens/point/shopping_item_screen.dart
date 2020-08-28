@@ -5,6 +5,10 @@ import 'package:provider/provider.dart';
 class ShoppingItemScreen extends StatelessWidget {
   static final routeName = 'shopping-item';
 
+  void _tapBuyCouponBtn(ctx, code) async {
+    await Provider.of<ProductProvider>(ctx, listen: false).buyCoupon(code);
+  }
+
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
@@ -69,7 +73,7 @@ class ShoppingItemScreen extends StatelessWidget {
           color: Theme.of(context).primaryColor,
           height: kBottomNavigationBarHeight,
           child: InkWell(
-              onTap: () {},
+              onTap: (){ _tapBuyCouponBtn(context, args['id']); },
               child: Center(
                 child: Text('구매하기'),
               ))),
