@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:honeytoon/providers/auth_provider.dart';
 import 'package:honeytoon/providers/product_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -6,7 +7,8 @@ class ShoppingItemScreen extends StatelessWidget {
   static final routeName = 'shopping-item';
 
   void _tapBuyCouponBtn(ctx, code) async {
-    await Provider.of<ProductProvider>(ctx, listen: false).buyCoupon(code);
+    final uid = await AuthProvider.getCurrentFirebaseUserUid();
+    await Provider.of<ProductProvider>(ctx, listen: false).buyCoupon(uid, code);
   }
 
   @override
