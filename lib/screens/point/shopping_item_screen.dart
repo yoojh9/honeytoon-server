@@ -23,7 +23,7 @@ class ShoppingItemScreen extends StatelessWidget {
       body: SafeArea(
           child: FutureBuilder(
               future: Provider.of<ProductProvider>(context)
-                  .getProductById(args['id']),
+                  .getProductById(args['id'], args['brandCode']),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(

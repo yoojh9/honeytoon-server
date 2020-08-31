@@ -1,110 +1,78 @@
+import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:honeytoon/providers/product_provider.dart';
 import 'package:provider/provider.dart';
 import './shopping_item_screen.dart';
 
-class ShoppingListScreen extends StatelessWidget {
-  final test_data = [
-    {
-      'name': '스타벅스',
-      'img': 'https://biz.giftishow.com/Resource/brand/BR_20140605_164826_3.jpg'
-    },
-    {
-      'name': '투썸플레이스',
-      'img': 'https://biz.giftishow.com/Resource/brand/20190819_095358914.jpg'
-    },
-    {
-      'name': '이디야커피',
-      'img': 'https://biz.giftishow.com/Resource/brand/20180326_113355154.jpg'
-    },
-    {
-      'name': '커피빈',
-      'img': 'https://biz.giftishow.com/Resource/brand/20161130_172005195.jpg'
-    },
-    {
-      'name': '폴바셋',
-      'img': 'https://biz.giftishow.com/Resource/brand/20190416_175254764.jpg'
-    },
-  ];
-  final test_product = [
-    {
-      'name': '카페아메리카노 Tall',
-      'brand': '스타벅스',
-      'img':
-          'https://biz.giftishow.com/Resource/goods/G00000008072/G00000008072.jpg',
-      'price': 3440
-    },
-    {
-      'name': '아이스 카페아메리카노 Tall',
-      'brand': '스타벅스',
-      'img':
-          'https://biz.giftishow.com/Resource/goods/G00000008077/G00000008077.jpg',
-      'price': 3440
-    },
-    {
-      'name': '달콤한 디저트 세트',
-      'brand': '스타벅스',
-      'img':
-          'https://biz.giftishow.com/Resource/goods/G00000261112/G00000261112.jpg',
-      'price': 9210
-    },
-    {
-      'name': '아이스 카페라떼 Tall',
-      'brand': '스타벅스',
-      'img':
-          'https://biz.giftishow.com/Resource/goods/G00000008084/G00000008084.jpg',
-      'price': 4320
-    },
-    {
-      'name': '시원한 아메리카노 커플세트',
-      'brand': '스타벅스',
-      'img':
-          'https://biz.giftishow.com/Resource/goods/G00000460706/G00000460706.jpg',
-      'price': 7700
-    },
-    {
-      'name': '부드러운 디저트 세트',
-      'brand': '스타벅스',
-      'img':
-          'https://biz.giftishow.com/Resource/goods/G00000261108/G00000261108.jpg',
-      'price': 11930
-    },
-    {
-      'name': '아이스 자몽 허니 블랙티',
-      'brand': '스타벅스',
-      'img':
-          'https://biz.giftishow.com/Resource/goods/G00000251701/G00000251701.jpg',
-      'price': 4980
-    },
-  ];
+class ShoppingListScreen extends StatefulWidget {
+  @override
+  _ShoppingListScreenState createState() => _ShoppingListScreenState();
+}
+
+class _ShoppingListScreenState extends State<ShoppingListScreen> {
+  final AsyncMemoizer _memoizer = AsyncMemoizer();
+  ProductProvider _productProvider;
+  var _brandCode = '';
+  var _brandList = [];
+
+
+  @override
+  void initState() {
+    super.initState();
+    _getBrandList();
+  }
+
+  void _getBrandList() async {
+    final brandList = await Provider.of<ProductProvider>(context, listen: false).getBrands();
+    setState(() {
+      _brandList = brandList;
+      _brandCode = brandList[0].code;
+    });
+  }
+
+  void _changeBrandCode(code){
+    setState(() {
+      _brandCode = code;
+    });
+  }
+  
+
   @override
   Widget build(BuildContext context) {
+    _productProvider = Provider.of<ProductProvider>(context);
+
     return Container(
       child: Column(children: [
         Expanded(
             flex: 1,
             child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              shrinkWrap: false,
-              itemCount: test_data.length,
-              itemBuilder: (ctx, index) => Container(
-                margin: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      CircleAvatar(
-                          child: ClipRRect(
-                        borderRadius: BorderRadius.circular(100),
-                        child: Image.network(test_data[index]['img']),
-                      )),
-                      Text('${test_data[index]['name']}')
-                    ]),
-              ),
-            )),
+                  scrollDirection: Axis.horizontal,
+                  shrinkWrap: false,
+                  itemCount: _brandList == null? 0 : _brandList.length ,
+                  itemBuilder: (ctx, index) {
+                    return Container(
+                      margin: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                      child: GestureDetector(
+                        onTap: (){ _changeBrandCode('${_brandList[index].code}');},
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              CircleAvatar(
+                                  child: ClipRRect(
+                                borderRadius: BorderRadius.circular(100),
+                                child: Image.network('${_brandList[index].brandIconImg}'),
+                              )),
+                              Text('${_brandList[index].name}')
+                            ]),
+                      ),
+                    );
+                  }
+                )
+            ),
         Expanded(
             flex: 5,
             child: FutureBuilder(
-                future: Provider.of<ProductProvider>(context).getProducts(),
+                future: _productProvider.getProducts(_brandCode),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(
@@ -126,7 +94,8 @@ class ShoppingListScreen extends StatelessWidget {
                                   Navigator.of(ctx).pushNamed(
                                       ShoppingItemScreen.routeName,
                                       arguments: {
-                                        'id': snapshot.data[index].code
+                                        'id': snapshot.data[index].code,
+                                        'brandCode': snapshot.data[index].brandCode
                                       });
                                 },
                                 child: ListTile(
