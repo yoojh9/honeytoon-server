@@ -5,4 +5,8 @@ class DateFormatHelper {
   static String getDateTime(Timestamp timestamp) {
     return DateFormat('yyyy-MM-dd HH:mm').format(timestamp.toDate());
   }
+
+  static String getDate(Timestamp timestamp){
+    return DateFormat('yyyyMMdd').format(timestamp.toDate());
+  }
 }

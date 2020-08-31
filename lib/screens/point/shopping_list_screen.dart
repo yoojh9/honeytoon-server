@@ -1,4 +1,3 @@
-import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:honeytoon/providers/product_provider.dart';
 import 'package:provider/provider.dart';
@@ -10,7 +9,6 @@ class ShoppingListScreen extends StatefulWidget {
 }
 
 class _ShoppingListScreenState extends State<ShoppingListScreen> {
-  final AsyncMemoizer _memoizer = AsyncMemoizer();
   ProductProvider _productProvider;
   var _brandCode = '';
   var _brandList = [];
@@ -95,6 +93,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                                       ShoppingItemScreen.routeName,
                                       arguments: {
                                         'id': snapshot.data[index].code,
+                                        'price': snapshot.data[index].realPrice,
                                         'brandCode': snapshot.data[index].brandCode
                                       });
                                 },

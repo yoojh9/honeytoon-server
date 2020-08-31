@@ -1,14 +1,58 @@
+
 import 'package:flutter/material.dart';
+import 'package:honeytoon/models/user.dart';
 import 'package:honeytoon/providers/auth_provider.dart';
 import 'package:honeytoon/providers/product_provider.dart';
+import 'package:honeytoon/screens/point/coupon_screen.dart';
 import 'package:provider/provider.dart';
 
-class ShoppingItemScreen extends StatelessWidget {
+class ShoppingItemScreen extends StatefulWidget {
   static final routeName = 'shopping-item';
 
-  void _tapBuyCouponBtn(ctx, code) async {
-    final uid = await AuthProvider.getCurrentFirebaseUserUid();
-    await Provider.of<ProductProvider>(ctx, listen: false).buyCoupon(uid, code);
+  @override
+  _ShoppingItemScreenState createState() => _ShoppingItemScreenState();
+}
+
+class _ShoppingItemScreenState extends State<ShoppingItemScreen> {
+  User _user;
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    super.initState();
+    getUser();
+  }
+
+  void getUser() async {
+    final user = await Provider.of<AuthProvider>(context, listen: false).getUserFromDB();
+    setState(() {
+      _user = user;
+    });
+  }
+
+  bool isPurchaseable(_price){
+    int honey = _user==null? 0 : _user.honey;
+    if(honey >= _price) return true;
+    return false;
+  }
+
+  void _tapBuyCouponBtn(ctx, code, price) async {
+    if(_user.honey < price) {
+      _showSnackbar(ctx, '해당 상품을 구매할 수 없습니다.');
+    } else {
+      await Provider.of<ProductProvider>(ctx, listen: false).buyCoupon(_user, code, price);
+       Navigator.of(ctx).pushNamed(CouponScreen.routeName);
+    }
+  }
+
+  void _showSnackbar(BuildContext context, String message){
+    _scaffoldKey.currentState.showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+        ),
+      ),
+    );
   }
 
   @override
@@ -20,6 +64,7 @@ class ShoppingItemScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
+      key: _scaffoldKey,
       body: SafeArea(
           child: FutureBuilder(
               future: Provider.of<ProductProvider>(context)
@@ -70,12 +115,13 @@ class ShoppingItemScreen extends StatelessWidget {
                     ],
                   );
                 }
-              })),
+              }
+          )),
       bottomNavigationBar: Container(
-          color: Theme.of(context).primaryColor,
+          color: isPurchaseable(args['price']) ? Theme.of(context).primaryColor : Colors.grey,
           height: kBottomNavigationBarHeight,
           child: InkWell(
-              onTap: (){ _tapBuyCouponBtn(context, args['id']); },
+              onTap: isPurchaseable(args['price']) ? (){ _tapBuyCouponBtn(context, args['id'], args['price']); } : null,
               child: Center(
                 child: Text('구매하기'),
               ))),
