@@ -1,7 +1,9 @@
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
+import 'package:honeytoon/providers/coupon_provider.dart';
 import 'package:honeytoon/providers/product_provider.dart';
 import 'package:honeytoon/screens/auth_join_screen.dart';
+import 'package:honeytoon/screens/point/coupon_detail_screen.dart';
 import 'package:kakao_flutter_sdk/link.dart';
 import './screens/honeytoon_list_screen.dart';
 import './screens/auth_screen.dart';
@@ -56,6 +58,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (ctx) => ProductProvider()
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => CouponProvider()
         )
       ],
       child: MaterialApp(
@@ -76,6 +81,7 @@ class MyApp extends StatelessWidget {
           TemplateScreen.routeName : (context) => TemplateScreen(),
           HoneyToonListScreen.routeName : (context) => HoneyToonListScreen(),
           CouponScreen.routeName: (context) => CouponScreen(),
+          CouponDetailScreen.routeName: (context) => CouponDetailScreen(),
           ShoppingItemScreen.routeName: (context) => ShoppingItemScreen(),
           HoneytoonViewScreen.routeName: (context) => HoneytoonViewScreen(),
           HoneytoonDetailScreen.routeName: (context) => HoneytoonDetailScreen(),

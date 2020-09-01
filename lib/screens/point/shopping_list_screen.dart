@@ -42,31 +42,31 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
     return Container(
       child: Column(children: [
         Expanded(
-            flex: 1,
-            child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  shrinkWrap: false,
-                  itemCount: _brandList == null? 0 : _brandList.length ,
-                  itemBuilder: (ctx, index) {
-                    return Container(
-                      margin: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                      child: GestureDetector(
-                        onTap: (){ _changeBrandCode('${_brandList[index].code}');},
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              CircleAvatar(
-                                  child: ClipRRect(
-                                borderRadius: BorderRadius.circular(100),
-                                child: Image.network('${_brandList[index].brandIconImg}'),
-                              )),
-                              Text('${_brandList[index].name}')
-                            ]),
-                      ),
-                    );
-                  }
-                )
-            ),
+          flex: 1,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            shrinkWrap: false,
+            itemCount: _brandList == null? 0 : _brandList.length ,
+            itemBuilder: (ctx, index) {
+              return Container(
+                margin: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                child: GestureDetector(
+                  onTap: (){ _changeBrandCode('${_brandList[index].code}');},
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        CircleAvatar(
+                            child: ClipRRect(
+                          borderRadius: BorderRadius.circular(100),
+                          child: Image.network('${_brandList[index].brandIconImg}'),
+                        )),
+                        Text('${_brandList[index].name}')
+                      ]),
+                ),
+              );
+            }
+          )
+        ),
         Expanded(
             flex: 5,
             child: FutureBuilder(

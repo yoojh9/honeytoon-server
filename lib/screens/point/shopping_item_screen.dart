@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:honeytoon/models/user.dart';
 import 'package:honeytoon/providers/auth_provider.dart';
-import 'package:honeytoon/providers/product_provider.dart';
+import 'package:honeytoon/providers/coupon_provider.dart';
 import 'package:honeytoon/screens/point/coupon_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -40,7 +40,7 @@ class _ShoppingItemScreenState extends State<ShoppingItemScreen> {
     if(_user.honey < product.realPrice) {
       _showSnackbar(ctx, '해당 상품을 구매할 수 없습니다.');
     } else {
-      await Provider.of<ProductProvider>(ctx, listen: false).buyCoupon(_user, product);
+      await Provider.of<CouponProvider>(ctx, listen: false).buyCoupon(_user, product);
        Navigator.of(ctx).pushNamed(CouponScreen.routeName);
     }
   }
@@ -93,7 +93,8 @@ class _ShoppingItemScreenState extends State<ShoppingItemScreen> {
                             ),
                             Text('${product.name}'),
                             Text('${product.realPrice}원'),
-                          ])
+                          ]
+                      )
                     ],
                   )),
               Divider(),
