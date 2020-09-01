@@ -71,11 +71,11 @@ class MyApp extends StatelessWidget {
           visualDensity: VisualDensity.adaptivePlatformDensity,
           brightness: Brightness.light,
         ),
-        darkTheme: ThemeData(
-          primaryColor: themeColor,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-          brightness: Brightness.dark,
-        ),
+        // darkTheme: ThemeData(
+        //   primaryColor: themeColor,
+        //   visualDensity: VisualDensity.adaptivePlatformDensity,
+        //   brightness: Brightness.dark,
+        // ),
         home: TemplateScreen(),
         routes: {
           TemplateScreen.routeName : (context) => TemplateScreen(),
