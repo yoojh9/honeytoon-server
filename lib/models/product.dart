@@ -7,6 +7,7 @@ class Product {
   String contentAddDesc;
   int realPrice;
   String image;
+  String validPrdDay;
 
   Product(
       {this.code,
@@ -16,7 +17,8 @@ class Product {
       this.content,
       this.contentAddDesc,
       this.realPrice,
-      this.image});
+      this.image,
+      this.validPrdDay});
 
   Product.fromMap(String documentId, Map snapshot) {
     this.code = documentId;
@@ -41,6 +43,9 @@ class Product {
     }
     if (snapshot['goodsImgS'] != null) {
       this.image = snapshot['goodsImgS'];
+    }
+    if (snapshot['validPrdDay'] != null){
+      this.validPrdDay = snapshot['validPrdDay'];
     }
   }
 }

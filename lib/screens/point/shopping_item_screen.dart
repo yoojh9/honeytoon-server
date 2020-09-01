@@ -36,11 +36,11 @@ class _ShoppingItemScreenState extends State<ShoppingItemScreen> {
     return false;
   }
 
-  void _tapBuyCouponBtn(ctx, code, price) async {
-    if(_user.honey < price) {
+  void _tapBuyCouponBtn(ctx, product) async {
+    if(_user.honey < product.realPrice) {
       _showSnackbar(ctx, '해당 상품을 구매할 수 없습니다.');
     } else {
-      await Provider.of<ProductProvider>(ctx, listen: false).buyCoupon(_user, code, price);
+      await Provider.of<ProductProvider>(ctx, listen: false).buyCoupon(_user, product);
        Navigator.of(ctx).pushNamed(CouponScreen.routeName);
     }
   }
@@ -58,6 +58,8 @@ class _ShoppingItemScreenState extends State<ShoppingItemScreen> {
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
+    final product = args['product'];
+    print('product : $product');
     final mediaQueryData = MediaQuery.of(context);
     final height = mediaQueryData.size.height -
         (kToolbarHeight + kBottomNavigationBarHeight);
@@ -66,62 +68,47 @@ class _ShoppingItemScreenState extends State<ShoppingItemScreen> {
       appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
       key: _scaffoldKey,
       body: SafeArea(
-          child: FutureBuilder(
-              future: Provider.of<ProductProvider>(context)
-                  .getProductById(args['id'], args['brandCode']),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else if (!snapshot.hasData) {
-                  return Center(
-                    child: Text('데이터를 불러오는 데 실패했습니다.'),
-                  );
-                } else {
-                  return Column(
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                  flex: 1,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      Expanded(
-                          flex: 1,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              Container(
-                                margin: EdgeInsetsDirectional.only(bottom: 16),
-                                height: height * 0.3,
-                                alignment: Alignment.center,
-                                child: Image.network(snapshot.data.image),
-                              ),
-                              Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Text(
-                                      '${snapshot.data.brandName}',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    Text('${snapshot.data.name}'),
-                                    Text('${snapshot.data.realPrice}원'),
-                                  ])
-                            ],
-                          )),
-                      Divider(),
-                      Expanded(
-                          flex: 1,
-                          child: SingleChildScrollView(
-                              child: Text('${snapshot.data.content}'))),
+                      Container(
+                        margin: EdgeInsetsDirectional.only(bottom: 16),
+                        height: height * 0.3,
+                        alignment: Alignment.center,
+                        child: Image.network(product.image),
+                      ),
+                      Column(
+                          mainAxisAlignment:
+                              MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Text(
+                              '${product.brandName}',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            Text('${product.name}'),
+                            Text('${product.realPrice}원'),
+                          ])
                     ],
-                  );
-                }
-              }
-          )),
+                  )),
+              Divider(),
+              Expanded(
+                  flex: 1,
+                  child: SingleChildScrollView(
+                      child: Text('${product.content}'))),
+            ],
+          )
+        ),
       bottomNavigationBar: Container(
-          color: isPurchaseable(args['price']) ? Theme.of(context).primaryColor : Colors.grey,
+          color: isPurchaseable(product.realPrice) ? Theme.of(context).primaryColor : Colors.grey,
           height: kBottomNavigationBarHeight,
           child: InkWell(
-              onTap: isPurchaseable(args['price']) ? (){ _tapBuyCouponBtn(context, args['id'], args['price']); } : null,
+              onTap: isPurchaseable(product.realPrice) ? (){ _tapBuyCouponBtn(context, product); } : null,
               child: Center(
                 child: Text('구매하기'),
               ))),

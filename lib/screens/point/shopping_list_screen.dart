@@ -92,9 +92,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                                   Navigator.of(ctx).pushNamed(
                                       ShoppingItemScreen.routeName,
                                       arguments: {
-                                        'id': snapshot.data[index].code,
-                                        'price': snapshot.data[index].realPrice,
-                                        'brandCode': snapshot.data[index].brandCode
+                                        'product': snapshot.data[index],
                                       });
                                 },
                                 child: ListTile(
