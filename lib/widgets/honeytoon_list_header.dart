@@ -1,7 +1,8 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
-class HoneytoonListHeader extends StatelessWidget {
-  const HoneytoonListHeader({
+class HoneytoonListHeader extends StatefulWidget {
+  HoneytoonListHeader({
     Key key,
     @required this.height,
   }) : super(key: key);
@@ -9,47 +10,108 @@ class HoneytoonListHeader extends StatelessWidget {
   final height;
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 16),
-      width: double.infinity,
-      height: height * 0.3,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        image: DecorationImage(
-          image: AssetImage('assets/images/one.jpg'),
-          fit: BoxFit.cover
+  _HoneytoonListHeaderState createState() => _HoneytoonListHeaderState();
+}
+
+class _HoneytoonListHeaderState extends State<HoneytoonListHeader> {
+  int _current = 0;
+
+  static const List<String> imgList = [
+    'https://images.unsplash.com/photo-1520342868574-5fa3804e551c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=6ff92caffcdd63681a35134a6770ed3b&auto=format&fit=crop&w=1951&q=80',
+    'https://images.unsplash.com/photo-1522205408450-add114ad53fe?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=368f45b0888aeb0b7b08e3a1084d3ede&auto=format&fit=crop&w=1950&q=80',
+    'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=94a1e718d89ca60a6337a6008341ca50&auto=format&fit=crop&w=1950&q=80',
+    'https://images.unsplash.com/photo-1523205771623-e0faa4d2813d?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=89719a0d55dd05e2deae4120227e6efc&auto=format&fit=crop&w=1953&q=80',
+    'https://images.unsplash.com/photo-1508704019882-f9cf40e475b4?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=8c6e5e3aba713b17aa1fe71ab4f0ae5b&auto=format&fit=crop&w=1352&q=80',
+    'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a0c8d632e977f94e5d312d9893258f59&auto=format&fit=crop&w=1355&q=80'
+  ];
+
+  final List<Widget> imageSliders = imgList.map((item) => Container(
+    child: Container(
+      margin: EdgeInsets.all(5.0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+        child: Stack(
+          children: <Widget>[
+            Image.network(item, fit: BoxFit.cover, width: 1000.0),
+            Positioned(
+              bottom: 0.0,
+              left: 0.0,
+              right: 0.0,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color.fromARGB(200, 0, 0, 0),
+                      Color.fromARGB(0, 0, 0, 0)
+                    ],
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                  ),
+                ),
+                padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+                // child: Text(
+                //   'No. ${imgList.indexOf(item)} image',
+                //   style: TextStyle(
+                //     color: Colors.white,
+                //     fontSize: 20.0,
+                //     fontWeight: FontWeight.bold,
+                //   ),
+                // ),
+              ),
+            ),
+          ],
         )
       ),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          gradient: LinearGradient(
-            begin: Alignment.bottomRight,
-            colors: [
-              Colors.black.withOpacity(.4),
-              Colors.black.withOpacity(.2),
-            ]
-          )
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            Text("Lifestyle Sale", style: TextStyle(color: Colors.white, fontSize: 35, fontWeight: FontWeight.bold),),
-            SizedBox(height: height * 0.3 * 0.1,),
-            Container(
-              height: height * 0.3 * 0.2,
-              margin: EdgeInsets.symmetric(horizontal: 40),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.white
-              ),
-              child: Center(child: Text("Shop Now", style: TextStyle(color: Colors.grey[900], fontWeight: FontWeight.bold),)),
-            ),
-            SizedBox(height: height * 0.3 * 0.15,),
-          ],
-        ),
-      ),
+    ),
+  )).toList();
+
+  @override
+  Widget build(BuildContext context) {
+    
+    return Column(
+      children: [ 
+        _buildCarouselSlider(),
+        _buildIndicator()
+      ]
+    );
+  }
+
+  Widget _buildCarouselSlider(){
+    return CarouselSlider(
+      items: imageSliders, 
+      options: CarouselOptions(
+        aspectRatio: 16/9,
+        viewportFraction: 0.9,
+        enlargeCenterPage: true,
+        enlargeStrategy: CenterPageEnlargeStrategy.height,
+        scrollDirection: Axis.horizontal,
+        autoPlay: true,
+        onPageChanged: (index, _){
+          setState((){
+            _current = index;
+          });
+        }
+      )
+    );
+  }
+
+  Widget _buildIndicator(){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: imgList.map((url) {
+        int index = imgList.indexOf(url);
+        return Container(
+          width: 8.0,
+          height: 8.0,
+          margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: _current == index
+              ? Color.fromRGBO(0, 0, 0, 0.9)
+              : Color.fromRGBO(0, 0, 0, 0.4),
+          ),
+        );
+      }).toList(),
     );
   }
 }
