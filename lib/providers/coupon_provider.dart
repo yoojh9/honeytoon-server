@@ -22,7 +22,7 @@ class CouponProvider extends ChangeNotifier {
       final couponRef = Database.couponRef.document(user.uid).collection('coupons').document(trid);
       final pointRef = Database.pointRef.document(user.uid).collection('point').document();
       
-      await couponRef.setData({'goods_code': product.code, 'goods_name': product.name, 'goods_image': product.image, 'success':'', 'create_time': Timestamp.now(), 'use': 'N'});
+      await couponRef.setData({'goods_code': product.code, 'goods_name': product.name, 'goods_image': product.image, 'goods_content': product.content, 'success':'', 'create_time': Timestamp.now(), 'use': 'N'});
 
       http.Response response = await requestSendCoupon(product.code, trid);
       final body = jsonDecode(response.body);

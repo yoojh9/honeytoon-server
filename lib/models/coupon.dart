@@ -5,6 +5,7 @@ class Coupon {
   String goodsCode;
   String goodsName;
   String goodsImage;
+  String goodsContent;
   String couponImgUrl;
   String use;
   String validDate;
@@ -16,6 +17,7 @@ class Coupon {
     this.goodsCode,
     this.goodsName,
     this.goodsImage,
+    this.goodsContent,
     this.couponImgUrl,
     this.use,
     this.validDate
@@ -41,6 +43,9 @@ class Coupon {
     }
     if(data['goods_image']!=null){
       this.goodsImage = data['goods_image'];
+    }
+    if(data['goods_content']!=null){
+      this.goodsContent = data['goods_content'];
     }
     if(data['use']!=null){
       this.use = data['use'];

@@ -34,15 +34,15 @@ class _CouponScreenState extends State<CouponScreen> {
       if(coupon.use == 'N') notUsed.add(coupon);
       else used.add(coupon);
     }
-    
+
     setState(() {
       _notUsedCoupons = notUsed;
       _usedCoupons = used;
     });
   }
 
-  void _useCoupon(ctx){
-    Navigator.of(ctx).pushNamed(CouponDetailScreen.routeName);
+  void _useCoupon(ctx, coupon){
+    Navigator.of(ctx).pushNamed(CouponDetailScreen.routeName, arguments: {'coupon': coupon});
   }
 
 
@@ -96,7 +96,7 @@ class _CouponScreenState extends State<CouponScreen> {
               title: Text(_notUsedCoupons[index].goodsName),
               subtitle: Text('${_notUsedCoupons[index].validDate}까지'),
               trailing:
-                  FlatButton(onPressed: (){_useCoupon(context);}, child: Text('사용하기')),
+                  FlatButton(onPressed: (){_useCoupon(context, _notUsedCoupons[index]);}, child: Text('사용하기')),
             ),
           ),
           itemCount: _notUsedCoupons.length,
@@ -125,7 +125,7 @@ class _CouponScreenState extends State<CouponScreen> {
               ),
               subtitle: Text('${_usedCoupons[index].validDate}까지'),
               trailing:
-                  FlatButton(onPressed: (){_useCoupon(context);}, child: Text('사용하기')),
+                  FlatButton(onPressed: (){_useCoupon(context, _usedCoupons[index]);}, child: Text('사용하기')),
             ),
           ),
           itemCount: _usedCoupons.length,
