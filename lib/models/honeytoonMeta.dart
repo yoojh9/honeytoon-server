@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 
 class HoneytoonMeta {
   String workId;
@@ -7,6 +6,7 @@ class HoneytoonMeta {
   String displayName;
   String coverImgUrl;
   int totalCount;
+  int likes;
   String title;
   String description;
   Timestamp createTime;
@@ -17,6 +17,7 @@ class HoneytoonMeta {
       this.displayName,
       this.coverImgUrl,
       this.totalCount,
+      this.likes,
       this.title,
       this.description});
 
@@ -29,6 +30,7 @@ class HoneytoonMeta {
     this.description = snapshot['description'];
     this.displayName = snapshot['displayName'];
     this.coverImgUrl = snapshot['cover_img'];
+    this.likes = snapshot['likes'];
     this.totalCount = snapshot['total_count'];
     this.createTime = snapshot['create_time'];
   }
@@ -52,6 +54,9 @@ class HoneytoonMeta {
     }
     if(this.totalCount!=null){
       data['total_count'] = this.totalCount;
+    }
+    if(this.likes!=null){
+      data['likes'] = this.likes;
     }
     if(this.createTime!=null){
       data['create_time'] = this.createTime;

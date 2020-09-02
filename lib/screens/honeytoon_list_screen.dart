@@ -15,8 +15,24 @@ class HoneyToonListScreen extends StatefulWidget {
 }
 
 class _HoneyToonListScreenState extends State<HoneyToonListScreen> {
+  var sort = 1;
   HoneytoonMetaProvider _metaProvider;
   List<dynamic> _metaList = [];
+
+  @override
+  void initState() {
+    setState(() {
+      sort = 1;
+    });
+    super.initState();
+  }
+
+  void _toggleSort(_sort){
+    setState(() {
+      sort = _sort;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -35,84 +51,91 @@ class _HoneyToonListScreenState extends State<HoneyToonListScreen> {
             padding: EdgeInsets.all(8.0),
             child: Column(children: <Widget>[
               HoneytoonListHeader(height: height),
-              HoneytoonListSort(),
-              Container(
-                margin: EdgeInsets.only(top: 16),
-                height: height * 0.6,
-                child: StreamBuilder(
-                    stream: _metaProvider.streamMeta(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasData &&
-                          snapshot.data.documents.length > 0) {
-                            _metaList = snapshot.data.documents
-                              .map((item) => HoneytoonMeta.fromMap(
-                                  item.data, item.documentID))
-                              .toList();
-
-                        return GridView.builder(
-                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                              childAspectRatio: 8 / 10
-                            ),
-                            itemCount: _metaList.length,
-                            itemBuilder: (_, index) {
-                              return GestureDetector(
-                                onTap: (){Navigator.of(context).pushNamed(HoneytoonDetailScreen.routeName, 
-                                  arguments: {'id': _metaList[index].workId, 'uid': _metaList[index].uid});
-                                },
-                                child: Card(
-                                  clipBehavior: Clip.antiAlias,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      AspectRatio(
-                                        aspectRatio: 4 / 3,
-                                        child: CachedNetworkImage(
-                                          imageUrl: _metaList[index].coverImgUrl,
-                                          placeholder: (context, url) => Image.asset(
-                                              'assets/images/image_spinner.gif'),
-                                          errorWidget: (context, url, error) =>
-                                              Icon(Icons.error),
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                      Expanded(
-                                          child: Padding(
-                                              padding: EdgeInsets.all(10),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: <Widget>[
-                                                  Text(
-                                                      "${_metaList[index].title}",
-                                                      maxLines: 1,
-                                                      style: TextStyle(
-                                                          fontSize: 12)),
-                                                  Text(
-                                                    "${_metaList[index].displayName}",
-                                                    style: TextStyle(
-                                                        fontSize: 10,
-                                                        color: Colors.grey),
-                                                  )
-                                                  // Text('제목2')
-                                                ],
-                                              )))
-                                      ],
-                                    ),
-                                ),
-                              );
-                            });
-                      } else {
-                        return Center(
-                            child: Text('허니툰을 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요'));
-                      }
-                    }),
-              )
+              HoneytoonListSort(toggleSort: _toggleSort),
+              _buildHoneytoonList(height)
             ])),
+      ),
+    );
+  }
+
+  Widget _buildHoneytoonList(height){
+    return  Container(
+      margin: EdgeInsets.only(top: 16),
+      height: height * 0.6,
+      child: StreamBuilder(
+          stream: _metaProvider.streamMeta(sort),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasData &&
+                snapshot.data.documents.length > 0) {
+                  _metaList = snapshot.data.documents
+                    .map((item) => HoneytoonMeta.fromMap(item.data, item.documentID))
+                    .toList();
+
+              return GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    childAspectRatio: 8 / 10
+                  ),
+                  itemCount: _metaList.length,
+                  itemBuilder: (_, index) {
+                    return _buildHoneytoonItem(index);
+                  }
+              );
+            } else {
+              return Center(
+                child: Text('허니툰을 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요'));
+            }
+          }),
+    );
+  }
+
+  Widget _buildHoneytoonItem(index){
+    return GestureDetector(
+      onTap: (){Navigator.of(context).pushNamed(HoneytoonDetailScreen.routeName, 
+        arguments: {'id': _metaList[index].workId, 'uid': _metaList[index].uid});
+      },
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            AspectRatio(
+              aspectRatio: 4 / 3,
+              child: CachedNetworkImage(
+                imageUrl: _metaList[index].coverImgUrl,
+                placeholder: (context, url) => Image.asset(
+                    'assets/images/image_spinner.gif'),
+                errorWidget: (context, url, error) =>
+                    Icon(Icons.error),
+                fit: BoxFit.cover,
+              ),
+            ),
+            Expanded(
+                child: Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Column(
+                      crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                            "${_metaList[index].title}",
+                            maxLines: 1,
+                            style: TextStyle(
+                                fontSize: 12)),
+                        Text(
+                          "${_metaList[index].displayName}",
+                          style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.grey),
+                        )
+                      ],
+                    )))
+            ],
+          ),
       ),
     );
   }
