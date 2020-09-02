@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:honeytoon/widgets/native_ads_widget.dart';
 
 class HoneytoonListHeader extends StatefulWidget {
   HoneytoonListHeader({
@@ -26,6 +27,9 @@ class _HoneytoonListHeaderState extends State<HoneytoonListHeader> {
   ];
 
   final List<Widget> imageSliders = imgList.map((item) => Container(
+    // child: Center(
+    //   child: NativeAdsWidget()
+    // )
     child: Container(
       margin: EdgeInsets.all(5.0),
       child: ClipRRect(
@@ -49,14 +53,6 @@ class _HoneytoonListHeaderState extends State<HoneytoonListHeader> {
                   ),
                 ),
                 padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-                // child: Text(
-                //   'No. ${imgList.indexOf(item)} image',
-                //   style: TextStyle(
-                //     color: Colors.white,
-                //     fontSize: 20.0,
-                //     fontWeight: FontWeight.bold,
-                //   ),
-                // ),
               ),
             ),
           ],
@@ -68,30 +64,37 @@ class _HoneytoonListHeaderState extends State<HoneytoonListHeader> {
   @override
   Widget build(BuildContext context) {
     
-    return Column(
-      children: [ 
-        _buildCarouselSlider(),
-        _buildIndicator()
-      ]
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      child: Stack(
+        alignment: AlignmentDirectional.bottomEnd,
+        overflow: Overflow.visible,
+        children: [ 
+          _buildCarouselSlider(),
+          _buildIndicator()
+        ]
+        ),
     );
   }
 
   Widget _buildCarouselSlider(){
-    return CarouselSlider(
-      items: imageSliders, 
-      options: CarouselOptions(
-        aspectRatio: 16/9,
-        viewportFraction: 0.9,
-        enlargeCenterPage: true,
-        enlargeStrategy: CenterPageEnlargeStrategy.height,
-        scrollDirection: Axis.horizontal,
-        autoPlay: true,
-        onPageChanged: (index, _){
-          setState((){
-            _current = index;
-          });
-        }
-      )
+    return Container(
+      child: CarouselSlider(
+        items: imageSliders, 
+        options: CarouselOptions(
+          aspectRatio: 2/1,
+          viewportFraction: 1.0,
+          enlargeCenterPage: true,
+          //enlargeStrategy: CenterPageEnlargeStrategy.height,
+          scrollDirection: Axis.horizontal,
+          autoPlay: true,
+          onPageChanged: (index, _){
+            setState((){
+              _current = index;
+            });
+          }
+        )
+      ),
     );
   }
 
@@ -107,8 +110,8 @@ class _HoneytoonListHeaderState extends State<HoneytoonListHeader> {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: _current == index
-              ? Color.fromRGBO(0, 0, 0, 0.9)
-              : Color.fromRGBO(0, 0, 0, 0.4),
+              ? Color.fromRGBO(255, 255, 255, 0.9)
+              : Color.fromRGBO(255, 255, 255, 0.4),
           ),
         );
       }).toList(),
