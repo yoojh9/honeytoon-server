@@ -65,6 +65,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Honey Toon',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: themeColor,
           primaryColor: themeColor,

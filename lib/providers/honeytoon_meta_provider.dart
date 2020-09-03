@@ -54,8 +54,18 @@ class HoneytoonMetaProvider extends ChangeNotifier {
     await Database.metaRef.document(meta.workId).updateData(data);
   }
 
-  Stream<QuerySnapshot> streamMeta(type) {
-    String sortType = type ==1 ? 'create_time' : 'likes';
-    return Database.metaRef.orderBy(sortType, descending: true).getDocuments().asStream();
+  Stream<QuerySnapshot> streamMeta(type, keyword) {
+    try {
+      String sortType = type ==1 ? 'create_time' : 'likes';
+      print('streamMeta keyword: $keyword');
+      if(keyword==null || keyword==""){
+        return Database.metaRef.orderBy(sortType, descending: true).getDocuments().asStream();
+      }
+      else {
+        return Database.metaRef.where('title', isEqualTo:keyword).getDocuments().asStream();
+      }
+    } catch(error){
+      print(error.message);
+    }
   }
 }

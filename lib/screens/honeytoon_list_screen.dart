@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -7,8 +9,12 @@ import './honeytoon_detail_screen.dart';
 import '../widgets/honeytoon_list_header.dart';
 import '../widgets/honeytoon_list_sort.dart';
 
+
 class HoneyToonListScreen extends StatefulWidget {
   static final routeName = 'list';
+  final Stream<String> stream;
+  
+  HoneyToonListScreen({this.stream});
 
   @override
   _HoneyToonListScreenState createState() => _HoneyToonListScreenState();
@@ -16,6 +22,8 @@ class HoneyToonListScreen extends StatefulWidget {
 
 class _HoneyToonListScreenState extends State<HoneyToonListScreen> {
   var sort = 1;
+  String _keyword = '';
+  StreamSubscription _subscription;
   HoneytoonMetaProvider _metaProvider;
   List<dynamic> _metaList = [];
 
@@ -24,15 +32,45 @@ class _HoneyToonListScreenState extends State<HoneyToonListScreen> {
     setState(() {
       sort = 1;
     });
+    _subscribe();
     super.initState();
+  }
+
+  void _subscribe(){
+    if(widget.stream != null){
+      _subscription = widget.stream.listen((keyword){
+        _changeKeyword(keyword);
+      });
+    }
+  }
+
+  void _unsubscribe(){
+    if(_subscription!=null){
+      _subscription.cancel();
+      _subscription = null;
+    }
+  }
+
+  @override
+  void dispose() {
+    _unsubscribe();
+    super.dispose();
   }
 
   void _toggleSort(_sort){
     setState(() {
       sort = _sort;
+      _keyword = '';
     });
   }
 
+  void _changeKeyword(keyword){
+    print('_changeKeyword');
+    setState(() {
+      _keyword = keyword;
+    });
+    print('setState()');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,8 +101,10 @@ class _HoneyToonListScreenState extends State<HoneyToonListScreen> {
       margin: EdgeInsets.only(top: 16),
       height: height * 0.6,
       child: StreamBuilder(
-          stream: _metaProvider.streamMeta(sort),
+          stream: _metaProvider.streamMeta(sort, _keyword),
           builder: (context, snapshot) {
+            print(snapshot);
+            print(snapshot.data);
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
             } else if (snapshot.hasData &&
