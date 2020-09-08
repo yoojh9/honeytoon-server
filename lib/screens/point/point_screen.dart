@@ -131,7 +131,7 @@ class PointScreen extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('assets/images/honey_pot.png'),
+                  image: AssetImage('assets/images/honey.png'),
                   fit: BoxFit.contain)),
             child: null,
           ),

@@ -39,6 +39,7 @@ dependencies:
   flutter_native_admob: ^2.1.0+3
   async: ^2.4.1
   carousel_slider: ^2.2.1
+  shared_preferences: ^0.5.10
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -60,11 +61,6 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/images/one.jpg
-    - assets/images/two.jpg
-    - assets/images/three.jpg
-    - assets/images/four.jpg
-    - assets/images/five.jpg
     - assets/images/kakao_login_icon.png
     - assets/images/naver_login_icon.png
     - assets/images/honey_pot.png
@@ -75,6 +71,7 @@ flutter:
     - assets/images/placeholder.png
     - assets/images/image_spinner.gif
     - assets/images/avatar_placeholder.png
+    - assets/images/honey.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

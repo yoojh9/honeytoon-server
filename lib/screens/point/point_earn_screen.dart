@@ -1,10 +1,14 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:honeytoon/helpers/dateFormatHelper.dart';
 import 'package:honeytoon/models/point.dart';
 import 'package:honeytoon/providers/point_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // test device id for production
 const String testDevice = null;
@@ -25,17 +29,51 @@ class _PointEarnScreenState extends State<PointEarnScreen>
     childDirected: true,
     nonPersonalizedAds: true,
   );
-  int _coins = 0;
-  bool _videoLoaded = false;
+
+  bool _checkPoint = false;
+  Map<String, dynamic> _history = Map<String, dynamic>();
+  String _dateKey = '';
 
   @override
   void initState() {
+    setState(() {
+      _dateKey = DateFormatHelper.getDateFromDateTime(DateTime.now());
+    });
+    _loadPref();
     super.initState();
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  void _loadPref() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String _pointHistory = prefs.getString('point_history');
+
+    if(_pointHistory==null) return;
+
+    setState(() {
+      print(_pointHistory);
+      _history = jsonDecode(_pointHistory);
+
+      print('_dateKey:$_dateKey');
+      if(_history.containsKey(_dateKey)){
+        setState(() {
+          _checkPoint = _history[_dateKey];
+        }); 
+      }
+    });
+  }
+
+  void _setPref() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _checkPoint = true;
+    });
+    _history[_dateKey] = _checkPoint;
+    prefs.setString('point_history', jsonEncode(_history));
   }
 
   void rewardVideo() async {
@@ -50,11 +88,8 @@ class _PointEarnScreenState extends State<PointEarnScreen>
             type: PointType.REWARD,
             point: rewardAmount,
             createTime: Timestamp.now()));
-        setState(() {
-          _coins += rewardAmount;
-          _videoLoaded = true;
-          print('coins:$_coins');
-        });
+
+        _setPref();
       } else if (event == RewardedVideoAdEvent.loaded) {
         print('loaded');
         await RewardedVideoAd.instance.show();
@@ -73,7 +108,7 @@ class _PointEarnScreenState extends State<PointEarnScreen>
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        (!_videoLoaded)
+        (!_checkPoint)
             ? RaisedButton(
                 child: Text('출석하기'),
                 onPressed: rewardVideo,

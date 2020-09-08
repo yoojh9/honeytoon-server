@@ -1,11 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:honeytoon/models/honeytoonMeta.dart';
 import '../screens/honeytoon_detail_screen.dart';
 import 'package:provider/provider.dart';
 import '../screens/my/add_content_screen.dart';
 import '../providers/honeytoon_meta_provider.dart';
 
-class MyHoneytoonListView extends StatelessWidget {
+class MyHoneytoonListView extends StatefulWidget {
   const MyHoneytoonListView({
     Key key,
     @required this.height,
@@ -17,6 +18,13 @@ class MyHoneytoonListView extends StatelessWidget {
   final String uid;
   final GlobalKey<ScaffoldState> scaffoldKey;
 
+  @override
+  _MyHoneytoonListViewState createState() => _MyHoneytoonListViewState();
+}
+
+class _MyHoneytoonListViewState extends State<MyHoneytoonListView> {
+  List<dynamic> _myHoneytoon = [];
+
   void _navigateToDetail(BuildContext ctx, String uid, String workId){
     Navigator.of(ctx).pushNamed(HoneytoonDetailScreen.routeName, arguments: {'uid': uid, 'id': workId});
   }
@@ -25,46 +33,50 @@ class MyHoneytoonListView extends StatelessWidget {
     var result = await Navigator.of(ctx)
                 .pushNamed(AddContentScreen.routeName, arguments: {'id': data.workId, 'page': HoneytoonDetailScreen.routeName});
     if(result!=null){
-      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(result), duration: Duration(seconds: 2),));
+      widget.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(result), duration: Duration(seconds: 2),));
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
-    HoneytoonMetaProvider _metaProvider = Provider.of<HoneytoonMetaProvider>(context);
+    HoneytoonMetaProvider _metaProvider = Provider.of<HoneytoonMetaProvider>(context, listen: true);
 
     return Container(
-      child: FutureBuilder(
-          future: _metaProvider.getMyHoneytoonMetaList(uid),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            } else if (snapshot.hasData) {
-              return ListView.builder(
-                primary: false,
-                shrinkWrap: true,
-                itemCount: snapshot.data.length,
-                itemBuilder: (_, index) {
-                  print('snapshot.data: ${snapshot.data[index]}');
-                  var data = snapshot.data[index];
-                  return Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                    child: Row(children: [
-                      _buildCoverImage(context, data),
-                      _buildHoneytoonInfo(context, uid, data),
-                      _buildAddIcon(context, data)
-                    ]),
-                  );
-                },
-              );
-            } else {
-              return Center(child: Text('허니툰을 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요'));
-            }
-          }),
+      child: StreamBuilder(
+        stream: _metaProvider.getMyHoneytoonStream(widget.uid),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if(snapshot.hasError) {
+            return Center(child: Text('허니툰을 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요'));
+          } else if(snapshot.hasData) {
+            _myHoneytoon = snapshot.data.documents
+              .map((item) => HoneytoonMeta.fromMap(item.data, item.documentID))
+              .toList();
+
+            return ListView.builder(
+              primary: false,
+              shrinkWrap: true,
+              itemCount: snapshot.data.documents.length,
+              itemBuilder: (_, index) {
+                print('snapshot.data: ${_myHoneytoon[index]}');
+                var data = _myHoneytoon[index];
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  child: Row(children: [
+                    _buildCoverImage(context, data),
+                    _buildHoneytoonInfo(context, widget.uid, data),
+                    _buildAddIcon(context, data)
+                  ]),
+                );
+              },
+            );
+          } else {
+            return Center(child: Text('데이터가 없습니다'));
+          }
+        }),
     );
   }
 
@@ -75,7 +87,7 @@ class MyHoneytoonListView extends StatelessWidget {
           aspectRatio: 4 / 3,
           child: GestureDetector(
             onTap: (){
-              _navigateToDetail(ctx, uid, data.workId);
+              _navigateToDetail(ctx, widget.uid, data.workId);
             },
             child: CachedNetworkImage(
               imageUrl: data.coverImgUrl,

@@ -9,6 +9,10 @@ class DateFormatHelper {
   static String getDate(Timestamp timestamp){
     return DateFormat('yyyyMMdd').format(timestamp.toDate());
   }
+
+  static String getDateFromDateTime(DateTime datetime){
+    return DateFormat('yyyyMMdd').format(datetime);
+  }
   
   static String convertDateTimeToDate(String dateTimeStr){
     print('dateTimeStr:$dateTimeStr');
