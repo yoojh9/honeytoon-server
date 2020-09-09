@@ -114,9 +114,14 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
                 padding: const EdgeInsets.all(16),
                 child: SingleChildScrollView(
                     child: Column(children: [
-                  _buildHoneytoonMetaInfo(args['id'], height),
-                  _buildHoneytoonContentList(args['id'])
-                ])))));
+                      _buildHoneytoonMetaInfo(args['id'], height),
+                      _buildHoneytoonContentList(args['id'])
+                      ]
+                    )
+                )
+            )
+        )
+    );
   }
 
   Widget _buildHeaderIcon(ctx, userId, args) {
@@ -152,25 +157,36 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
                   children: <Widget>[
                     Expanded(
                         flex: 2,
-                        child: AspectRatio(
-                            aspectRatio: 4 / 3,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: AspectRatio(
+                            aspectRatio: 16 / 9,
                             child: CachedNetworkImage(
                                 imageUrl: snapshot.data.coverImgUrl,
                                 placeholder: (context, url) => Image.asset(
                                     'assets/images/image_spinner.gif'),
                                 errorWidget: (context, url, error) =>
                                     Icon(Icons.error),
-                                fit: BoxFit.cover))),
+                                fit: BoxFit.cover
+                            )
+                          )
+                        )
+                    ),
                     Expanded(
                       flex: 1,
                       child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Text(
                               '${snapshot.data.title}',
                               style: TextStyle(fontSize: 20),
                             ),
-                            Text('${snapshot.data.displayName}'),
+                            SizedBox(height: 10,),
+                            Text('${snapshot.data.displayName}',
+                              style: TextStyle(fontSize: 16, color: Colors.grey)
+                            ),
+                            SizedBox(height: 20),
+                            Text('${snapshot.data.likes}'),
                           ]),
                     ),
                   ],
