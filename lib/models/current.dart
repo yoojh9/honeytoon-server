@@ -20,23 +20,23 @@ class Current {
     return data;
   }
 
-  Current.fromMap(String documentId, Map currentSnapshot, Map toonSnapshot){
+  Current.fromMap(String documentId, Map currentSnapshot, Map toonSnapshot) {
     this.workId = documentId;
-    if(currentSnapshot['content_id']!=null){
+    if (currentSnapshot['content_id'] != null) {
       this.contentId = currentSnapshot['content_id'];
     }
-    if(currentSnapshot['times']!=null){
+    if (currentSnapshot['times'] != null) {
       this.times = currentSnapshot['times'];
     }
-    if(toonSnapshot['title']!=null){
+    if (toonSnapshot == null) return;
+    if (toonSnapshot['title'] != null) {
       this.title = toonSnapshot['title'];
     }
-    if(toonSnapshot['cover_img']!=null){
+    if (toonSnapshot['cover_img'] != null) {
       this.coverImgUrl = toonSnapshot['cover_img'];
     }
-    if(toonSnapshot['displayName']!=null){
+    if (toonSnapshot['displayName'] != null) {
       this.authName = toonSnapshot['displayName'];
     }
   }
-
 }

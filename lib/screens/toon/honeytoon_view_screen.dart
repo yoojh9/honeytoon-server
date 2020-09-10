@@ -91,63 +91,6 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen>
     });
   }
 
-  void _modalBottomSheetMenu(context, height) {
-    showModalBottomSheet(
-        context: context,
-        builder: (builder) {
-          return StatefulBuilder(
-              builder: (BuildContext context, StateSetter setState) {
-            return Container(
-                height: height * 0.5,
-                decoration: new BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: new BorderRadius.only(
-                        topLeft: const Radius.circular(20.0),
-                        topRight: const Radius.circular(20.0))),
-                child: Column(children: [
-                  RadioListTile(
-                      value: 10,
-                      groupValue: _giftPoint,
-                      title: Text('10꿀'),
-                      selected: _giftPoint == 10,
-                      onChanged: (value) {
-                        setState(() {
-                          _giftPoint = value;
-                        });
-                      }),
-                  RadioListTile(
-                      value: 30,
-                      groupValue: _giftPoint,
-                      title: Text('30꿀'),
-                      selected: _giftPoint == 30,
-                      onChanged: (value) {
-                        print('value:$value');
-                        setState(() {
-                          _giftPoint = value;
-                        });
-                      }),
-                  RadioListTile(
-                      value: 50,
-                      groupValue: _giftPoint,
-                      title: Text('50꿀'),
-                      selected: _giftPoint == 50,
-                      onChanged: (value) {
-                        print('value:$value');
-                        setState(() {
-                          _giftPoint = value;
-                        });
-                      }),
-                  RaisedButton(
-                      color: Theme.of(context).primaryColor,
-                      onPressed: () {},
-                      child: Text(
-                        '선물하기',
-                      ))
-                ]));
-          });
-        });
-  }
-
   Widget buildImage(args) {
     List<String> images = args['images'];
     if (images != null) {
@@ -259,5 +202,62 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen>
                 ),
               ])
             : Container(color: Colors.transparent, width: width));
+  }
+
+  void _modalBottomSheetMenu(context, height) {
+    showModalBottomSheet(
+        context: context,
+        builder: (builder) {
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+            return Container(
+                height: height * 0.5,
+                decoration: new BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: new BorderRadius.only(
+                        topLeft: const Radius.circular(20.0),
+                        topRight: const Radius.circular(20.0))),
+                child: Column(children: [
+                  RadioListTile(
+                      value: 10,
+                      groupValue: _giftPoint,
+                      title: Text('10꿀'),
+                      selected: _giftPoint == 10,
+                      onChanged: (value) {
+                        setState(() {
+                          _giftPoint = value;
+                        });
+                      }),
+                  RadioListTile(
+                      value: 30,
+                      groupValue: _giftPoint,
+                      title: Text('30꿀'),
+                      selected: _giftPoint == 30,
+                      onChanged: (value) {
+                        print('value:$value');
+                        setState(() {
+                          _giftPoint = value;
+                        });
+                      }),
+                  RadioListTile(
+                      value: 50,
+                      groupValue: _giftPoint,
+                      title: Text('50꿀'),
+                      selected: _giftPoint == 50,
+                      onChanged: (value) {
+                        print('value:$value');
+                        setState(() {
+                          _giftPoint = value;
+                        });
+                      }),
+                  RaisedButton(
+                      color: Theme.of(context).primaryColor,
+                      onPressed: () {},
+                      child: Text(
+                        '선물하기',
+                      ))
+                ]));
+          });
+        });
   }
 }

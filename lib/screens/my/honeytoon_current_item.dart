@@ -8,7 +8,6 @@ class CurrentToonItem extends StatelessWidget {
     @required this.height,
     @required this.data,
     @required this.uid,
-
   }) : super(key: key);
 
   final double height;
@@ -16,8 +15,11 @@ class CurrentToonItem extends StatelessWidget {
   final uid;
 
   _navigateViewPage(BuildContext ctx) {
-    Navigator.of(ctx).pushNamed(HoneytoonViewScreen.routeName,
-      arguments: {'id' : data.workId, 'contentId': data.contentId, 'times': data.times});
+    Navigator.of(ctx).pushNamed(HoneytoonViewScreen.routeName, arguments: {
+      'id': data.workId,
+      'contentId': data.contentId,
+      'times': data.times
+    });
   }
 
   @override
@@ -25,41 +27,39 @@ class CurrentToonItem extends StatelessWidget {
     return Container(
       height: height * 0.15,
       child: GestureDetector(
-        onTap: (){
+        onTap: () {
           _navigateViewPage(context);
         },
-        child: Row(
-          children: [
-            Expanded(
+        child: Row(children: [
+          Expanded(
               flex: 2,
               child: AspectRatio(
-                aspectRatio: 4/3,
-                child: CachedNetworkImage(
-                  imageUrl: data.coverImgUrl,
-                  placeholder: (context, url) => Image.asset(
-                      'assets/images/image_spinner.gif'),
-                  errorWidget: (context, url, error) =>
-                      Icon(Icons.error),
-                  fit: BoxFit.cover))
-            ),
-            Expanded(
+                  aspectRatio: 4 / 3,
+                  child: CachedNetworkImage(
+                      imageUrl: data.coverImgUrl,
+                      placeholder: (context, url) =>
+                          Image.asset('assets/images/image_spinner.gif'),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                      fit: BoxFit.cover))),
+          Expanded(
               flex: 3,
               child: Container(
                 margin: EdgeInsets.only(left: 8),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('${data.title}', style: TextStyle(fontSize:20,),),
-                    Text('${data.authName}'),
-                    Text('${data.times}화')
-                  ]
-                ),
-              )
-            ),
-
-          ]
-        ),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '${data.title}',
+                        style: TextStyle(
+                          fontSize: 20,
+                        ),
+                      ),
+                      Text('${data.authName}'),
+                      Text('${data.times}화')
+                    ]),
+              )),
+        ]),
       ),
     );
   }

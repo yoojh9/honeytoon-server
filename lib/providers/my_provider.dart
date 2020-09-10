@@ -5,7 +5,6 @@ import 'package:honeytoon/models/current.dart';
 import 'package:honeytoon/models/likes.dart';
 
 class MyProvider extends ChangeNotifier {
-
   /*
    * 관심툰 추가 or 제거 
    */
@@ -18,19 +17,19 @@ class MyProvider extends ChangeNotifier {
         .document(like.workId);
 
     Database.firestore
-    .runTransaction((transaction) async {
-      await transaction.update(metaReference,
-          {'likes': FieldValue.increment(like.like ? 1 : -1)});
-      if(like.like){
-        await transaction.set(likeReference, like.toJson());
-      } else {
-        await transaction.delete(likeReference);
-      }
-    })
-    .then((value) => {print('success')})
-    .catchError((error) {
-      print(error.message);
-    });
+        .runTransaction((transaction) async {
+          await transaction.update(metaReference,
+              {'likes': FieldValue.increment(like.like ? 1 : -1)});
+          if (like.like) {
+            await transaction.set(likeReference, like.toJson());
+          } else {
+            await transaction.delete(likeReference);
+          }
+        })
+        .then((value) => {print('success')})
+        .catchError((error) {
+          print(error.message);
+        });
   }
 
   /*
@@ -51,12 +50,17 @@ class MyProvider extends ChangeNotifier {
    */
   Future<List<Likes>> getLikeHoneytoon(String uid) async {
     List<Likes> _likes;
-    QuerySnapshot snapshot  = await Database.myRef.document(uid).collection('likes').orderBy('like_time', descending: true).getDocuments();
+    QuerySnapshot snapshot = await Database.myRef
+        .document(uid)
+        .collection('likes')
+        .orderBy('like_time', descending: true)
+        .getDocuments();
     _likes = await Future.wait(snapshot.documents.map((likeSnapshot) async {
-        DocumentSnapshot toonSnapshot = await Database.metaRef.document(likeSnapshot.documentID).get();
-        return Likes.fromMap(likeSnapshot.documentID, likeSnapshot.data['like_time'], toonSnapshot.data);
-      }).toList()
-    );
+      DocumentSnapshot toonSnapshot =
+          await Database.metaRef.document(likeSnapshot.documentID).get();
+      return Likes.fromMap(likeSnapshot.documentID,
+          likeSnapshot.data['like_time'], toonSnapshot.data);
+    }).toList());
     return _likes;
   }
 
@@ -64,7 +68,11 @@ class MyProvider extends ChangeNotifier {
    * 최근 본 작품 추가 
    */
   Future<void> addCurrentHoneytoon(Current current) async {
-    final DocumentReference currentReference = Database.myRef.document(current.uid).collection('current').document(current.workId);
+    final DocumentReference currentReference = Database.myRef
+        .document(current.uid)
+        .collection('current')
+        .document(current.workId);
+
     await currentReference.setData(current.toJson());
   }
 
@@ -73,12 +81,19 @@ class MyProvider extends ChangeNotifier {
    */
   Future<List<Current>> getCurrentHoneytoon(String uid) async {
     List<Current> _currentList;
-    QuerySnapshot snapshot = await Database.myRef.document(uid).collection('current').orderBy('update_time', descending: true).getDocuments();
-    _currentList = await Future.wait(snapshot.documents.map((currentSnapshot) async {
-      DocumentSnapshot toonSnapshot = await Database.metaRef.document(currentSnapshot.documentID).get();
-      return Current.fromMap(currentSnapshot.documentID, currentSnapshot.data, toonSnapshot.data);
-      }).toList()
-    );
+    QuerySnapshot snapshot = await Database.myRef
+        .document(uid)
+        .collection('current')
+        .orderBy('update_time', descending: true)
+        .getDocuments();
+    _currentList =
+        await Future.wait(snapshot.documents.map((currentSnapshot) async {
+      DocumentSnapshot toonSnapshot =
+          await Database.metaRef.document(currentSnapshot.documentID).get();
+      print('toonSnapshot:${toonSnapshot.data}');
+      return Current.fromMap(
+          currentSnapshot.documentID, currentSnapshot.data, toonSnapshot.data);
+    }).toList());
     return _currentList;
   }
 }
