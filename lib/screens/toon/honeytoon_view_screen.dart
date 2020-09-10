@@ -67,10 +67,54 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
   void _onTap(BuildContext context, String contentId, int index){
     setState(() {
       print(index);
-      if(index==1){
+      if(index==0){
+
+      } else if(index==1){
         Navigator.of(context).pushNamed(HoneytoonCommentScreen.routeName, arguments: {'id': contentId });
+      } else if(index==2){
+        _modalBottomSheetMenu();
+      } else if(index==3){
+
       }
     });
+  }
+
+  void _modalBottomSheetMenu(){
+    showModalBottomSheet(
+        context: context,
+        builder: (builder){
+          return new Container(
+            height: 250.0,
+            color: Colors.transparent, //could change this to Color(0xFF737373), 
+                        //so you don't have to change MaterialApp canvasColor
+            child: new Container(
+                decoration: new BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: new BorderRadius.only(
+                        topLeft: const Radius.circular(20.0),
+                        topRight: const Radius.circular(20.0))),
+                child: 
+                  new Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      FlatButton.icon(onPressed: null, icon: Icon(Icons.remove), label: Text('')),
+                      Container(
+                        width: 50,
+                        child: TextField(
+                          decoration: InputDecoration(
+                            border: InputBorder.none, 
+                          ),
+                          textAlign: TextAlign.center,
+                          onSubmitted: null,
+                        )
+                      ),
+                      FlatButton.icon(onPressed: null, icon: Icon(Icons.add), label: Text('')),
+                    ]
+                  ),
+                ),
+          );
+        }
+    );
   }
 
   Widget buildImage(args){
@@ -138,7 +182,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
               backgroundColor: Colors.transparent,
               floating: false,
               pinned: false,
-              leading: IconButton(icon: Icon(Icons.list), onPressed: (){Navigator.of(context).pop();}),
+              leading: IconButton(icon: Icon(Icons.format_list_bulleted), onPressed: (){Navigator.of(context).pop();}),
               flexibleSpace: FlexibleSpaceBar(
                 centerTitle: true,
                 title: Text('${args['times']}화', style: TextStyle(fontSize:20),),
@@ -168,6 +212,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(icon: Icon(Icons.arrow_back), title: Text('이전화')),
               BottomNavigationBarItem(icon: Icon(Icons.mode_comment), title: Text('댓글')),
+              BottomNavigationBarItem(icon: Icon(Icons.attach_money), title: Text('선물하기')),
               BottomNavigationBarItem(icon: Icon(Icons.arrow_forward), title: Text('다음화')),
             ],
             currentIndex: _currentIndex,
