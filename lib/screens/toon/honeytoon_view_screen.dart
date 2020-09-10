@@ -25,11 +25,13 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
   String userId;
   MyProvider _myProvider;
   HoneytoonContentProvider _contentProvider;
+  TextEditingController _controller;
+
 
   @override
   void initState() {
     super.initState();
-
+    _controller = new TextEditingController(text: '0');
     _scrollController = ScrollController();
     _scrollController.addListener(() {
       if(_scrollController.position.userScrollDirection == ScrollDirection.reverse && _isVisible){
@@ -64,7 +66,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
 
   }
 
-  void _onTap(BuildContext context, String contentId, int index){
+  void _onTap(BuildContext context, height, String contentId, int index){
     setState(() {
       print(index);
       if(index==0){
@@ -72,22 +74,23 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
       } else if(index==1){
         Navigator.of(context).pushNamed(HoneytoonCommentScreen.routeName, arguments: {'id': contentId });
       } else if(index==2){
-        _modalBottomSheetMenu();
+        _modalBottomSheetMenu(height);
       } else if(index==3){
 
       }
     });
   }
 
-  void _modalBottomSheetMenu(){
-    showModalBottomSheet(
+  void _modalBottomSheetMenu(height){
+    showDialog(
         context: context,
         builder: (builder){
-          return new Container(
-            height: 250.0,
-            color: Colors.transparent, //could change this to Color(0xFF737373), 
-                        //so you don't have to change MaterialApp canvasColor
-            child: new Container(
+          return AlertDialog(
+            content:
+          
+            new Container(
+                height: 100,
+                width: 250,
                 decoration: new BoxDecoration(
                     color: Colors.white,
                     borderRadius: new BorderRadius.only(
@@ -101,17 +104,20 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
                       Container(
                         width: 50,
                         child: TextField(
+                          controller : _controller,
                           decoration: InputDecoration(
                             border: InputBorder.none, 
                           ),
                           textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16),
                           onSubmitted: null,
                         )
                       ),
                       FlatButton.icon(onPressed: null, icon: Icon(Icons.add), label: Text('')),
                     ]
-                  ),
                 ),
+
+                )
           );
         }
     );
@@ -197,11 +203,11 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
            
           ]
         ),
-        bottomNavigationBar: _buildBottonNavigationBar(width, args['contentId']) 
+        bottomNavigationBar: _buildBottonNavigationBar(height, width, args['contentId']) 
       );
   }
 
-  Widget _buildBottonNavigationBar(width, contentId){
+  Widget _buildBottonNavigationBar(height, width, contentId){
     return AnimatedContainer(
         duration: Duration(milliseconds: 500),
         height: _isVisible ? 60 : 0,
@@ -217,7 +223,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
             ],
             currentIndex: _currentIndex,
             onTap: (index) {
-              _onTap(context, contentId, index);
+              _onTap(context, height, contentId, index);
             },
             ),
           ]
