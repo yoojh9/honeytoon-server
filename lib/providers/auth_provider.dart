@@ -71,18 +71,13 @@ class AuthProvider with ChangeNotifier {
           FacebookAuthProvider.getCredential(accessToken: accessToken.token);
       AuthResult authResult = await _auth.signInWithCredential(credential);
 
+      print('displayName: ${authResult.user.displayName}');
       print(authResult.user.displayName);
-      print(authResult.user);
+      print('user : ${authResult.user}');
 
       await addUserToDB(authResult, 'FACEBOOK', null);
 
-      await _db.collection('users').document(authResult.user.uid).setData({
-        'displayName': authResult.user.displayName,
-        'email': authResult.user.email,
-        'provider': 'FACEBOOK',
-        'thumbnail': authResult.user.photoUrl
-      });
-
+      print('success');
       return authResult.user;
     } on PlatformException catch (error) {
       var message = 'An error occurred, please check your credentials!';
@@ -99,10 +94,11 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> addUserToDB(AuthResult authResult, String providerType, User user) async {
     await _db.collection('users').document(authResult.user.uid).setData({
-        'displayName': user.displayName,
-        'email': user.email,
+        'displayName': user == null ? authResult.user.displayName : user.displayName,
+        'email': user == null ? authResult.user.email : user.email,
         'provider': providerType,
-        'thumbnail':  user.thumbnail
+        'thumbnail': user == null ? authResult.user.photoUrl : user.thumbnail,
+        'update_time': Timestamp.now(),
     });
   }
 

@@ -29,14 +29,16 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   void _loginFacebook(BuildContext ctx) async {
-    user = await FirebaseAuth.instance.currentUser();
-
-    if (user == null) {
-      user = await Provider.of<AuthProvider>(context, listen: false)
-          .facebookLogin();
-    }
-
+    try {
+      user = await FirebaseAuth.instance.currentUser();
+      if (user == null) {
+        user = await Provider.of<AuthProvider>(context, listen: false)
+            .facebookLogin();
+      }
     Navigator.of(ctx).pop(user);
+    } catch(error){
+      print(error);
+    }
   }
 
   @override
