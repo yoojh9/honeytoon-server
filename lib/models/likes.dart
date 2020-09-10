@@ -22,13 +22,15 @@ class Likes {
     if (likeTime != null) {
       this.likeTime = likeTime;
     }
-    if(toonSnapshot['title']!=null){
+    if (toonSnapshot == null) return;
+
+    if (toonSnapshot['title'] != null) {
       this.title = toonSnapshot['title'];
     }
-    if(toonSnapshot['cover_img']!=null){
+    if (toonSnapshot['cover_img'] != null) {
       this.coverImgUrl = toonSnapshot['cover_img'];
     }
-    if(toonSnapshot['displayName']!=null){
+    if (toonSnapshot['displayName'] != null) {
       this.authName = toonSnapshot['displayName'];
     }
   }

@@ -9,11 +9,10 @@ import './honeytoon_detail_screen.dart';
 import '../widgets/honeytoon_list_header.dart';
 import '../widgets/honeytoon_list_sort.dart';
 
-
 class HoneyToonListScreen extends StatefulWidget {
   static final routeName = 'list';
   final Stream<String> stream;
-  
+
   HoneyToonListScreen({this.stream});
 
   @override
@@ -36,16 +35,16 @@ class _HoneyToonListScreenState extends State<HoneyToonListScreen> {
     super.initState();
   }
 
-  void _subscribe(){
-    if(widget.stream != null){
-      _subscription = widget.stream.listen((keyword){
+  void _subscribe() {
+    if (widget.stream != null) {
+      _subscription = widget.stream.listen((keyword) {
         _changeKeyword(keyword);
       });
     }
   }
 
-  void _unsubscribe(){
-    if(_subscription!=null){
+  void _unsubscribe() {
+    if (_subscription != null) {
       _subscription.cancel();
       _subscription = null;
     }
@@ -57,14 +56,14 @@ class _HoneyToonListScreenState extends State<HoneyToonListScreen> {
     super.dispose();
   }
 
-  void _toggleSort(_sort){
+  void _toggleSort(_sort) {
     setState(() {
       sort = _sort;
       _keyword = '';
     });
   }
 
-  void _changeKeyword(keyword){
+  void _changeKeyword(keyword) {
     print('_changeKeyword');
     setState(() {
       _keyword = keyword;
@@ -96,45 +95,43 @@ class _HoneyToonListScreenState extends State<HoneyToonListScreen> {
     );
   }
 
-  Widget _buildHoneytoonList(height){
-    return  Container(
+  Widget _buildHoneytoonList(height) {
+    return Container(
       margin: EdgeInsets.only(top: 16),
       height: height * 0.6,
       child: StreamBuilder(
           stream: _metaProvider.streamMeta(sort, _keyword),
           builder: (context, snapshot) {
-            print(snapshot);
-            print(snapshot.data);
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasData &&
-                snapshot.data.documents.length > 0) {
-                  _metaList = snapshot.data.documents
-                    .map((item) => HoneytoonMeta.fromMap(item.data, item.documentID))
-                    .toList();
+            } else if (snapshot.hasData && snapshot.data.documents.length > 0) {
+              _metaList = snapshot.data.documents
+                  .map((item) =>
+                      HoneytoonMeta.fromMap(item.data, item.documentID))
+                  .toList();
 
               return GridView.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    childAspectRatio: 8 / 10
-                  ),
+                      crossAxisCount: 3, childAspectRatio: 8 / 10),
                   itemCount: _metaList.length,
                   itemBuilder: (_, index) {
                     return _buildHoneytoonItem(index);
-                  }
-              );
+                  });
             } else {
-              return Center(
-                child: Text('허니툰을 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요'));
+              return Center(child: Text('허니툰을 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요'));
             }
           }),
     );
   }
 
-  Widget _buildHoneytoonItem(index){
+  Widget _buildHoneytoonItem(index) {
     return GestureDetector(
-      onTap: (){Navigator.of(context).pushNamed(HoneytoonDetailScreen.routeName, 
-        arguments: {'id': _metaList[index].workId, 'uid': _metaList[index].uid});
+      onTap: () {
+        Navigator.of(context).pushNamed(HoneytoonDetailScreen.routeName,
+            arguments: {
+              'id': _metaList[index].workId,
+              'uid': _metaList[index].uid
+            });
       },
       child: Card(
         clipBehavior: Clip.antiAlias,
@@ -145,10 +142,9 @@ class _HoneyToonListScreenState extends State<HoneyToonListScreen> {
               aspectRatio: 4 / 3,
               child: CachedNetworkImage(
                 imageUrl: _metaList[index].coverImgUrl,
-                placeholder: (context, url) => Image.asset(
-                    'assets/images/image_spinner.gif'),
-                errorWidget: (context, url, error) =>
-                    Icon(Icons.error),
+                placeholder: (context, url) =>
+                    Image.asset('assets/images/image_spinner.gif'),
+                errorWidget: (context, url, error) => Icon(Icons.error),
                 fit: BoxFit.cover,
               ),
             ),
@@ -156,26 +152,19 @@ class _HoneyToonListScreenState extends State<HoneyToonListScreen> {
                 child: Padding(
                     padding: EdgeInsets.all(10),
                     child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                      mainAxisAlignment:
-                          MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Text(
-                            "${_metaList[index].title}",
-                            maxLines: 1,
-                            style: TextStyle(
-                                fontSize: 12)),
+                        Text("${_metaList[index].title}",
+                            maxLines: 1, style: TextStyle(fontSize: 12)),
                         Text(
                           "${_metaList[index].displayName}",
-                          style: TextStyle(
-                              fontSize: 10,
-                              color: Colors.grey),
+                          style: TextStyle(fontSize: 10, color: Colors.grey),
                         )
                       ],
                     )))
-            ],
-          ),
+          ],
+        ),
       ),
     );
   }

@@ -92,9 +92,11 @@ class _HoneytoonListHeaderState extends State<HoneytoonListHeader> {
               scrollDirection: Axis.horizontal,
               autoPlay: true,
               onPageChanged: (index, _) {
-                setState(() {
-                  _current = index;
-                });
+                if (mounted) {
+                  setState(() {
+                    _current = index;
+                  });
+                }
               })),
     );
   }
