@@ -17,7 +17,8 @@ class HoneytoonViewScreen extends StatefulWidget {
   _HoneytoonViewScreenState createState() => _HoneytoonViewScreenState();
 }
 
-class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTickerProviderStateMixin{
+class _HoneytoonViewScreenState extends State<HoneytoonViewScreen>
+    with SingleTickerProviderStateMixin {
   final AsyncMemoizer _memoizer = AsyncMemoizer();
   ScrollController _scrollController;
   var _isVisible = true;
@@ -26,7 +27,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
   MyProvider _myProvider;
   HoneytoonContentProvider _contentProvider;
   TextEditingController _controller;
-
+  int _giftPoint = 0;
 
   @override
   void initState() {
@@ -34,16 +35,23 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
     _controller = new TextEditingController(text: '0');
     _scrollController = ScrollController();
     _scrollController.addListener(() {
-      if(_scrollController.position.userScrollDirection == ScrollDirection.reverse && _isVisible){
+      if (_scrollController.position.userScrollDirection ==
+              ScrollDirection.reverse &&
+          _isVisible) {
         setState(() {
           _isVisible = false;
         });
       }
-      if(_scrollController.position.userScrollDirection == ScrollDirection.forward && !_isVisible){
+      if (_scrollController.position.userScrollDirection ==
+              ScrollDirection.forward &&
+          !_isVisible) {
         setState(() {
           _isVisible = true;
         });
       }
+      setState(() {
+        _giftPoint = 10;
+      });
     });
   }
 
@@ -60,114 +68,132 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
         userId = uid;
       });
 
-      Current current = Current(uid: userId, workId: args['id'], contentId: args['contentId'], times: args['times'], updateTime: Timestamp.now());
+      Current current = Current(
+          uid: userId,
+          workId: args['id'],
+          contentId: args['contentId'],
+          times: args['times'],
+          updateTime: Timestamp.now());
       await _myProvider.addCurrentHoneytoon(current);
     });
-
   }
 
-  void _onTap(BuildContext context, height, String contentId, int index){
+  void _onTap(BuildContext context, height, String contentId, int index) {
     setState(() {
       print(index);
-      if(index==0){
-
-      } else if(index==1){
-        Navigator.of(context).pushNamed(HoneytoonCommentScreen.routeName, arguments: {'id': contentId });
-      } else if(index==2){
-        _modalBottomSheetMenu(height);
-      } else if(index==3){
-
-      }
+      if (index == 0) {
+      } else if (index == 1) {
+        Navigator.of(context).pushNamed(HoneytoonCommentScreen.routeName,
+            arguments: {'id': contentId});
+      } else if (index == 2) {
+        _modalBottomSheetMenu(context, height);
+      } else if (index == 3) {}
     });
   }
 
-  void _modalBottomSheetMenu(height){
-    showDialog(
+  void _modalBottomSheetMenu(context, height) {
+    showModalBottomSheet(
         context: context,
-        builder: (builder){
-          return AlertDialog(
-            content:
-          
-            new Container(
-                height: 100,
-                width: 250,
+        builder: (builder) {
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+            return Container(
+                height: height * 0.5,
                 decoration: new BoxDecoration(
                     color: Colors.white,
                     borderRadius: new BorderRadius.only(
                         topLeft: const Radius.circular(20.0),
                         topRight: const Radius.circular(20.0))),
-                child: 
-                  new Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      FlatButton.icon(onPressed: null, icon: Icon(Icons.remove), label: Text('')),
-                      Container(
-                        width: 50,
-                        child: TextField(
-                          controller : _controller,
-                          decoration: InputDecoration(
-                            border: InputBorder.none, 
-                          ),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 16),
-                          onSubmitted: null,
-                        )
-                      ),
-                      FlatButton.icon(onPressed: null, icon: Icon(Icons.add), label: Text('')),
-                    ]
-                ),
-
-                )
-          );
-        }
-    );
+                child: Column(children: [
+                  RadioListTile(
+                      value: 10,
+                      groupValue: _giftPoint,
+                      title: Text('10꿀'),
+                      selected: _giftPoint == 10,
+                      onChanged: (value) {
+                        setState(() {
+                          _giftPoint = value;
+                        });
+                      }),
+                  RadioListTile(
+                      value: 30,
+                      groupValue: _giftPoint,
+                      title: Text('30꿀'),
+                      selected: _giftPoint == 30,
+                      onChanged: (value) {
+                        print('value:$value');
+                        setState(() {
+                          _giftPoint = value;
+                        });
+                      }),
+                  RadioListTile(
+                      value: 50,
+                      groupValue: _giftPoint,
+                      title: Text('50꿀'),
+                      selected: _giftPoint == 50,
+                      onChanged: (value) {
+                        print('value:$value');
+                        setState(() {
+                          _giftPoint = value;
+                        });
+                      }),
+                  RaisedButton(
+                      color: Theme.of(context).primaryColor,
+                      onPressed: () {},
+                      child: Text(
+                        '선물하기',
+                      ))
+                ]));
+          });
+        });
   }
 
-  Widget buildImage(args){
+  Widget buildImage(args) {
     List<String> images = args['images'];
-    if(images!=null){
+    if (images != null) {
       return Container(
-        child: Column(
-            children: 
-              images.map((image) => CachedNetworkImage(
-                imageUrl: image,
-                placeholder: (context, url) => Image.asset('assets/images/image_spinner.gif'),
-                errorWidget: (context, url, error) => Icon(Icons.error),
-                fit: BoxFit.cover
-              )).toList()
-          )
-      );
+          child: Column(
+              children: images
+                  .map((image) => CachedNetworkImage(
+                      imageUrl: image,
+                      placeholder: (context, url) =>
+                          Image.asset('assets/images/image_spinner.gif'),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                      fit: BoxFit.cover))
+                  .toList()));
     } else {
       return FutureBuilder(
-        future: _contentProvider.getHoneytoonContentByTimes(args['id'], args['times']),
-        builder: (context, snapshot) {
-          if(snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator(),);
-          } else if(snapshot.hasData){
-            print('image:${snapshot.data.contentImgUrls}');
-            return Container(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  ListView.builder(
-                    padding: EdgeInsets.zero,
-                    shrinkWrap: true,
-                    itemCount: snapshot.data.contentImgUrls.length,
-                    itemBuilder: (ctx, index) => CachedNetworkImage(
-                        imageUrl: snapshot.data.contentImgUrls[index],
-                        placeholder: (context, url) => Image.asset('assets/images/image_spinner.gif'),
-                        errorWidget: (context, url, error) => Icon(Icons.error),
-                        fit: BoxFit.cover
-                      )  
-                    )
-                  ]
-                )
-            );
-          } else {
-            return Center(child: Text('허니툰을 불러오는데 문제가 발생했습니다. 잠시 후 다시 시도해주세요'),);
-          } 
-        }
-      );
+          future: _contentProvider.getHoneytoonContentByTimes(
+              args['id'], args['times']),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (snapshot.hasData) {
+              print('image:${snapshot.data.contentImgUrls}');
+              return Container(
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                    ListView.builder(
+                        padding: EdgeInsets.zero,
+                        shrinkWrap: true,
+                        itemCount: snapshot.data.contentImgUrls.length,
+                        itemBuilder: (ctx, index) => CachedNetworkImage(
+                            imageUrl: snapshot.data.contentImgUrls[index],
+                            placeholder: (context, url) =>
+                                Image.asset('assets/images/image_spinner.gif'),
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error),
+                            fit: BoxFit.cover))
+                  ]));
+            } else {
+              return Center(
+                child: Text('허니툰을 불러오는데 문제가 발생했습니다. 잠시 후 다시 시도해주세요'),
+              );
+            }
+          });
     }
   }
 
@@ -175,63 +201,63 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
   Widget build(BuildContext context) {
     final Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
     final mediaQueryData = MediaQuery.of(context);
-    final height = mediaQueryData.size.height - (mediaQueryData.padding.top + mediaQueryData.padding.bottom + 160 );
-    final width = mediaQueryData.size.width - (mediaQueryData.padding.left + mediaQueryData.padding.right);
-    _contentProvider = Provider.of<HoneytoonContentProvider>(context, listen: false);
+    final height = mediaQueryData.size.height -
+        (mediaQueryData.padding.top + mediaQueryData.padding.bottom + 160);
+    final width = mediaQueryData.size.width -
+        (mediaQueryData.padding.left + mediaQueryData.padding.right);
+    _contentProvider =
+        Provider.of<HoneytoonContentProvider>(context, listen: false);
 
     return Scaffold(
-        body: CustomScrollView(
-          controller: _scrollController,
-          slivers: [
-            SliverAppBar(
-              expandedHeight: 30,
-              backgroundColor: Colors.transparent,
-              floating: false,
-              pinned: false,
-              leading: IconButton(icon: Icon(Icons.format_list_bulleted), onPressed: (){Navigator.of(context).pop();}),
-              flexibleSpace: FlexibleSpaceBar(
-                centerTitle: true,
-                title: Text('${args['times']}화', style: TextStyle(fontSize:20),),
+        body: CustomScrollView(controller: _scrollController, slivers: [
+          SliverAppBar(
+            expandedHeight: 30,
+            backgroundColor: Colors.transparent,
+            floating: false,
+            pinned: false,
+            leading: IconButton(
+                icon: Icon(Icons.format_list_bulleted),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                }),
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: true,
+              title: Text(
+                '${args['times']}화',
+                style: TextStyle(fontSize: 20),
               ),
             ),
- 
-            SliverList(
-              delegate: SliverChildListDelegate([
-                buildImage(args)
-              ])
-            )
-           
-          ]
-        ),
-        bottomNavigationBar: _buildBottonNavigationBar(height, width, args['contentId']) 
-      );
+          ),
+          SliverList(delegate: SliverChildListDelegate([buildImage(args)]))
+        ]),
+        bottomNavigationBar:
+            _buildBottonNavigationBar(height, width, args['contentId']));
   }
 
-  Widget _buildBottonNavigationBar(height, width, contentId){
+  Widget _buildBottonNavigationBar(height, width, contentId) {
     return AnimatedContainer(
         duration: Duration(milliseconds: 500),
         height: _isVisible ? 60 : 0,
         child: _isVisible
-        ? Wrap(
-            children: [ BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            items: const <BottomNavigationBarItem>[
-              BottomNavigationBarItem(icon: Icon(Icons.arrow_back), title: Text('이전화')),
-              BottomNavigationBarItem(icon: Icon(Icons.mode_comment), title: Text('댓글')),
-              BottomNavigationBarItem(icon: Icon(Icons.attach_money), title: Text('선물하기')),
-              BottomNavigationBarItem(icon: Icon(Icons.arrow_forward), title: Text('다음화')),
-            ],
-            currentIndex: _currentIndex,
-            onTap: (index) {
-              _onTap(context, height, contentId, index);
-            },
-            ),
-          ]
-        ) 
-        : Container(
-          color: Colors.transparent,
-          width: width
-        )
-    );
+            ? Wrap(children: [
+                BottomNavigationBar(
+                  type: BottomNavigationBarType.fixed,
+                  items: const <BottomNavigationBarItem>[
+                    BottomNavigationBarItem(
+                        icon: Icon(Icons.arrow_back), title: Text('이전화')),
+                    BottomNavigationBarItem(
+                        icon: Icon(Icons.mode_comment), title: Text('댓글')),
+                    BottomNavigationBarItem(
+                        icon: Icon(Icons.attach_money), title: Text('선물하기')),
+                    BottomNavigationBarItem(
+                        icon: Icon(Icons.arrow_forward), title: Text('다음화')),
+                  ],
+                  currentIndex: _currentIndex,
+                  onTap: (index) {
+                    _onTap(context, height, contentId, index);
+                  },
+                ),
+              ])
+            : Container(color: Colors.transparent, width: width));
   }
 }

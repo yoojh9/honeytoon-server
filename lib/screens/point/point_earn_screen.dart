@@ -52,19 +52,20 @@ class _PointEarnScreenState extends State<PointEarnScreen>
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String _pointHistory = prefs.getString('point_history');
 
-    if(_pointHistory==null) return;
+    if (_pointHistory == null) return;
+    if (mounted) {
+      setState(() {
+        print(_pointHistory);
+        _history = jsonDecode(_pointHistory);
 
-    setState(() {
-      print(_pointHistory);
-      _history = jsonDecode(_pointHistory);
-
-      print('_dateKey:$_dateKey');
-      if(_history.containsKey(_dateKey)){
-        setState(() {
-          _checkPoint = _history[_dateKey];
-        }); 
-      }
-    });
+        print('_dateKey:$_dateKey');
+        if (_history.containsKey(_dateKey)) {
+          setState(() {
+            _checkPoint = _history[_dateKey];
+          });
+        }
+      });
+    }
   }
 
   void _setPref() async {

@@ -25,8 +25,11 @@ class HoneytoonMetaProvider extends ChangeNotifier {
     return _metaList;
   }
 
-  Stream<QuerySnapshot> getMyHoneytoonStream(String uid)  {
-    return Database.metaRef.where('uid', isEqualTo: uid).getDocuments().asStream();
+  Stream<QuerySnapshot> getMyHoneytoonStream(String uid) {
+    return Database.metaRef
+        .where('uid', isEqualTo: uid)
+        .getDocuments()
+        .asStream();
   }
 
   Future<HoneytoonMeta> getHoneytoonMeta(String id) async {
@@ -59,13 +62,18 @@ class HoneytoonMetaProvider extends ChangeNotifier {
   }
 
   Stream<QuerySnapshot> streamMeta(type, keyword) {
-    String sortType = type ==1 ? 'create_time' : 'likes';
-    print('streamMeta keyword: $keyword');
-    if(keyword==null || keyword==""){
-      return Database.metaRef.orderBy(sortType, descending: true).getDocuments().asStream();
-    }
-    else {
-      return Database.metaRef.where('title', isEqualTo:keyword).getDocuments().asStream();
+    String sortType = type == 1 ? 'create_time' : 'likes';
+
+    if (keyword == null || keyword == "") {
+      return Database.metaRef
+          .orderBy(sortType, descending: true)
+          .getDocuments()
+          .asStream();
+    } else {
+      return Database.metaRef
+          .where('title', isEqualTo: keyword)
+          .getDocuments()
+          .asStream();
     }
   }
 }
