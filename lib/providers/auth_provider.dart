@@ -27,27 +27,7 @@ class AuthProvider with ChangeNotifier {
       final firebaseUser = await signInWithCustomToken(firebaseToken);
 
       return firebaseUser;
-    // try {
-    //   print('kakao login start');
-    //   final installed = await isKakaoTalkInstalled();
-    //   final authCode = installed
-    //       ? await AuthCodeClient.instance.requestWithTalk()
-    //       : await AuthCodeClient.instance.request();
-    //   final token = await AuthApi.instance.issueAccessToken(authCode);
 
-    //   print('accessToken:${token.accessToken}');
-
-    //   final firebaseToken = await getFirebaseToken(token.accessToken);
-    //   final firebaseUser = await signInWithCustomToken(firebaseToken);
-
-    //   return firebaseUser;
-    // } on KakaoAuthException catch (error) {
-    //   print(error);
-    // } on KakaoClientException catch (error) {
-    //   print(error);
-    // } catch (error) {
-    //   print(error);
-    // }
   }
 
   Future<FirebaseUser> facebookLogin() async {
@@ -70,10 +50,6 @@ class AuthProvider with ChangeNotifier {
       AuthCredential credential =
           FacebookAuthProvider.getCredential(accessToken: accessToken.token);
       AuthResult authResult = await _auth.signInWithCredential(credential);
-
-      print('displayName: ${authResult.user.displayName}');
-      print(authResult.user.displayName);
-      print('user : ${authResult.user}');
 
       await addUserToDB(authResult, 'FACEBOOK', null);
 
