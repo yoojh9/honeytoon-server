@@ -17,9 +17,9 @@ class HoneytoonViewScreen extends StatefulWidget {
   _HoneytoonViewScreenState createState() => _HoneytoonViewScreenState();
 }
 
-class _HoneytoonViewScreenState extends State<HoneytoonViewScreen>
-    with SingleTickerProviderStateMixin {
+class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTickerProviderStateMixin {
   final AsyncMemoizer _memoizer = AsyncMemoizer();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   ScrollController _scrollController;
   var _isVisible = true;
   int _currentIndex = 0;
@@ -57,10 +57,10 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen>
 
   @override
   void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
     super.didChangeDependencies();
     final Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
     _myProvider = Provider.of<MyProvider>(context, listen: false);
+
 
     this._memoizer.runOnce(() async {
       final uid = await AuthProvider.getCurrentFirebaseUserUid();
@@ -71,28 +71,32 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen>
       Current current = Current(
           uid: userId,
           workId: args['id'],
-          contentId: args['contentId'],
-          times: args['times'],
+          contentId: args['data'].contentId,
+          times: args['data'].times,
           updateTime: Timestamp.now());
       await _myProvider.addCurrentHoneytoon(current);
     });
   }
 
-  void _onTap(BuildContext context, height, String contentId, int index) {
+  void _onTap(BuildContext context, height, int index, args) {
     setState(() {
       print(index);
       if (index == 0) {
       } else if (index == 1) {
         Navigator.of(context).pushNamed(HoneytoonCommentScreen.routeName,
-            arguments: {'id': contentId});
+            arguments: {'id': args['data'].contentId});
       } else if (index == 2) {
-        _modalBottomSheetMenu(context, height);
+        _modalBottomSheetMenu(context, height, args);
       } else if (index == 3) {}
     });
   }
 
+  void _submitGiftPoint(args){
+    
+  }
+
   Widget buildImage(args) {
-    List<String> images = args['images'];
+    List<String> images = args['data'].contentImgUrls;
     if (images != null) {
       return Container(
           child: Column(
@@ -107,7 +111,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen>
     } else {
       return FutureBuilder(
           future: _contentProvider.getHoneytoonContentByTimes(
-              args['id'], args['times']),
+              args['id'], args['data'].times),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(
@@ -152,6 +156,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen>
         Provider.of<HoneytoonContentProvider>(context, listen: false);
 
     return Scaffold(
+        key: _scaffoldKey,
         body: CustomScrollView(controller: _scrollController, slivers: [
           SliverAppBar(
             expandedHeight: 30,
@@ -166,7 +171,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen>
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
               title: Text(
-                '${args['times']}화',
+                '${args['data'].times}화',
                 style: TextStyle(fontSize: 20),
               ),
             ),
@@ -174,10 +179,10 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen>
           SliverList(delegate: SliverChildListDelegate([buildImage(args)]))
         ]),
         bottomNavigationBar:
-            _buildBottonNavigationBar(height, width, args['contentId']));
+            _buildBottonNavigationBar(height, width, args));
   }
 
-  Widget _buildBottonNavigationBar(height, width, contentId) {
+  Widget _buildBottonNavigationBar(height, width, args) {
     return AnimatedContainer(
         duration: Duration(milliseconds: 500),
         height: _isVisible ? 60 : 0,
@@ -197,14 +202,21 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen>
                   ],
                   currentIndex: _currentIndex,
                   onTap: (index) {
-                    _onTap(context, height, contentId, index);
+                    _onTap(context, height, index, args);
                   },
                 ),
               ])
             : Container(color: Colors.transparent, width: width));
   }
 
-  void _modalBottomSheetMenu(context, height) {
+  void _modalBottomSheetMenu(context, height, args) {
+    String authorId = args['authorId'];
+
+    if(authorId == userId){
+      _showSnackbar(context, '내가 등록한 작품에는 선물을 보낼 수 없습니다');
+      return;
+    }
+
     showModalBottomSheet(
         context: context,
         builder: (builder) {
@@ -227,7 +239,8 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen>
                         setState(() {
                           _giftPoint = value;
                         });
-                      }),
+                      }
+                  ),
                   RadioListTile(
                       value: 30,
                       groupValue: _giftPoint,
@@ -238,7 +251,8 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen>
                         setState(() {
                           _giftPoint = value;
                         });
-                      }),
+                      }
+                  ),
                   RadioListTile(
                       value: 50,
                       groupValue: _giftPoint,
@@ -249,15 +263,22 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen>
                         setState(() {
                           _giftPoint = value;
                         });
-                      }),
+                      }
+                  ),
                   RaisedButton(
                       color: Theme.of(context).primaryColor,
-                      onPressed: () {},
+                      onPressed: (){ _submitGiftPoint(args);},
                       child: Text(
                         '선물하기',
                       ))
                 ]));
           });
         });
+  }
+
+  void _showSnackbar(BuildContext context, String message){
+    _scaffoldKey.currentState.showSnackBar(
+      SnackBar(content: Text(message))
+    );
   }
 }

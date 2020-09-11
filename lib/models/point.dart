@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-enum PointType { REWARD, CHEER, GIFT, REGIST }
+enum PointType { REWARD, CHEER, GIFT_SEND, REGIST }
 
 class Point {
   String uid;

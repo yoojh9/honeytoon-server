@@ -43,4 +43,30 @@ class PointProvider extends ChangeNotifier {
         .getDocuments()
         .asStream();
   }
+
+  /*
+   * to: point를 선물받는 사용자의 uid  
+   * from: point를 선물하는 사용자의 uid
+   * point: point 값
+   */
+  Future<void> sendPoint(String to, String from, int point) async {
+    final DocumentReference toUserRef =  Database.userRef.document(to);
+    final DocumentReference fromUserRef = Database.userRef.document(from);
+    final DocumentReference toPointRef = Database.pointRef.document(to).collection('point').document();
+    final DocumentReference fromPointRef = Database.pointRef.document(from).collection('point').document();
+
+    Point toPoint = Point(targetUid: to, type: PointType.CHEER, point: point, createTime: Timestamp.now());
+    Point fromPoint = Point(targetUid: from, type: PointType.GIFT_SEND, point: -point, createTime: Timestamp.now());
+
+    Database.firestore
+        .runTransaction((transaction) async {
+          await transaction.update(toUserRef, {'honey': FieldValue.increment(point)});
+          await transaction.update(fromUserRef, {'honey': FieldValue.increment(-point)});
+          await transaction.set(toPointRef, toPoint.toJson());
+          await transaction.set(fromPointRef, fromPoint.toJson());
+        }).then((value) => print('success'))
+        .catchError((error) {
+          print(error.message);
+        });
+  }
 }

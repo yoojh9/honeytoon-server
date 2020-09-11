@@ -84,8 +84,8 @@ class PointScreen extends StatelessWidget {
       case PointType.CHEER:
         return Text('응원선물');
         break;
-      case PointType.GIFT:
-        return Text('쇼핑');
+      case PointType.GIFT_SEND:
+        return Text('선물하기');
         break;
       case PointType.REGIST:
         return Text('허니툰생성');

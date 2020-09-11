@@ -5,6 +5,7 @@ class HoneytoonContentItem {
   String contentId;
   String times;
   String coverImgUrl;
+  String authorId;
   Timestamp createTime;
   Timestamp updateTime;
   List<String> contentImgUrls;
@@ -22,9 +23,11 @@ class HoneytoonContentItem {
   }
 
   HoneytoonContentItem.fromMap(String documentId, Map snapshot){
+    print('snapshot:$snapshot');
     this.contentId = documentId;
     this.times = snapshot['times'];
     this.coverImgUrl = snapshot['cover_img'];
+    this.authorId = snapshot['uid'];
     this.contentImgUrls = List<String>.from(snapshot['content_imgs']);
     this.createTime = snapshot['create_time'];
     this.updateTime = snapshot['update_time'];

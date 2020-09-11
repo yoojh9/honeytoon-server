@@ -73,11 +73,13 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
     await _myProvider.likeHoneytoon(likeObj);
   }
 
-  void _navigateViewPage(BuildContext ctx, String workId, HoneytoonContentItem data) {
+  void _navigateViewPage(BuildContext ctx, String workId, String authorId, HoneytoonContentItem data) {
     Navigator.of(ctx).pushNamed(
       HoneytoonViewScreen.routeName,
       arguments: {
         'id': workId,
+        'data': data,
+        'authorId': authorId,
         'contentId': data.contentId,
         'images': data.contentImgUrls,
         'times': data.times,
@@ -115,8 +117,8 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
                 child: SingleChildScrollView(
                     child: Column(children: [
                       _buildHoneytoonMetaInfo(args['id'], height),
-                      _buildHoneytoonContentList(args['id'])
-                      ]
+                      _buildHoneytoonContentList(args)
+                    ]
                     )
                 )
             )
@@ -197,9 +199,9 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
         });
   }
 
-  Widget _buildHoneytoonContentList(id) {
+  Widget _buildHoneytoonContentList(args) {
     return StreamBuilder(
-      stream: _contentProvider.streamHoneytoonContents(id),
+      stream: _contentProvider.streamHoneytoonContents(args['id']),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
@@ -223,7 +225,7 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
                 child: GridTile(
                   child: GestureDetector(
                       onTap: () {
-                        _navigateViewPage(ctx, id, _contentList[index]);
+                        _navigateViewPage(ctx, args['id'], args['uid'], _contentList[index]);
                       },
                       child: CachedNetworkImage(
                           imageUrl: _contentList[index].coverImgUrl,
