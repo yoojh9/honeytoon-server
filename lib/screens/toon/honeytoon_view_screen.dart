@@ -94,7 +94,8 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
   void _submitGiftPoint(context, args) async {
     PointProvider _pointProvider = Provider.of<PointProvider>(context, listen: false);
     await _pointProvider.sendPoint(args['authorId'], userId, _giftPoint);
-    _showSnackbar(context, '작가에게 $_giftPoint를 선물했습니다.');
+    Navigator.pop(context);
+    _showSnackbar(context, '작가에게 $_giftPoint 꿀을 선물했습니다.');
   }
 
   Widget buildImage(args) {
