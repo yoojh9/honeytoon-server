@@ -50,6 +50,7 @@ class PointProvider extends ChangeNotifier {
    * point: point 값
    */
   Future<void> sendPoint(String to, String from, int point) async {
+    print('to:$to');
     final DocumentReference toUserRef =  Database.userRef.document(to);
     final DocumentReference fromUserRef = Database.userRef.document(from);
     final DocumentReference toPointRef = Database.pointRef.document(to).collection('point').document();
@@ -58,7 +59,7 @@ class PointProvider extends ChangeNotifier {
     Point toPoint = Point(targetUid: to, type: PointType.CHEER, point: point, createTime: Timestamp.now());
     Point fromPoint = Point(targetUid: from, type: PointType.GIFT_SEND, point: -point, createTime: Timestamp.now());
 
-    Database.firestore
+    await Database.firestore
         .runTransaction((transaction) async {
           await transaction.update(toUserRef, {'honey': FieldValue.increment(point)});
           await transaction.update(fromUserRef, {'honey': FieldValue.increment(-point)});

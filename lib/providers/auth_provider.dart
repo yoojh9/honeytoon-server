@@ -51,7 +51,13 @@ class AuthProvider with ChangeNotifier {
           FacebookAuthProvider.getCredential(accessToken: accessToken.token);
       AuthResult authResult = await _auth.signInWithCredential(credential);
 
-      await addUserToDB(authResult, 'FACEBOOK', null);
+      await _db.collection('users').document(authResult.user.uid).get().then((snapshot) => {
+      if (snapshot.exists) {
+        updateUserToDB(User.fromMap(snapshot.documentID, snapshot.data), 'FACEBOOK', )
+      } else {
+        addUserToDB(authResult, null, 'FACEBOOK')
+      }
+      });
 
       print('success');
       return authResult.user;
@@ -68,12 +74,24 @@ class AuthProvider with ChangeNotifier {
     return authResult;
   }
 
-  Future<void> addUserToDB(AuthResult authResult, String providerType, User user) async {
+  Future<void> addUserToDB(AuthResult authResult, User user, String providerType) async {
     await _db.collection('users').document(authResult.user.uid).setData({
-        'displayName': user == null ? authResult.user.displayName : user.displayName,
-        'email': user == null ? authResult.user.email : user.email,
+      'displayName': user==null ? authResult.user.displayName : user.displayName,
+      'email': user==null ? authResult.user.email : user.email,
+      'honey': 0,
+      'rank': -1,
+      'provider': providerType,
+      'thumbnail': user==null ? authResult.user.photoUrl : user.thumbnail,
+      'update_time': Timestamp.now()
+    });
+  }
+
+  Future<void> updateUserToDB(User user, String providerType,) async {
+    await _db.collection('users').document(user.uid).updateData({
+        'displayName': user.displayName,
+        'email': user.email,
         'provider': providerType,
-        'thumbnail': user == null ? authResult.user.photoUrl : user.thumbnail,
+        'thumbnail': user.thumbnail,
         'update_time': Timestamp.now(),
     });
   }

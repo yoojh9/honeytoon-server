@@ -60,7 +60,7 @@ class _AuthJoinScreenState extends State<AuthJoinScreen> {
           StorageType.USER_THUMBNAIL, authResult.user.uid, _thumbnail);
       user.thumbnail = thumbnailUrl;
 
-      await _authProvider.addUserToDB(authResult, 'EMAIL', user);
+      await _authProvider.addUserToDB(authResult, user, 'EMAIL');
       if (!_disposed) {
         setState(() {
           _isLoading = false;

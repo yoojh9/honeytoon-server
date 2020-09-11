@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:honeytoon/models/current.dart';
 import 'package:honeytoon/providers/honeytoon_content_provider.dart';
+import 'package:honeytoon/providers/point_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/my_provider.dart';
 import 'package:provider/provider.dart';
@@ -80,7 +81,6 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
 
   void _onTap(BuildContext context, height, int index, args) {
     setState(() {
-      print(index);
       if (index == 0) {
       } else if (index == 1) {
         Navigator.of(context).pushNamed(HoneytoonCommentScreen.routeName,
@@ -91,8 +91,10 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
     });
   }
 
-  void _submitGiftPoint(args){
-    
+  void _submitGiftPoint(context, args) async {
+    PointProvider _pointProvider = Provider.of<PointProvider>(context, listen: false);
+    await _pointProvider.sendPoint(args['authorId'], userId, _giftPoint);
+    _showSnackbar(context, '작가에게 $_giftPoint를 선물했습니다.');
   }
 
   Widget buildImage(args) {
@@ -267,7 +269,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
                   ),
                   RaisedButton(
                       color: Theme.of(context).primaryColor,
-                      onPressed: (){ _submitGiftPoint(args);},
+                      onPressed: (){ _submitGiftPoint(context, args);},
                       child: Text(
                         '선물하기',
                       ))
