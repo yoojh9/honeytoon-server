@@ -63,7 +63,7 @@ class PointScreen extends StatelessWidget {
                         )),
                         title: Text('${snapshot.data[index].point}꿀'),
                         subtitle: Row(children: [
-                          _buildPointType(snapshot.data[index]),
+                          _buildPointType(snapshot.data[index], snapshot.data[index].otherDisplayName),
                           Spacer(),
                           Text(
                               '${DateFormatHelper.getDateTime(snapshot.data[index].createTime)}'),
@@ -76,19 +76,19 @@ class PointScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPointType(data) {
+  Widget _buildPointType(data, otherName) {
     switch (data.type) {
       case PointType.REWARD:
         return Text('출석체크');
         break;
       case PointType.CHEER:
-        return Text('응원선물');
+        return Text('응원선물 (from: $otherName)');
         break;
       case PointType.GIFT_SEND:
-        return Text('선물하기');
+        return Text('선물하기 (to: $otherName)');
         break;
       case PointType.REGIST:
-        return Text('허니툰생성');
+        return Text('허니툰생성 (from: $otherName)');
       default:
         return null;
     }
