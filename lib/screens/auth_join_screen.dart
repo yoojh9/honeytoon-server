@@ -43,7 +43,6 @@ class _AuthJoinScreenState extends State<AuthJoinScreen> {
   }
 
   void _submitForm(BuildContext ctx) async {
-    print('submitForm');
     AuthResult authResult;
     try {
       final _isValid = _formKey.currentState.validate();

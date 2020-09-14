@@ -59,7 +59,6 @@ class _ShoppingItemScreenState extends State<ShoppingItemScreen> {
   Widget build(BuildContext context) {
     final Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
     final product = args['product'];
-    print('product : $product');
     final mediaQueryData = MediaQuery.of(context);
     final height = mediaQueryData.size.height -
         (kToolbarHeight + kBottomNavigationBarHeight);

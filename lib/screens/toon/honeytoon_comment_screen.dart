@@ -19,10 +19,8 @@ class _HoneytoonCommentScreenState extends State<HoneytoonCommentScreen> {
 
   void _handleSubmitted(String id, String text) async {
     try {
-      print('id=$id');
       final user = await FirebaseAuth.instance.currentUser();
       Comment comment = Comment(toonId: id, uid: user.uid, comment: text, createTime: Timestamp.now());
-      print(comment);
       _commentProvider.setComment(comment);
       _textController.clear();
     } catch(error){
