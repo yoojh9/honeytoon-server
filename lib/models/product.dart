@@ -5,7 +5,7 @@ class Product {
   String brandName;
   String content;
   String contentAddDesc;
-  int realPrice;
+  int honey;
   String image;
   String validPrdDay;
 
@@ -16,7 +16,7 @@ class Product {
       this.brandName,
       this.content,
       this.contentAddDesc,
-      this.realPrice,
+      this.honey,
       this.image,
       this.validPrdDay});
 
@@ -38,8 +38,8 @@ class Product {
     if (snapshot['contentAddDesc'] != null) {
       this.contentAddDesc = snapshot['contentAddDesc'];
     }
-    if (snapshot['realPrice'] != null) {
-      this.realPrice = snapshot['realPrice'];
+    if (snapshot['honey'] != null) {
+      this.honey = snapshot['honey'];
     }
     if (snapshot['goodsImgS'] != null) {
       this.image = snapshot['goodsImgS'];

@@ -105,7 +105,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                                   title: Row(children: [
                                     Text('${snapshot.data[index].brandName}'),
                                     Spacer(),
-                                    Text('${snapshot.data[index].realPrice}원'),
+                                    Text('${snapshot.data[index].honey}꿀'),
                                   ]),
                                   subtitle:
                                       Text('${snapshot.data[index].name}'),

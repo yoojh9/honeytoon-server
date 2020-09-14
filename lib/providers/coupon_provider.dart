@@ -35,8 +35,8 @@ class CouponProvider extends ChangeNotifier {
           final data = body['result']['result'];
 
           await transaction.update(couponRef, {'success':'Y','orderNo': data['orderNo'], 'pinNo': data['pinNo'], 'couponImgUrl': data['couponImgUrl'], 'validDate': validDate});
-          await transaction.update(userRef, {'honey': FieldValue.increment(-(product.realPrice))});
-          await transaction.set(pointRef, {'create_time': Timestamp.now(), 'point': -product.realPrice, 'type': 2});
+          await transaction.update(userRef, {'honey': FieldValue.increment(-(product.honey))});
+          await transaction.set(pointRef, {'create_time': Timestamp.now(), 'point': -product.honey, 'type': 2});
         });
       } else {
         await couponRef.updateData({'success':'N', 'response': body['result']});

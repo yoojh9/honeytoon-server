@@ -37,7 +37,7 @@ class _ShoppingItemScreenState extends State<ShoppingItemScreen> {
   }
 
   void _tapBuyCouponBtn(ctx, product) async {
-    if(_user.honey < product.realPrice) {
+    if(_user.honey < product.honey) {
       _showSnackbar(ctx, '해당 상품을 구매할 수 없습니다.');
     } else {
       await Provider.of<CouponProvider>(ctx, listen: false).buyCoupon(_user, product);
@@ -92,7 +92,7 @@ class _ShoppingItemScreenState extends State<ShoppingItemScreen> {
                                   fontWeight: FontWeight.bold),
                             ),
                             Text('${product.name}'),
-                            Text('${product.realPrice}원'),
+                            Text('${product.honey}꿀'),
                           ]
                       )
                     ],
@@ -106,10 +106,10 @@ class _ShoppingItemScreenState extends State<ShoppingItemScreen> {
           )
         ),
       bottomNavigationBar: Container(
-          color: isPurchaseable(product.realPrice) ? Theme.of(context).primaryColor : Colors.grey,
+          color: isPurchaseable(product.honey) ? Theme.of(context).primaryColor : Colors.grey,
           height: kBottomNavigationBarHeight,
           child: InkWell(
-              onTap: isPurchaseable(product.realPrice) ? (){ _tapBuyCouponBtn(context, product); } : null,
+              onTap: isPurchaseable(product.honey) ? (){ _tapBuyCouponBtn(context, product); } : null,
               child: Center(
                 child: Text('구매하기'),
               ))),
