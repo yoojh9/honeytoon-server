@@ -55,8 +55,8 @@ class PointProvider extends ChangeNotifier {
     final DocumentReference toPointRef = Database.pointRef.document(to).collection('point').document();
     final DocumentReference fromPointRef = Database.pointRef.document(from).collection('point').document();
 
-    Point toPoint = Point(targetUid: to, type: PointType.CHEER, point: point, createTime: Timestamp.now());
-    Point fromPoint = Point(targetUid: from, type: PointType.GIFT_SEND, point: -point, createTime: Timestamp.now());
+    Point toPoint = Point(otherUid: from, type: PointType.CHEER, point: point, createTime: Timestamp.now());
+    Point fromPoint = Point(otherUid: to, type: PointType.GIFT_SEND, point: -point, createTime: Timestamp.now());
 
     await Database.firestore
         .runTransaction((transaction) async {

@@ -6,12 +6,18 @@ import '../models/honeytoonMeta.dart';
 class HoneytoonMetaProvider extends ChangeNotifier {
   List<HoneytoonMeta> _metaList;
 
-  Future<List<HoneytoonMeta>> getHoneytoonMetaList() async {
-    QuerySnapshot result = await Database.metaRef.getDocuments();
-    _metaList = result.documents
-        .map((document) =>
-            HoneytoonMeta.fromMap(document.data, document.documentID))
-        .toList();
+  Future<List<HoneytoonMeta>> getHoneytoonMetaList(type, keyword) async {
+    String sortType = type == 1 ? 'create_time' : 'likes';
+    List<HoneytoonMeta> _metaList;
+    QuerySnapshot listSnapshot = (keyword == null || keyword == "") ? 
+      await Database.metaRef.orderBy(sortType, descending: true).getDocuments() :
+      await Database.metaRef.where('title', isEqualTo: keyword).getDocuments();
+
+    _metaList = await Future.wait(listSnapshot.documents.map((item) async {
+      DocumentSnapshot userSnapshot = await Database.userRef.document(item.data['uid']).get();
+      return HoneytoonMeta.fromMapWithAuthor(item.documentID, item.data, userSnapshot.data);
+    }).toList());
+
     return _metaList;
   }
 
@@ -33,9 +39,11 @@ class HoneytoonMetaProvider extends ChangeNotifier {
   }
 
   Future<HoneytoonMeta> getHoneytoonMeta(String id) async {
-    DocumentSnapshot snapshot = await Database.metaRef.document(id).get();
+    DocumentSnapshot metaSnapshot = await Database.metaRef.document(id).get();
+    String authorId = metaSnapshot.data['uid'];
+    DocumentSnapshot userSnapshot = await Database.userRef.document(authorId).get();
     HoneytoonMeta honeytoonMeta =
-        HoneytoonMeta.fromMap(snapshot.data, snapshot.documentID);
+        HoneytoonMeta.fromMapWithAuthor(metaSnapshot.documentID, metaSnapshot.data, userSnapshot.data);
     return honeytoonMeta;
   }
 

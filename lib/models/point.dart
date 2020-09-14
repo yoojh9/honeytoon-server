@@ -7,7 +7,7 @@ class Point {
   String pointId;
   PointType type;
   int point;
-  String targetUid;
+  String otherUid;
   Timestamp createTime;
 
   Point(
@@ -15,7 +15,7 @@ class Point {
       this.pointId,
       this.type,
       this.point,
-      this.targetUid,
+      this.otherUid,
       this.createTime});
 
   Map<String, dynamic> toJson() {
@@ -26,8 +26,8 @@ class Point {
     if (this.point != null) {
       data['point'] = this.point;
     }
-    if (this.targetUid != null) {
-      data['target_uid'] = this.targetUid;
+    if (this.otherUid != null) {
+      data['otherUid'] = this.otherUid;
     }
     if (this.createTime != null) {
       data['create_time'] = this.createTime;
@@ -43,8 +43,8 @@ class Point {
     if (snapshot['point'] != 0) {
       this.point = snapshot['point'];
     }
-    if (snapshot['target_uid'] != null) {
-      this.targetUid = snapshot['target_uid'];
+    if (snapshot['otherUid'] != null) {
+      this.otherUid = snapshot['otherUid'];
     }
     if (snapshot['create_time'] != null) {
       this.createTime = snapshot['create_time'];

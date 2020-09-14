@@ -97,23 +97,18 @@ class _HoneyToonListScreenState extends State<HoneyToonListScreen> {
     return Container(
       margin: EdgeInsets.only(top: 16),
       height: height * 0.6,
-      child: StreamBuilder(
-          stream: _metaProvider.streamMeta(sort, _keyword),
+      child: FutureBuilder(
+          future: _metaProvider.getHoneytoonMetaList(sort, _keyword),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasData && snapshot.data.documents.length > 0) {
-              _metaList = snapshot.data.documents
-                  .map((item) =>
-                      HoneytoonMeta.fromMap(item.data, item.documentID))
-                  .toList();
-
+            } else if (snapshot.hasData && snapshot.data.length > 0) {
               return GridView.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3, childAspectRatio: 8 / 10),
-                  itemCount: _metaList.length,
+                  itemCount: snapshot.data.length,
                   itemBuilder: (_, index) {
-                    return _buildHoneytoonItem(index);
+                    return _buildHoneytoonItem(snapshot.data[index]);
                   });
             } else {
               return Center(child: Text('허니툰을 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요'));
@@ -122,13 +117,13 @@ class _HoneyToonListScreenState extends State<HoneyToonListScreen> {
     );
   }
 
-  Widget _buildHoneytoonItem(index) {
+  Widget _buildHoneytoonItem(data) {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pushNamed(HoneytoonDetailScreen.routeName,
             arguments: {
-              'id': _metaList[index].workId,
-              'uid': _metaList[index].uid
+              'id': data.workId,
+              'uid': data.uid
             });
       },
       child: Card(
@@ -139,7 +134,7 @@ class _HoneyToonListScreenState extends State<HoneyToonListScreen> {
             AspectRatio(
               aspectRatio: 4 / 3,
               child: CachedNetworkImage(
-                imageUrl: _metaList[index].coverImgUrl,
+                imageUrl: data.coverImgUrl,
                 placeholder: (context, url) =>
                     Image.asset('assets/images/image_spinner.gif'),
                 errorWidget: (context, url, error) => Icon(Icons.error),
@@ -153,10 +148,10 @@ class _HoneyToonListScreenState extends State<HoneyToonListScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Text("${_metaList[index].title}",
+                        Text("${data.title}",
                             maxLines: 1, style: TextStyle(fontSize: 12)),
                         Text(
-                          "${_metaList[index].displayName}",
+                          "${data.displayName}",
                           style: TextStyle(fontSize: 10, color: Colors.grey),
                         )
                       ],

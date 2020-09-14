@@ -45,7 +45,6 @@ class _AddContentMetaScreenState extends State<AddContentMetaScreen> {
 
       String downloadUrl = await Storage.uploadImageToStorage(StorageType.META_COVER, user.uid, _coverImage);
       honeytoonMeta.coverImgUrl = downloadUrl;
-      honeytoonMeta.displayName = user.displayName;
       honeytoonMeta.uid = user.uid;
       honeytoonMeta.createTime = Timestamp.now();
       honeytoonMeta.totalCount = 0;

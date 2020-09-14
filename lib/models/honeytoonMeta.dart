@@ -35,6 +35,20 @@ class HoneytoonMeta {
     this.createTime = snapshot['create_time'];
   }
 
+  HoneytoonMeta.fromMapWithAuthor(String documentId, Map metaSnapshot, Map authorSnapshot) {
+    this.workId = documentId;
+    if(metaSnapshot['uid']!=null){
+      this.uid = metaSnapshot['uid'];
+    }
+    this.title = metaSnapshot['title'];
+    this.description = metaSnapshot['description'];
+    this.displayName = authorSnapshot['displayName'];
+    this.coverImgUrl = metaSnapshot['cover_img'];
+    this.likes = metaSnapshot['likes'];
+    this.totalCount = metaSnapshot['total_count'];
+    this.createTime = metaSnapshot['create_time'];
+  }
+
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     if(this.uid!=null) {
@@ -45,9 +59,6 @@ class HoneytoonMeta {
     }
     if(this.description!=null){
       data['description'] = this.description;
-    }
-    if(this.displayName!=null){
-      data['displayName'] = this.displayName;
     }
     if(this.coverImgUrl!=null){
       data['cover_img'] = this.coverImgUrl;
