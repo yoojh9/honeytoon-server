@@ -79,10 +79,7 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
       arguments: {
         'id': workId,
         'data': data,
-        'authorId': authorId,
-        'contentId': data.contentId,
         'images': data.contentImgUrls,
-        'times': data.times,
       }
     );
   }

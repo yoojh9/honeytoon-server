@@ -99,7 +99,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
   }
 
   Widget buildImage(args) {
-    List<String> images = args['data'].contentImgUrls;
+    List<String> images = args['images'];
     if (images != null) {
       return Container(
           child: Column(
