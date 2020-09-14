@@ -14,22 +14,34 @@ class AuthScreen extends StatefulWidget {
 class _AuthScreenState extends State<AuthScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   var user;
+  var _loading = false;
+
 
   void _loginKakao(BuildContext ctx) async {
     try {
+      setState(() {
+        _loading = true;
+      });
       user = await FirebaseAuth.instance.currentUser();
       if (user == null) {
         user = await Provider.of<AuthProvider>(context, listen: false).kakaoLogin();
-      }
-      Navigator.of(ctx).pop(user);
+      }     
+      Navigator.of(ctx).pop(user);      
     } catch(error){
       _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('카카오톡으로 로그인을 진행할 수 없습니다.'), duration: Duration(seconds: 2),));
       print(error);
+    } finally {
+      setState(() {
+        _loading = false;
+      });
     }
   }
 
   void _loginFacebook(BuildContext ctx) async {
     try {
+      setState(() {
+        _loading = true;
+      });
       user = await FirebaseAuth.instance.currentUser();
       if (user == null) {
         user = await Provider.of<AuthProvider>(context, listen: false)
@@ -38,6 +50,10 @@ class _AuthScreenState extends State<AuthScreen> {
     Navigator.of(ctx).pop(user);
     } catch(error){
       print(error);
+    } finally {
+      setState(() {
+        _loading = false;
+      });
     }
   }
 
@@ -53,7 +69,10 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
         body: Padding(
           padding: EdgeInsets.symmetric(vertical: 18, horizontal: 16),
-          child: Column(
+          child: 
+          _loading 
+          ? Center(child: CircularProgressIndicator(),)
+          : Column(
             children: <Widget>[
               Expanded(
                 flex: 1,
