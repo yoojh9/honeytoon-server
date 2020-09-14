@@ -6,7 +6,8 @@ class Current {
   String contentId;
   String title;
   String coverImgUrl;
-  String authName;
+  String authorName;
+  String authorId;
   String times;
   int totalCount;
   Timestamp updateTime;
@@ -37,7 +38,10 @@ class Current {
       this.coverImgUrl = toonSnapshot['cover_img'];
     }
     if (toonSnapshot['displayName'] != null) {
-      this.authName = toonSnapshot['displayName'];
+      this.authorName = toonSnapshot['displayName'];
+    }
+    if(toonSnapshot['uid']!=null){
+      this.authorId = toonSnapshot['uid'];
     }
     if (toonSnapshot['total_count'] != null) {
       this.totalCount = toonSnapshot['total_count'];

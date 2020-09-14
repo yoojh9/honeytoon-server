@@ -17,6 +17,7 @@ class CurrentToonItem extends StatelessWidget {
   _navigateViewPage(BuildContext ctx) {
     Navigator.of(ctx).pushNamed(HoneytoonViewScreen.routeName, arguments: {
       'id': data.workId,
+      'authorId': data.authorId,
       'data': data,
       'total': data.totalCount,
       'images': null,
@@ -56,7 +57,7 @@ class CurrentToonItem extends StatelessWidget {
                           fontSize: 20,
                         ),
                       ),
-                      Text('${data.authName}'),
+                      Text('${data.authorName}'),
                       Text('${data.times}화')
                     ]),
               )),

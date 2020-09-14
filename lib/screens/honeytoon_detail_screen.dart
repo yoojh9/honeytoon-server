@@ -75,10 +75,12 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
   }
 
   void _navigateViewPage(BuildContext ctx, String workId, String authorId, HoneytoonContentItem data) {
+    print('authorId: $authorId');
     Navigator.of(ctx).pushNamed(
       HoneytoonViewScreen.routeName,
       arguments: {
         'id': workId,
+        'authorId': authorId,
         'data': data,
         'total': totalCount,
         'images': data.contentImgUrls,
