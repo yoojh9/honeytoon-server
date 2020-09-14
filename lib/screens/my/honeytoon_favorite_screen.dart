@@ -26,7 +26,6 @@ class _HoneytoonFavoriteScreenState extends State<HoneytoonFavoriteScreen> {
       if(!_disposed){
         setState(() {
           userId = uid;
-          print('setUserId');
         });
       }
     });
@@ -66,7 +65,6 @@ class _HoneytoonFavoriteScreenState extends State<HoneytoonFavoriteScreen> {
         future: _myProvider.getLikeHoneytoon(userId),
         builder: (context, snapshot) {
           if(snapshot.hasData && snapshot.data!=null && snapshot.data.length > 0){
-             print('data:${snapshot.data}');
           return  SingleChildScrollView(
             child: 
             ListView.builder(

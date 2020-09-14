@@ -145,7 +145,6 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
                 child: CircularProgressIndicator(),
               );
             } else if (snapshot.hasData) {
-              print('image:${snapshot.data.contentImgUrls}');
               return Container(
                   child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -274,7 +273,6 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
                       title: Text('30꿀'),
                       selected: _giftPoint == 30,
                       onChanged: (value) {
-                        print('value:$value');
                         setState(() {
                           _giftPoint = value;
                         });
@@ -286,7 +284,6 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
                       title: Text('50꿀'),
                       selected: _giftPoint == 50,
                       onChanged: (value) {
-                        print('value:$value');
                         setState(() {
                           _giftPoint = value;
                         });

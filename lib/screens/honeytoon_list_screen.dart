@@ -64,11 +64,9 @@ class _HoneyToonListScreenState extends State<HoneyToonListScreen> {
   }
 
   void _changeKeyword(keyword) {
-    print('_changeKeyword');
     setState(() {
       _keyword = keyword;
     });
-    print('setState()');
   }
 
   @override

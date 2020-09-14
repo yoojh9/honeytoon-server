@@ -25,7 +25,6 @@ class _HoneytoonCurrentScreenState extends State<HoneytoonCurrentScreen> {
       final uid = await AuthProvider.getCurrentFirebaseUserUid();
       setState(() {
         userId = uid;
-        print('setUserId');
       });
     });
   }
@@ -57,7 +56,6 @@ class _HoneytoonCurrentScreenState extends State<HoneytoonCurrentScreen> {
         future: _myProvider.getCurrentHoneytoon(userId),
         builder: (context, snapshot) {
           if(snapshot.hasData && snapshot.data!=null && snapshot.data.length > 0){
-             print('data:${snapshot.data}');
           return  SingleChildScrollView(
             child: 
             ListView.builder(

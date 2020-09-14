@@ -55,10 +55,7 @@ class _PointEarnScreenState extends State<PointEarnScreen>
     if (_pointHistory == null) return;
     if (mounted) {
       setState(() {
-        print(_pointHistory);
         _history = jsonDecode(_pointHistory);
-
-        print('_dateKey:$_dateKey');
         if (_history.containsKey(_dateKey)) {
           setState(() {
             _checkPoint = _history[_dateKey];

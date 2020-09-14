@@ -38,7 +38,6 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
 
   @override
   void didChangeDependencies() {
-    print('didChangeDependencies()');
     super.didChangeDependencies();
     final Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
     _myProvider = Provider.of<MyProvider>(context, listen: false);
