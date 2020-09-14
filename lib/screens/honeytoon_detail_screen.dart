@@ -28,6 +28,7 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
   bool like = false;
   String userId;
   List<dynamic> _contentList = [];
+  int totalCount = 0;
 
 
   @override
@@ -79,6 +80,7 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
       arguments: {
         'id': workId,
         'data': data,
+        'total': totalCount,
         'images': data.contentImgUrls,
       }
     );
@@ -150,6 +152,7 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Container();
           } else if (snapshot.hasData) {
+            totalCount = snapshot.data.totalCount;
             return Container(
                 height: height * 0.4,
                 child: Column(

@@ -61,7 +61,6 @@ class _MyHoneytoonListViewState extends State<MyHoneytoonListView> {
               shrinkWrap: true,
               itemCount: snapshot.data.documents.length,
               itemBuilder: (_, index) {
-                print('snapshot.data: ${_myHoneytoon[index]}');
                 var data = _myHoneytoon[index];
                 return Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),

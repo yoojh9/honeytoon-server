@@ -62,7 +62,6 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
     final Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
     _myProvider = Provider.of<MyProvider>(context, listen: false);
 
-
     this._memoizer.runOnce(() async {
       final uid = await AuthProvider.getCurrentFirebaseUserUid();
       setState(() {
@@ -82,12 +81,15 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
   void _onTap(BuildContext context, height, int index, args) {
     setState(() {
       if (index == 0) {
+        _prevOrNextPage(context, args, -1);
       } else if (index == 1) {
         Navigator.of(context).pushNamed(HoneytoonCommentScreen.routeName,
             arguments: {'id': args['data'].contentId});
       } else if (index == 2) {
         _modalBottomSheetMenu(context, height, args);
-      } else if (index == 3) {}
+      } else if (index == 3) {
+        _prevOrNextPage(context, args, 1);
+      }
     });
   }
 
@@ -96,6 +98,28 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
     await _pointProvider.sendPoint(args['authorId'], userId, _giftPoint);
     Navigator.pop(context);
     _showSnackbar(context, '작가에게 $_giftPoint 꿀을 선물했습니다.');
+  }
+
+  void _prevOrNextPage(BuildContext ctx, args, timesIncrement) {
+    int times = int.parse(args['data'].times) + timesIncrement;
+    if(times == 0) {
+      _showSnackbar(context, '이전화가 없습니다.');
+      return;
+    } else if(times > args['total']){
+      _showSnackbar(context, '마지막 화 입니다.');
+      return;
+    } else {
+      args['data'].times = times.toString();
+      Navigator.of(ctx).pushNamed(
+        HoneytoonViewScreen.routeName,
+        arguments: {
+          'id': args['id'],
+          'data': args['data'],
+          'total': args['total'],
+          'images':null,
+        }
+      );
+    }
   }
 
   Widget buildImage(args) {
@@ -195,7 +219,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
                   type: BottomNavigationBarType.fixed,
                   items: const <BottomNavigationBarItem>[
                     BottomNavigationBarItem(
-                        icon: Icon(Icons.arrow_back), title: Text('이전화')),
+                        icon: Icon(Icons.arrow_back), title: Text('이전화'),),
                     BottomNavigationBarItem(
                         icon: Icon(Icons.mode_comment), title: Text('댓글')),
                     BottomNavigationBarItem(

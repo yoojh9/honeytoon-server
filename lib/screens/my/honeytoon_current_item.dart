@@ -18,6 +18,7 @@ class CurrentToonItem extends StatelessWidget {
     Navigator.of(ctx).pushNamed(HoneytoonViewScreen.routeName, arguments: {
       'id': data.workId,
       'data': data,
+      'total': data.totalCount,
       'images': null,
     });
   }

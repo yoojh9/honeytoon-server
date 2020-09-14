@@ -8,6 +8,7 @@ class Current {
   String coverImgUrl;
   String authName;
   String times;
+  int totalCount;
   Timestamp updateTime;
 
   Current({this.uid, this.workId, this.contentId, this.times, this.updateTime});
@@ -37,6 +38,9 @@ class Current {
     }
     if (toonSnapshot['displayName'] != null) {
       this.authName = toonSnapshot['displayName'];
+    }
+    if (toonSnapshot['total_count'] != null) {
+      this.totalCount = toonSnapshot['total_count'];
     }
   }
 }
