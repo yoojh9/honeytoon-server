@@ -8,6 +8,7 @@ import 'package:honeytoon/providers/auth_provider.dart';
 import 'package:honeytoon/providers/honeytoon_content_provider.dart';
 import 'package:honeytoon/providers/honeytoon_meta_provider.dart';
 import 'package:honeytoon/providers/my_provider.dart';
+import 'package:honeytoon/screens/template_screen.dart';
 import './toon/honeytoon_view_screen.dart';
 import './my/add_content_screen.dart';
 import 'package:provider/provider.dart';
@@ -103,7 +104,7 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
           leading: IconButton(
               icon: Icon(Icons.arrow_back),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pushNamed(TemplateScreen.routeName);
               }),
           actions: <Widget>[             
             _buildHeaderIcon(context, userId, args)

@@ -5,6 +5,7 @@ import 'package:flutter/rendering.dart';
 import 'package:honeytoon/models/current.dart';
 import 'package:honeytoon/providers/honeytoon_content_provider.dart';
 import 'package:honeytoon/providers/point_provider.dart';
+import 'package:honeytoon/screens/honeytoon_detail_screen.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/my_provider.dart';
 import 'package:provider/provider.dart';
@@ -81,14 +82,14 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
   void _onTap(BuildContext context, height, int index, args) {
     setState(() {
       if (index == 0) {
-        _prevOrNextPage(context, args, -1);
+        _navigateOtherPage(context, args, -1);
       } else if (index == 1) {
         Navigator.of(context).pushNamed(HoneytoonCommentScreen.routeName,
             arguments: {'id': args['data'].contentId});
       } else if (index == 2) {
         _modalBottomSheetMenu(context, height, args);
       } else if (index == 3) {
-        _prevOrNextPage(context, args, 1);
+        _navigateOtherPage(context, args, 1);
       }
     });
   }
@@ -100,7 +101,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
     _showSnackbar(context, '작가에게 $_giftPoint 꿀을 선물했습니다.');
   }
 
-  void _prevOrNextPage(BuildContext ctx, args, timesIncrement) {
+  void _navigateOtherPage(BuildContext ctx, args, timesIncrement) {
     int times = int.parse(args['data'].times) + timesIncrement;
     if(times == 0) {
       _showSnackbar(context, '이전화가 없습니다.');
@@ -120,6 +121,14 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
         }
       );
     }
+  }
+
+  void _navigateDetailPage(BuildContext ctx, workId){
+    Navigator.of(context).pushNamed(HoneytoonDetailScreen.routeName,
+    arguments: {
+      'id': workId,
+      'uid': userId
+    });
   }
 
   Widget buildImage(args) {
@@ -192,7 +201,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
             leading: IconButton(
                 icon: Icon(Icons.format_list_bulleted),
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  _navigateDetailPage(context, args['id']);
                 }),
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
