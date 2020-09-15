@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:honeytoon/models/current.dart';
+import 'package:honeytoon/models/user.dart';
 import 'package:honeytoon/providers/honeytoon_content_provider.dart';
 import 'package:honeytoon/providers/point_provider.dart';
 import 'package:honeytoon/screens/honeytoon_detail_screen.dart';
@@ -25,11 +26,12 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
   ScrollController _scrollController;
   var _isVisible = true;
   int _currentIndex = 0;
+  int _giftPoint = 0;
   String userId;
   MyProvider _myProvider;
   HoneytoonContentProvider _contentProvider;
   TextEditingController _controller;
-  int _giftPoint = 0;
+
 
   @override
   void initState() {
@@ -97,10 +99,18 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
   }
 
   void _submitGiftPoint(context, args) async {
+    AuthProvider  _authProvider = Provider.of<AuthProvider>(context, listen: false);
     PointProvider _pointProvider = Provider.of<PointProvider>(context, listen: false);
-    await _pointProvider.sendPoint(args['authorId'], userId, _giftPoint);
-    Navigator.pop(context);
-    _showSnackbar(context, '작가에게 $_giftPoint 꿀을 선물했습니다.');
+
+    User user = await _authProvider.getUserFromDB();
+    if(user.honey < _giftPoint) {
+      Navigator.pop(context);
+      _showSnackbar(context, '보유한 꿀단지 수가 부족하여 선물할 수 없습니다.');
+    } else {
+      await _pointProvider.sendPoint(args['authorId'], userId, _giftPoint);
+      Navigator.pop(context);
+      _showSnackbar(context, '작가에게 $_giftPoint 꿀을 선물했습니다.');
+    }
   }
 
   void _navigateOtherPage(BuildContext ctx, args, timesIncrement) {

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -95,11 +96,22 @@ class _HoneytoonCommentScreenState extends State<HoneytoonCommentScreen> {
               itemCount: snapshot.data.length,
               padding: EdgeInsets.symmetric(vertical: 16),
               itemBuilder: (ctx, index) => ListTile(
-                contentPadding: EdgeInsets.symmetric(vertical: 6),
-                leading: CircleAvatar(
-                  radius: 30,
-                  backgroundImage: NetworkImage(snapshot.data[index].thumbnail),
+                contentPadding: EdgeInsets.symmetric(vertical: 6), 
+                leading: ClipRRect(
+                  borderRadius: BorderRadius.circular(50),
+                  child: CachedNetworkImage(
+                      width: 50,
+                      height: 50,
+                      imageUrl: snapshot.data[index].thumbnail,
+                      placeholder: (context, url) => Image.asset('assets/images/avatar_placeholder.png',),
+                      errorWidget: (context, url, error) => Image.asset('assets/images/avatar_placeholder.png'),
+                      fit: BoxFit.fill,
+                    ), 
                 ),
+                // leading: CircleAvatar(
+                //   radius: 30,
+                //   backgroundImage: NetworkImage(snapshot.data[index].thumbnail),
+                // ),
                 title: Container(
                   child: Row(
                     children: <Widget>[
