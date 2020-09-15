@@ -60,11 +60,13 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    print('didChangeDependencies');
     final Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
     _myProvider = Provider.of<MyProvider>(context, listen: false);
 
     this._memoizer.runOnce(() async {
       final uid = await AuthProvider.getCurrentFirebaseUserUid();
+      print('uid=$uid');
       setState(() {
         userId = uid;
       });
@@ -123,11 +125,12 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
     }
   }
 
-  void _navigateDetailPage(BuildContext ctx, workId){
+  void _navigateDetailPage(BuildContext ctx, workId, authorId){
+    print('userId=$userId');
     Navigator.of(context).pushNamed(HoneytoonDetailScreen.routeName,
     arguments: {
       'id': workId,
-      'uid': userId
+      'uid': authorId,
     });
   }
 
@@ -201,7 +204,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
             leading: IconButton(
                 icon: Icon(Icons.format_list_bulleted),
                 onPressed: () {
-                  _navigateDetailPage(context, args['id']);
+                  _navigateDetailPage(context, args['id'], args['authorId']);
                 }),
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,

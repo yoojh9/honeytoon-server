@@ -88,7 +88,7 @@ class PointScreen extends StatelessWidget {
         return Text('선물하기 (to: $otherName)');
         break;
       case PointType.REGIST:
-        return Text('허니툰생성 (from: $otherName)');
+        return Text('허니툰생성');
       default:
         return null;
     }

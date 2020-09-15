@@ -17,7 +17,7 @@ class Likes {
     return data;
   }
 
-  Likes.fromMap(String documentId, Timestamp likeTime, Map toonSnapshot) {
+  Likes.fromMap(String documentId, Timestamp likeTime, Map toonSnapshot, Map userSnapshot) {
     this.workId = documentId;
     if (likeTime != null) {
       this.likeTime = likeTime;
@@ -30,8 +30,8 @@ class Likes {
     if (toonSnapshot['cover_img'] != null) {
       this.coverImgUrl = toonSnapshot['cover_img'];
     }
-    if (toonSnapshot['displayName'] != null) {
-      this.authName = toonSnapshot['displayName'];
+    if (userSnapshot['displayName'] != null) {
+      this.authName = userSnapshot['displayName'];
     }
   }
 }

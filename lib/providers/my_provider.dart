@@ -56,10 +56,9 @@ class MyProvider extends ChangeNotifier {
         .orderBy('like_time', descending: true)
         .getDocuments();
     _likes = await Future.wait(snapshot.documents.map((likeSnapshot) async {
-      DocumentSnapshot toonSnapshot =
-          await Database.metaRef.document(likeSnapshot.documentID).get();
-      return Likes.fromMap(likeSnapshot.documentID,
-          likeSnapshot.data['like_time'], toonSnapshot.data);
+        DocumentSnapshot toonSnapshot = await Database.metaRef.document(likeSnapshot.documentID).get();
+        DocumentSnapshot userSnapshot = await Database.userRef.document(toonSnapshot.data['uid']).get();
+      return Likes.fromMap(likeSnapshot.documentID, likeSnapshot.data['like_time'], toonSnapshot.data, userSnapshot.data);
     }).toList());
     return _likes;
   }
@@ -86,13 +85,12 @@ class MyProvider extends ChangeNotifier {
         .collection('current')
         .orderBy('update_time', descending: true)
         .getDocuments();
-    _currentList =
-        await Future.wait(snapshot.documents.map((currentSnapshot) async {
+    _currentList = await Future.wait(snapshot.documents.map((currentSnapshot) async {
       DocumentSnapshot toonSnapshot =
           await Database.metaRef.document(currentSnapshot.documentID).get();
-      print('toonSnapshot:${toonSnapshot.data}');
+      DocumentSnapshot userSnapshot = await Database.userRef.document(toonSnapshot.data['uid']).get();
       return Current.fromMap(
-          currentSnapshot.documentID, currentSnapshot.data, toonSnapshot.data);
+          currentSnapshot.documentID, currentSnapshot.data, toonSnapshot.data, userSnapshot.data);
     }).toList());
     return _currentList;
   }

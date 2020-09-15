@@ -22,7 +22,7 @@ class Current {
     return data;
   }
 
-  Current.fromMap(String documentId, Map currentSnapshot, Map toonSnapshot) {
+  Current.fromMap(String documentId, Map currentSnapshot, Map toonSnapshot, Map userSnapshot) {
     this.workId = documentId;
     if (currentSnapshot['content_id'] != null) {
       this.contentId = currentSnapshot['content_id'];
@@ -37,8 +37,8 @@ class Current {
     if (toonSnapshot['cover_img'] != null) {
       this.coverImgUrl = toonSnapshot['cover_img'];
     }
-    if (toonSnapshot['displayName'] != null) {
-      this.authorName = toonSnapshot['displayName'];
+    if (userSnapshot['displayName'] != null) {
+      this.authorName = userSnapshot['displayName'];
     }
     if(toonSnapshot['uid']!=null){
       this.authorId = toonSnapshot['uid'];
