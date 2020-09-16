@@ -20,7 +20,6 @@ class User {
       this.rank,
       this.works});
 
-
   User.fromMap(String documentId, Map snapshot) {
     this.uid = documentId;
     if (snapshot['displayName'] != null) {
@@ -34,6 +33,12 @@ class User {
     }
     if (snapshot['thumbnail'] != null) {
       this.thumbnail = snapshot['thumbnail'];
+    }
+    if (snapshot['honey'] != null) {
+      this.honey = snapshot['honey'];
+    }
+    if(snapshot['works']!=null){
+      this.works = snapshot['works'];
     }
   }
 

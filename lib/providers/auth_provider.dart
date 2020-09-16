@@ -33,8 +33,7 @@ class AuthProvider with ChangeNotifier {
   Future<FirebaseUser> facebookLogin() async {
     try {
       final FacebookLogin facebookSignIn = FacebookLogin();
-      final FacebookLoginResult result =
-          await facebookSignIn.logIn(['email', 'public_profile']);
+      final FacebookLoginResult result = await facebookSignIn.logIn(['email', 'public_profile']);
       FacebookAccessToken accessToken;
 
       switch (result.status) {
@@ -79,7 +78,7 @@ class AuthProvider with ChangeNotifier {
       'displayName': user==null ? authResult.user.displayName : user.displayName,
       'email': user==null ? authResult.user.email : user.email,
       'honey': 0,
-      'rank': -1,
+      'earned_honey': 0,
       'provider': providerType,
       'thumbnail': user==null ? authResult.user.photoUrl : user.thumbnail,
       'update_time': Timestamp.now()
@@ -103,16 +102,26 @@ class AuthProvider with ChangeNotifier {
     }
     final userData =
         await _db.collection('users').document(firebaseUser.uid).get();
-    User user = User(
-        uid: userData.documentID,
-        displayName: userData.data['displayName'],
-        email: userData.data['email'],
-        provider: userData.data['provider'],
-        thumbnail: userData.data['thumbnail'],
-        honey: userData.data['honey'],
-        rank: userData.data['rank'],
-        works: userData.data['works']);
+    
+    // User user = User(
+    //     uid: userData.documentID,
+    //     displayName: userData.data['displayName'],
+    //     email: userData.data['email'],
+    //     provider: userData.data['provider'],
+    //     thumbnail: userData.data['thumbnail'],
+    //     honey: userData.data['honey'],
+    //     works: userData.data['works']);
 
+    return User.fromMap(userData.documentID, userData.data);
+  }
+
+  Future<User> getUserFromDBwithRank() async {
+    User user = await getUserFromDB();
+    final rank = await _db.collection('ranks').document(user.uid).get();
+
+    if(rank.exists){
+      user.rank = rank.data['rank'];
+    }
     return user;
   }
 

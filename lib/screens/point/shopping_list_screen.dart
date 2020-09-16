@@ -76,11 +76,13 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                     return Center(
                       child: CircularProgressIndicator(),
                     );
-                  } else if (!snapshot.hasData) {
-                    return Center(
-                      child: Text('데이터를 불러오는 데 실패했습니다.'),
-                    );
-                  } else {
+                  } 
+                  // else if (!snapshot.hasData) {
+                  //   return Center(
+                  //     child: Text('데이터를 불러오는 데 실패했습니다.'),
+                  //   );
+                  // } 
+                  else if(snapshot.hasData){
                     return ListView.builder(
                         primary: false,
                         shrinkWrap: true,
@@ -112,6 +114,10 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                                 ),
                               ),
                             ));
+                  } else {
+                    return Center(
+                      child: Text('데이터를 불러오는 데 실패했습니다.'),
+                    );               
                   }
                 }))
       ]),

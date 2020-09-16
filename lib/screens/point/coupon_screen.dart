@@ -81,10 +81,18 @@ class _CouponScreenState extends State<CouponScreen> {
         Container(
           padding:
               EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-          child: Text('미 사용 쿠폰'),
+          child: Text('미사용 쿠폰'),
           alignment: Alignment.centerLeft,
         ),
-        ListView.builder(
+        _notUsedCoupons.length == 0 
+        ? Container(
+          margin: EdgeInsets.only(bottom: 50),
+          child: Center(
+            child: Text('미사용 쿠폰이 없습니다'),
+          ),
+        )
+
+        : ListView.builder(
           primary: false,
           shrinkWrap: true,
           itemBuilder: (ctx, index) => Padding(
@@ -106,7 +114,11 @@ class _CouponScreenState extends State<CouponScreen> {
           child: Text('사용 완료 | 유효기간 만료'),
           alignment: Alignment.centerLeft,
         ),
-        ListView.builder(
+        _usedCoupons.length == 0 ? 
+        Center(
+            child: Text('사용 완료 또는 유효기간이 만료된 쿠폰이 없습니다')
+        )
+        : ListView.builder(
           primary: false,
           shrinkWrap: true,
           itemBuilder: (ctx, index) => Padding(

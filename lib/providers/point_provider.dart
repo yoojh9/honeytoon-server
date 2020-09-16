@@ -11,14 +11,21 @@ class PointProvider extends ChangeNotifier {
     final DocumentReference userReference =
         Database.userRef.document(point.uid);
 
+    Map<String, dynamic> honeyData = Map<String, dynamic>();
+    honeyData['honey'] = FieldValue.increment(point.point);
+    if(PointType.REWARD == point.type){
+      honeyData['earned_honey'] = FieldValue.increment(point.point);
+    }
+
     Database.firestore
         .runTransaction((transaction) async {
           await transaction.set(pointReference, data);
           await transaction.update(
-              userReference, {'honey': FieldValue.increment(point.point)});
+              userReference, honeyData);
         })
         .then((value) => {print('success')})
         .catchError((error) {
+          print('error');
           print(error.message);
         });
   }
@@ -36,7 +43,6 @@ class PointProvider extends ChangeNotifier {
 
       if(_pointType == PointType.GIFT_SEND || _pointType == PointType.CHEER){
         DocumentSnapshot userSnapshot = await Database.userRef.document(point.data['otherUid']).get();
-        print('userSnapshot:${userSnapshot.data}');
         return Point.fromMapWithUser(point.documentID, point.data, userSnapshot.data);
       } else {
         return Point.fromMap(point.documentID, point.data);
@@ -70,7 +76,7 @@ class PointProvider extends ChangeNotifier {
 
     await Database.firestore
         .runTransaction((transaction) async {
-          await transaction.update(toUserRef, {'honey': FieldValue.increment(point)});
+          await transaction.update(toUserRef, {'honey': FieldValue.increment(point), 'earned_honey': FieldValue.increment(point)});
           await transaction.update(fromUserRef, {'honey': FieldValue.increment(-point)});
           await transaction.set(toPointRef, toPoint.toJson());
           await transaction.set(fromPointRef, fromPoint.toJson());

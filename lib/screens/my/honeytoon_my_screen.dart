@@ -33,7 +33,7 @@ class _HoneytoonMyScreenState extends State<HoneytoonMyScreen> {
 
     return FutureBuilder(
         future:
-            Provider.of<AuthProvider>(context, listen: false).getUserFromDB(),
+            Provider.of<AuthProvider>(context, listen: false).getUserFromDBwithRank(),
         builder: (context, futureSnapshot) {
           if (futureSnapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
