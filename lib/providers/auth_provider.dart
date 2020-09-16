@@ -51,11 +51,11 @@ class AuthProvider with ChangeNotifier {
       AuthResult authResult = await _auth.signInWithCredential(credential);
 
       await _db.collection('users').document(authResult.user.uid).get().then((snapshot) => {
-      if (snapshot.exists) {
-        updateUserToDB(User.fromMap(snapshot.documentID, snapshot.data), 'FACEBOOK', )
-      } else {
-        addUserToDB(authResult, null, 'FACEBOOK')
-      }
+        if (snapshot.exists) {
+          updateUserToDB(User.fromMap(snapshot.documentID, snapshot.data), 'FACEBOOK', )
+        } else {
+          addUserToDB(authResult, null, 'FACEBOOK')
+        }
       });
 
       print('success');
@@ -66,6 +66,11 @@ class AuthProvider with ChangeNotifier {
     } catch (error) {
       print(error);
     }
+  }
+
+  Future<FirebaseUser> emailLogin(email, password) async {
+    AuthResult authResult = await _auth.signInWithEmailAndPassword(email: email, password: password);
+    return authResult.user;
   }
 
   Future<AuthResult> createUserWithEmailAndPassword(User user) async {
