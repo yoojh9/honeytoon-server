@@ -72,7 +72,7 @@ class _AuthScreenState extends State<AuthScreen> {
       Navigator.of(ctx).pop(user);
     } on PlatformException catch (error) {
       if(error.code == "ERROR_WRONG_PASSWORD") {
-        _showSnackbar(ctx, '비밀번호가 다릅니다');
+        _showSnackbar(ctx, '비밀번호를 다시 확인해주세요');
       }
       print(error);
     } catch (error) {

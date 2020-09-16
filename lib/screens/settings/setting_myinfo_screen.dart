@@ -103,7 +103,7 @@ class _SettingMyinfoScreenState extends State<SettingMyinfoScreen> {
                                         style: TextStyle(
                                           fontSize: 20,
                                         )),
-                                    Text('12000꿀')
+                                    Text('${futureSnapshot.data.honey}꿀')
                                   ],
                                 )),
                             Expanded(
