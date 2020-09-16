@@ -67,7 +67,7 @@ class _MyHoneytoonListViewState extends State<MyHoneytoonListView> {
                   child: Row(children: [
                     _buildCoverImage(context, data),
                     _buildHoneytoonInfo(context, widget.uid, data),
-                    _buildAddIcon(context, data)
+                    _buildDeleteIcon(context, data)
                   ]),
                 );
               },
@@ -115,7 +115,7 @@ class _MyHoneytoonListViewState extends State<MyHoneytoonListView> {
                 Text(
                   '${data.title}',
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 18,
                   ),
                 ),
                 Text((data.totalCount == 0)
@@ -128,12 +128,12 @@ class _MyHoneytoonListViewState extends State<MyHoneytoonListView> {
     );
   }
 
-  Widget _buildAddIcon(ctx, data){
+  Widget _buildDeleteIcon(ctx, data){
    return Expanded(
       flex: 1,
       child: IconButton(
           icon: Icon(
-            Icons.add,
+            Icons.delete, color: Colors.black54,
           ),
           onPressed: () {
            _navigateToAddContentPage(ctx, data);
