@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:honeytoon/models/user.dart';
+import 'package:honeytoon/screens/settings/setting_myinfo_edit_screen.dart';
 import '../../providers/auth_provider.dart';
 import 'package:honeytoon/screens/settings/setting_section.dart';
 import 'package:provider/provider.dart';
@@ -113,7 +114,7 @@ class _SettingMyinfoScreenState extends State<SettingMyinfoScreen> {
                                     SettingsSection(title: '계정', tiles: [
                                       SettingsTile(
                                         title: '닉네임변경',
-                                        onTap: () {},
+                                        onTap: (){ Navigator.of(context).pushNamed( SettingMyInfoEditScreen.routeName, arguments: {'user': futureSnapshot.data} );},
                                       ),
                                       SettingsTile(
                                           title: '로그아웃', onTap: _logout),

@@ -75,6 +75,26 @@ class _AuthJoinScreenState extends State<AuthJoinScreen> {
     }
   }
 
+  String _validateEmail(email){
+    bool emailValid = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(email);
+    if(email.isEmpty){
+      return '이메일을 입력해주세요';
+    } else if(!emailValid){
+      return '유효한 이메일을 입력해주세요';
+    }
+    return null;
+  }
+
+  String _validateDisplayName(displayName){
+    bool displayNameValid = RegExp(r"^[ㄱ-ㅎ|가-힣|a-z|A-Z|0-9|\*]+$").hasMatch(displayName);
+    if(displayName.isEmpty){
+      return '닉네임을 입력해주세요';
+    } else if(!displayNameValid) {
+      return '닉네임은 특수문자를 입력하실 수 없습니다.';
+    }
+    return null;
+  }
+
   @override
   void dispose() {
     _descriptionFocusNode.dispose();
@@ -132,11 +152,7 @@ class _AuthJoinScreenState extends State<AuthJoinScreen> {
                                       .requestFocus(_descriptionFocusNode);
                                 },
                                 validator: (value) {
-                                  if (value.isEmpty) {
-                                    return '닉네임을 입력해주세요';
-                                  } else {
-                                    return null;
-                                  }
+                                  return _validateDisplayName(value);
                                 },
                                 onSaved: (value) {
                                   user.displayName = value;
@@ -153,11 +169,7 @@ class _AuthJoinScreenState extends State<AuthJoinScreen> {
                                   labelText: "이메일",
                                 ),
                                 validator: (value) {
-                                  if (value.isEmpty) {
-                                    return '이메일을 입력해주세요';
-                                  } else {
-                                    return null;
-                                  }
+                                  return _validateEmail(value);
                                 },
                                 onSaved: (value) {
                                   user.email = value;

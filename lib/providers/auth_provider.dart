@@ -90,14 +90,18 @@ class AuthProvider with ChangeNotifier {
     });
   }
 
+  // displayName은 앱에서 수정할 수 있으므로 로그인 시 displayName을 update 하지 않는다
   Future<void> updateUserToDB(User user, String providerType,) async {
     await _db.collection('users').document(user.uid).updateData({
-        'displayName': user.displayName,
         'email': user.email,
         'provider': providerType,
         'thumbnail': user.thumbnail,
         'update_time': Timestamp.now(),
     });
+  }
+
+  Future<void> changeUserInfo(uid, changeInfo) async {
+    await _db.collection('users').document(uid).updateData(changeInfo);
   }
 
   Future<User> getUserFromDB() async {

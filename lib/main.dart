@@ -4,6 +4,7 @@ import 'package:honeytoon/providers/coupon_provider.dart';
 import 'package:honeytoon/providers/product_provider.dart';
 import 'package:honeytoon/screens/auth_join_screen.dart';
 import 'package:honeytoon/screens/point/coupon_detail_screen.dart';
+import 'package:honeytoon/screens/settings/setting_myinfo_edit_screen.dart';
 import 'package:kakao_flutter_sdk/link.dart';
 import './screens/honeytoon_list_screen.dart';
 import './screens/auth_screen.dart';
@@ -93,6 +94,7 @@ class MyApp extends StatelessWidget {
           HoneytoonCommentScreen.routeName: (context) =>
               HoneytoonCommentScreen(),
           SettingMyinfoScreen.routeName: (context) => SettingMyinfoScreen(),
+          SettingMyInfoEditScreen.routeName : (context) => SettingMyInfoEditScreen()
         },
       ),
     );
