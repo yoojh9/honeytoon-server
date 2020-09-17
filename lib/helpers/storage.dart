@@ -20,8 +20,14 @@ class Storage {
     final StorageUploadTask storageUploadTask = storageReference.putFile(image);
     await storageUploadTask.onComplete;
     String downloadUrl = await storageReference.getDownloadURL();
+
     return downloadUrl;
   }
+
+  static Future<void> deleteImageFromStorage(String imageUrl) async {
+    final StorageReference _storageReference = await _firebaseStorage.getReferenceFromUrl(imageUrl);
+    await _storageReference.delete();
+ }
 
   static String getStoragePath(type, id){
     if(type == StorageType.META_COVER) return 'cover/$id/${Uuid().v4()}';

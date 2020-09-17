@@ -24,6 +24,7 @@ class MyHoneytoonListView extends StatefulWidget {
 
 class _MyHoneytoonListViewState extends State<MyHoneytoonListView> {
   List<dynamic> _myHoneytoon = [];
+  HoneytoonMetaProvider _metaProvider;
 
   void _navigateToDetail(BuildContext ctx, String uid, String workId){
     Navigator.of(ctx).pushNamed(HoneytoonDetailScreen.routeName, arguments: {'uid': uid, 'id': workId});
@@ -37,9 +38,16 @@ class _MyHoneytoonListViewState extends State<MyHoneytoonListView> {
     }
   }
 
+  void _deleteHoneytoon(BuildContext ctx, data) async {
+    await _metaProvider.deleteHoneytoon(data);
+    widget.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('${data.title} 작품을 삭제했습니다.'), duration: Duration(seconds: 2),));
+
+  }
+  
+
   @override
   Widget build(BuildContext context) {
-    HoneytoonMetaProvider _metaProvider = Provider.of<HoneytoonMetaProvider>(context, listen: true);
+    _metaProvider = Provider.of<HoneytoonMetaProvider>(context, listen: true);
 
     return Container(
       child: StreamBuilder(
@@ -136,7 +144,7 @@ class _MyHoneytoonListViewState extends State<MyHoneytoonListView> {
             Icons.delete, color: Colors.black54,
           ),
           onPressed: () {
-           _navigateToAddContentPage(ctx, data);
+            _deleteHoneytoon(ctx, data);
           }
       )
     );

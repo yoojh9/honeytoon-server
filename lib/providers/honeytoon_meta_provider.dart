@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:honeytoon/helpers/database.dart';
+import 'package:honeytoon/helpers/storage.dart';
 import '../models/honeytoonMeta.dart';
 
 class HoneytoonMetaProvider extends ChangeNotifier {
@@ -33,9 +34,7 @@ class HoneytoonMetaProvider extends ChangeNotifier {
 
   Stream<QuerySnapshot> getMyHoneytoonStream(String uid) {
     return Database.metaRef
-        .where('uid', isEqualTo: uid)
-        .getDocuments()
-        .asStream();
+        .where('uid', isEqualTo: uid).snapshots();
   }
 
   Future<HoneytoonMeta> getHoneytoonMeta(String id) async {
@@ -83,5 +82,39 @@ class HoneytoonMetaProvider extends ChangeNotifier {
           .getDocuments()
           .asStream();
     }
+  }
+
+  Future<void> deleteHoneytoon(HoneytoonMeta meta) {
+    final contentsRef = Database.contentRef.document(meta.workId).collection('items');
+    final commentRef = Database.commentRef;
+    final userRef = Database.userRef.document(meta.uid);
+
+    try {
+      Database.firestore.runTransaction((transaction) async {
+        await transaction.delete(Database.metaRef.document(meta.workId));
+        await transaction.update(userRef, {'works': FieldValue.arrayRemove([meta.workId])});
+
+        await Storage.deleteImageFromStorage(meta.coverImgUrl);
+
+        final items = await contentsRef.getDocuments();
+
+        for(var item in items.documents){
+          final contentImgUrls = item.data['content_imgs'];
+          for(String contentImgUrl in contentImgUrls){
+            await Storage.deleteImageFromStorage(contentImgUrl);
+          }
+          final coverImg = item.data['cover_img'];
+          if(coverImg!=null) {
+            await Storage.deleteImageFromStorage(coverImg);
+          }
+          await transaction.delete(contentsRef.document(item.documentID));
+          await transaction.delete(commentRef.document(item.documentID));
+        }
+      });
+      print('success');
+    } catch(error){
+      print(error);
+    }
+
   }
 }
