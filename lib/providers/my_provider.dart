@@ -85,9 +85,13 @@ class MyProvider extends ChangeNotifier {
         .collection('current')
         .orderBy('update_time', descending: true)
         .getDocuments();
+  
     _currentList = await Future.wait(snapshot.documents.map((currentSnapshot) async {
       DocumentSnapshot toonSnapshot =
           await Database.metaRef.document(currentSnapshot.documentID).get();
+      
+      if(!toonSnapshot.exists) return null;
+
       DocumentSnapshot userSnapshot = await Database.userRef.document(toonSnapshot.data['uid']).get();
       return Current.fromMap(
           currentSnapshot.documentID, currentSnapshot.data, toonSnapshot.data, userSnapshot.data);
