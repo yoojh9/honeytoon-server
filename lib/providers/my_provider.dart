@@ -55,8 +55,12 @@ class MyProvider extends ChangeNotifier {
         .collection('likes')
         .orderBy('like_time', descending: true)
         .getDocuments();
+
     _likes = await Future.wait(snapshot.documents.map((likeSnapshot) async {
         DocumentSnapshot toonSnapshot = await Database.metaRef.document(likeSnapshot.documentID).get();
+        
+        if(!toonSnapshot.exists) return null;
+
         DocumentSnapshot userSnapshot = await Database.userRef.document(toonSnapshot.data['uid']).get();
       return Likes.fromMap(likeSnapshot.documentID, likeSnapshot.data['like_time'], toonSnapshot.data, userSnapshot.data);
     }).toList());

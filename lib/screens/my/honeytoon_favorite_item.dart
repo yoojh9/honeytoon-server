@@ -23,7 +23,8 @@ class FavoriteToonItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return data == null ? Container() : 
+    Container(
       height: height * 0.15,
       child: GestureDetector(
         onTap: (){
