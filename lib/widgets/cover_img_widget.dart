@@ -32,13 +32,16 @@ class CoverImgWidget extends StatelessWidget {
               label: Text('커버이미지', style: TextStyle(color: Colors.grey),))
             )
           )
-          : Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: FileImage(coverImage),
-                fit: BoxFit.cover
+          : GestureDetector(
+            onTap: _getImage,
+            child: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: FileImage(coverImage),
+                  fit: BoxFit.cover
+                ),
+                borderRadius: BorderRadius.circular(12)
               ),
-              borderRadius: BorderRadius.circular(12)
             ),
           )
     );
