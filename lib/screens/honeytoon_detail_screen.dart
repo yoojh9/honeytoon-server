@@ -2,6 +2,7 @@ import 'package:async/async.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:honeytoon/models/history.dart';
 import 'package:honeytoon/models/honeytoonContentItem.dart';
 import 'package:honeytoon/models/likes.dart';
 import 'package:honeytoon/providers/auth_provider.dart';
@@ -29,6 +30,7 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
   bool like = false;
   String userId;
   List<dynamic> _contentList = [];
+  History _history;
   int totalCount = 0;
 
 
@@ -52,6 +54,11 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
       final result = await _myProvider.ifLikeHoneytoon(Likes(uid: uid, workId: args['id']));
       setState(() {
         like = result;
+      });
+
+      final history = await _myProvider.getHoneytoonHistory(uid, args['id']);
+      setState(() {
+        _history = history;
       });
     });
   }
@@ -117,7 +124,7 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
                 child: SingleChildScrollView(
                     child: Column(children: [
                       _buildHoneytoonMetaInfo(args['id'], height),
-                      _buildHoneytoonContentList(args)
+                      _buildHoneytoonContentList(args, _history)
                     ]
                     )
                 )
@@ -200,7 +207,7 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
         });
   }
 
-  Widget _buildHoneytoonContentList(args) {
+  Widget _buildHoneytoonContentList(args, history) {
     return StreamBuilder(
       stream: _contentProvider.streamHoneytoonContents(args['id']),
       builder: (context, snapshot) {
@@ -228,13 +235,34 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
                       onTap: () {
                         _navigateViewPage(ctx, args['id'], args['uid'], _contentList[index]);
                       },
+
                       child: CachedNetworkImage(
-                          imageUrl: _contentList[index].coverImgUrl,
-                          placeholder: (context, url) =>
-                              Image.asset('assets/images/image_spinner.gif'),
-                          errorWidget: (context, url, error) =>
-                              Icon(Icons.error),
-                          fit: BoxFit.cover)),
+                        imageBuilder: (context, imageProvider) => 
+                         (history!=null && history.timesList.contains(_contentList[index].times)) ? 
+                        Container(
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: imageProvider,
+                              colorFilter: ColorFilter.mode(Colors.grey, BlendMode.lighten),
+                              fit: BoxFit.cover,
+                            )
+                          ),
+                        ):
+                        Container(
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: imageProvider,
+                              fit: BoxFit.cover,
+                            )
+                          ),
+                        ),
+                        imageUrl: _contentList[index].coverImgUrl,
+                        placeholder: (context, url) =>
+                            Image.asset('assets/images/image_spinner.gif'),
+                        errorWidget: (context, url, error) =>
+                            Icon(Icons.error),
+                        )
+                  ),
                   footer: GridTileBar(
                     backgroundColor: Colors.white70,
                     title: Text(

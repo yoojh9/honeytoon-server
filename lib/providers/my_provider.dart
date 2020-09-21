@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:honeytoon/helpers/database.dart';
 import 'package:honeytoon/models/current.dart';
+import 'package:honeytoon/models/history.dart';
 import 'package:honeytoon/models/likes.dart';
 
 class MyProvider extends ChangeNotifier {
@@ -77,6 +78,31 @@ class MyProvider extends ChangeNotifier {
         .document(current.workId);
 
     await currentReference.setData(current.toJson());
+  }
+
+  Future<void> addHoneytoonHistory(History history) async {
+    final DocumentReference historyReference = Database.myRef.document(history.uid).collection('history').document(history.workId);
+    DocumentSnapshot historySnapshot = await historyReference.get();
+    print('exists:${historySnapshot.exists}');
+    print('id:${history.times}');
+    if(historySnapshot.exists){
+      await historyReference.updateData({
+        'contents': FieldValue.arrayUnion([history.times]),
+        'update_time': history.updateTime
+      });
+    } else {
+      await historyReference.setData({
+        'contents': [history.times],
+        'update_time': history.updateTime
+      });
+    }
+  }
+
+  Future<History> getHoneytoonHistory(uid, workId) async {
+    final DocumentReference historyReference = Database.myRef.document(uid).collection('history').document(workId);
+    DocumentSnapshot historySnapshot = await historyReference.get();
+    print('data: ${historySnapshot.data}');
+    return History.fromMap(historySnapshot.documentID, historySnapshot.data);
   }
 
   /*

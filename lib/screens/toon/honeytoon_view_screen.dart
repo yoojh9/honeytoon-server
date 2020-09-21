@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:honeytoon/models/current.dart';
+import 'package:honeytoon/models/history.dart';
 import 'package:honeytoon/models/user.dart';
 import 'package:honeytoon/providers/honeytoon_content_provider.dart';
 import 'package:honeytoon/providers/point_provider.dart';
@@ -72,15 +73,32 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
       setState(() {
         userId = uid;
       });
+      await _addHoneytoonViewLog(args);
+    });
+  }
 
+  Future<void> _addHoneytoonViewLog(args) async {
       Current current = Current(
           uid: userId,
           workId: args['id'],
-          contentId: args['data'].contentId,
           times: args['data'].times,
-          updateTime: Timestamp.now());
+          updateTime: Timestamp.now()
+      );
+      
+      History history = History(
+        uid: userId,
+        workId: args['id'],
+        times: args['data'].times,
+        updateTime: Timestamp.now()
+      );
+
+    try {
+      print('updateHistory: $history');
       await _myProvider.addCurrentHoneytoon(current);
-    });
+      await _myProvider.addHoneytoonHistory(history);
+    } catch(error){
+      print(error);
+    }
   }
 
   void _onTap(BuildContext context, height, int index, args) {
@@ -155,7 +173,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
                       placeholder: (context, url) =>
                           Image.asset('assets/images/image_spinner.gif'),
                       errorWidget: (context, url, error) => Icon(Icons.error),
-                      fit: BoxFit.cover))
+                      fit: BoxFit.fitWidth))
                   .toList()));
     } else {
       return FutureBuilder(
