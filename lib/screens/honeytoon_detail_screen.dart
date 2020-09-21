@@ -195,8 +195,8 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
                             Text('${snapshot.data.displayName}',
                               style: TextStyle(fontSize: 16, color: Colors.grey)
                             ),
-                            SizedBox(height: 20),
-                            Text('${snapshot.data.likes}'),
+                            // SizedBox(height: 20),
+                            // Text('${snapshot.data.likes}'),
                           ]),
                     ),
                   ],
