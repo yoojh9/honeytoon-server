@@ -63,15 +63,16 @@ flutter:
   assets:
     - assets/images/kakao_login_icon.png
     - assets/images/naver_login_icon.png
-    - assets/images/honey_pot.png
     - assets/images/americano.jpg
-    - assets/images/capture.jpeg
-    - assets/images/capture2.jpeg
     - assets/images/facebook_login_icon.png
     - assets/images/placeholder.png
     - assets/images/image_spinner.gif
     - assets/images/avatar_placeholder.png
     - assets/images/honey.png
+    - assets/images/gift.png
+    - assets/images/send_gift.png
+    - assets/images/attend.png
+    - assets/images/pencil.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

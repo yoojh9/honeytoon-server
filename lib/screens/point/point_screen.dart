@@ -57,10 +57,12 @@ class PointScreen extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: ListTile(
                         leading: CircleAvatar(
-                            child: ClipRRect(
-                          borderRadius: BorderRadius.circular(50),
-                          child: Image.asset('assets/images/honey_pot.png',),
-                        )),
+                          backgroundColor: Colors.white12,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(50),
+                            child: _pointTypeImage(snapshot.data[index])
+                          )
+                          ),
                         title: Text('${snapshot.data[index].point}꿀'),
                         subtitle: Row(children: [
                           _buildPointType(snapshot.data[index], snapshot.data[index].otherDisplayName),
@@ -91,6 +93,21 @@ class PointScreen extends StatelessWidget {
         return Text('허니툰생성');
       default:
         return null;
+    }
+  }
+
+  Widget _pointTypeImage(data){
+    switch(data.type){
+      case PointType.CHEER:
+        return Image.asset('assets/images/gift.png');
+      case PointType.GIFT_SEND:
+        return Image.asset('assets/images/send_gift.png');
+        break;
+      case PointType.REWARD:
+        return Image.asset('assets/images/attend.png');
+      case PointType.REGIST:
+        return Image.asset('assets/images/pencil.png');
+      
     }
   }
 
