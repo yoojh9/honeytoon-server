@@ -38,10 +38,42 @@ class _MyHoneytoonListViewState extends State<MyHoneytoonListView> {
     }
   }
 
+  Future<void> _showDeleteDialog(BuildContext context, data) async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext ctx) {
+        return AlertDialog(
+          title: Text('허니툰 삭제'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: [
+                Text('${data.title} 작품을 삭제하실건가요?')
+              ],
+            )
+          ),
+          actions: [
+            FlatButton(
+              onPressed: (){
+                _deleteHoneytoon(context, data);
+              }, 
+              child: Text('확인')
+            ),
+            FlatButton(
+              onPressed: (){
+                Navigator.of(context).pop();
+              }, 
+              child: Text('취소')
+            )
+          ],
+        );
+      }
+    );
+  }
+
   void _deleteHoneytoon(BuildContext ctx, data) async {
     await _metaProvider.deleteHoneytoon(data);
     widget.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('${data.title} 작품을 삭제했습니다.'), duration: Duration(seconds: 2),));
-
+    Navigator.of(ctx).pop();
   }
   
 
@@ -144,7 +176,7 @@ class _MyHoneytoonListViewState extends State<MyHoneytoonListView> {
             Icons.delete, color: Colors.black54,
           ),
           onPressed: () {
-            _deleteHoneytoon(ctx, data);
+            _showDeleteDialog(ctx, data);
           }
       )
     );
