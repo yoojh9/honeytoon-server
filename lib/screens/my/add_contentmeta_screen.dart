@@ -47,6 +47,7 @@ class _AddContentMetaScreenState extends State<AddContentMetaScreen> {
       honeytoonMeta.coverImgUrl = downloadUrl;
       honeytoonMeta.uid = user.uid;
       honeytoonMeta.createTime = Timestamp.now();
+      honeytoonMeta.updateTime = Timestamp.now();
       honeytoonMeta.totalCount = 0;
       honeytoonMeta.likes = 0;
 

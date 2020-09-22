@@ -63,7 +63,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    print('didChangeDependencies');
+    
     final Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
     _myProvider = Provider.of<MyProvider>(context, listen: false);
 
@@ -75,6 +75,124 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
       await _addHoneytoonViewLog(args);
     });
   }
+
+  @override
+  Widget build(BuildContext context) {
+    final Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
+    final mediaQueryData = MediaQuery.of(context);
+    final height = mediaQueryData.size.height -
+        (mediaQueryData.padding.top + mediaQueryData.padding.bottom + 160);
+    final width = mediaQueryData.size.width -
+        (mediaQueryData.padding.left + mediaQueryData.padding.right);
+    _contentProvider =
+        Provider.of<HoneytoonContentProvider>(context, listen: false);
+
+    return Scaffold(
+        key: _scaffoldKey,
+        body: CustomScrollView(controller: _scrollController, slivers: [
+          SliverAppBar(
+            expandedHeight: 30,
+            backgroundColor: Colors.transparent,
+            floating: false,
+            pinned: false,
+            leading: IconButton(
+                icon: Icon(Icons.format_list_bulleted),
+                onPressed: () {
+                  _navigateDetailPage(context, args['id'], args['authorId']);
+                }),
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: true,
+              title: Text(
+                '${args['data'].times}화',
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
+          ),
+          SliverList(delegate: SliverChildListDelegate([buildImage(args)]))
+        ]),
+        bottomNavigationBar:
+            _buildBottomNavigationBar(height, width, args));
+  }
+
+  /*
+   * contents image build
+   */
+  Widget buildImage(args) {
+    List<String> images = args['images'];
+    if (images != null) {
+      return Container(
+          child: Column(
+              children: images
+                  .map((image) => CachedNetworkImage(
+                      imageUrl: image,
+                      placeholder: (context, url) =>
+                          Image.asset('assets/images/image_spinner.gif'),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                      fit: BoxFit.fitWidth))
+                  .toList()));
+    } else {
+      return FutureBuilder(
+          future: _contentProvider.getHoneytoonContentByTimes(args['id'], args['data'].times),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (snapshot.hasData) {
+              return Container(
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        ListView.builder(
+                            padding: EdgeInsets.zero,
+                            shrinkWrap: true,
+                            itemCount: snapshot.data.contentImgUrls.length,
+                            itemBuilder: (ctx, index) => CachedNetworkImage(
+                                imageUrl: snapshot.data.contentImgUrls[index],
+                                placeholder: (context, url) => Image.asset('assets/images/image_spinner.gif'),
+                                errorWidget: (context, url, error) => Icon(Icons.error),
+                                fit: BoxFit.cover))
+                      ]));
+            } else {
+              return Center(
+                child: Text('허니툰을 불러오는데 문제가 발생했습니다. 잠시 후 다시 시도해주세요'),
+              );
+            }
+          });
+    }
+  }
+
+
+ /*
+  *  bottom Navigation bar 생성
+  */
+  Widget _buildBottomNavigationBar(height, width, args) {
+    return AnimatedContainer(
+        duration: Duration(milliseconds: 500),
+        height: _isVisible ? 60 : 0,
+        child: _isVisible
+          ? Wrap(children: [
+              BottomNavigationBar(
+                type: BottomNavigationBarType.fixed,
+                items: const <BottomNavigationBarItem>[
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.arrow_back), title: Text('이전화'),),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.mode_comment), title: Text('댓글')),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.attach_money), title: Text('선물하기')),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.arrow_forward), title: Text('다음화')),
+                ],
+                currentIndex: _currentIndex,
+                onTap: (index) {
+                  _onTap(context, height, index, args);
+                },
+              ),
+            ])
+          : Container(color: Colors.transparent, width: width));
+  }
+
 
   Future<void> _addHoneytoonViewLog(args) async {
     if(userId==null) return;
@@ -94,7 +212,6 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
       );
 
     try {
-      print('updateHistory: $history');
       await _myProvider.addCurrentHoneytoon(current);
       await _myProvider.addHoneytoonHistory(history);
     } catch(error){
@@ -163,118 +280,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
     });
   }
 
-  Widget buildImage(args) {
-    List<String> images = args['images'];
-    if (images != null) {
-      return Container(
-          child: Column(
-              children: images
-                  .map((image) => CachedNetworkImage(
-                      imageUrl: image,
-                      placeholder: (context, url) =>
-                          Image.asset('assets/images/image_spinner.gif'),
-                      errorWidget: (context, url, error) => Icon(Icons.error),
-                      fit: BoxFit.fitWidth))
-                  .toList()));
-    } else {
-      return FutureBuilder(
-          future: _contentProvider.getHoneytoonContentByTimes(
-              args['id'], args['data'].times),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            } else if (snapshot.hasData) {
-              return Container(
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                    ListView.builder(
-                        padding: EdgeInsets.zero,
-                        shrinkWrap: true,
-                        itemCount: snapshot.data.contentImgUrls.length,
-                        itemBuilder: (ctx, index) => CachedNetworkImage(
-                            imageUrl: snapshot.data.contentImgUrls[index],
-                            placeholder: (context, url) =>
-                                Image.asset('assets/images/image_spinner.gif'),
-                            errorWidget: (context, url, error) =>
-                                Icon(Icons.error),
-                            fit: BoxFit.cover))
-                  ]));
-            } else {
-              return Center(
-                child: Text('허니툰을 불러오는데 문제가 발생했습니다. 잠시 후 다시 시도해주세요'),
-              );
-            }
-          });
-    }
-  }
 
-  @override
-  Widget build(BuildContext context) {
-    final Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
-    final mediaQueryData = MediaQuery.of(context);
-    final height = mediaQueryData.size.height -
-        (mediaQueryData.padding.top + mediaQueryData.padding.bottom + 160);
-    final width = mediaQueryData.size.width -
-        (mediaQueryData.padding.left + mediaQueryData.padding.right);
-    _contentProvider =
-        Provider.of<HoneytoonContentProvider>(context, listen: false);
-
-    return Scaffold(
-        key: _scaffoldKey,
-        body: CustomScrollView(controller: _scrollController, slivers: [
-          SliverAppBar(
-            expandedHeight: 30,
-            backgroundColor: Colors.transparent,
-            floating: false,
-            pinned: false,
-            leading: IconButton(
-                icon: Icon(Icons.format_list_bulleted),
-                onPressed: () {
-                  _navigateDetailPage(context, args['id'], args['authorId']);
-                }),
-            flexibleSpace: FlexibleSpaceBar(
-              centerTitle: true,
-              title: Text(
-                '${args['data'].times}화',
-                style: TextStyle(fontSize: 20),
-              ),
-            ),
-          ),
-          SliverList(delegate: SliverChildListDelegate([buildImage(args)]))
-        ]),
-        bottomNavigationBar:
-            _buildBottonNavigationBar(height, width, args));
-  }
-
-  Widget _buildBottonNavigationBar(height, width, args) {
-    return AnimatedContainer(
-        duration: Duration(milliseconds: 500),
-        height: _isVisible ? 60 : 0,
-        child: _isVisible
-            ? Wrap(children: [
-                BottomNavigationBar(
-                  type: BottomNavigationBarType.fixed,
-                  items: const <BottomNavigationBarItem>[
-                    BottomNavigationBarItem(
-                        icon: Icon(Icons.arrow_back), title: Text('이전화'),),
-                    BottomNavigationBarItem(
-                        icon: Icon(Icons.mode_comment), title: Text('댓글')),
-                    BottomNavigationBarItem(
-                        icon: Icon(Icons.attach_money), title: Text('선물하기')),
-                    BottomNavigationBarItem(
-                        icon: Icon(Icons.arrow_forward), title: Text('다음화')),
-                  ],
-                  currentIndex: _currentIndex,
-                  onTap: (index) {
-                    _onTap(context, height, index, args);
-                  },
-                ),
-              ])
-            : Container(color: Colors.transparent, width: width));
-  }
 
   void _modalBottomSheetMenu(context, height, args) {
     String authorId = args['authorId'];

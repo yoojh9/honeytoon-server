@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:honeytoon/helpers/dateFormatHelper.dart';
 import 'package:honeytoon/models/honeytoonMeta.dart';
 import '../screens/honeytoon_detail_screen.dart';
 import 'package:provider/provider.dart';
@@ -161,7 +162,7 @@ class _MyHoneytoonListViewState extends State<MyHoneytoonListView> {
                 Text((data.totalCount == 0)
                     ? "- 화"
                     : '${data.totalCount}화'),
-                Text('3일전'),
+                Text('${DateFormatHelper.getDateTime(data.updateTime)}'),
               ]),
         ),
       )

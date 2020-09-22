@@ -31,7 +31,7 @@ class HoneytoonContentProvider extends ChangeNotifier {
 
     Database.firestore.runTransaction((transaction) async {
       await transaction.set(_contentReference, data);
-      await transaction.update(_metaReference, {'total_count': content.count});
+      await transaction.update(_metaReference, {'total_count': content.count, 'update_time': Timestamp.now()});
       await transaction.update(_userReference, {'honey': FieldValue.increment(-10)});
       await transaction.set(_pointReference, pointData);
     }).then((_){

@@ -10,6 +10,7 @@ class HoneytoonMeta {
   String title;
   String description;
   Timestamp createTime;
+  Timestamp updateTime;
 
   HoneytoonMeta(
       {this.workId,
@@ -33,6 +34,11 @@ class HoneytoonMeta {
     this.likes = snapshot['likes'];
     this.totalCount = snapshot['total_count'];
     this.createTime = snapshot['create_time'];
+    
+    if(snapshot['update_time']!=null){
+      this.updateTime = snapshot['update_time'];
+    }
+    
   }
 
   HoneytoonMeta.fromMapWithAuthor(String documentId, Map metaSnapshot, Map authorSnapshot) {
@@ -71,6 +77,9 @@ class HoneytoonMeta {
     }
     if(this.createTime!=null){
       data['create_time'] = this.createTime;
+    }
+    if(this.updateTime!=null){
+      data['update_time'] = this.updateTime;
     }
     return data;
   }
