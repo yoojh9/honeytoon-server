@@ -165,116 +165,60 @@ class _HoneytoonCommentScreenState extends State<HoneytoonCommentScreen> {
                 if(snapshot.connectionState == ConnectionState.waiting){
                   return Center(child: CircularProgressIndicator(),);
                 } else if(snapshot.hasData){
-                  return ListView.builder(
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                    itemCount: snapshot.data.length,
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                    itemBuilder: (ctx, index) => 
-                      ListTile(
-                      contentPadding: EdgeInsets.symmetric(vertical: 6), 
-                      leading: ClipRRect(
-                        borderRadius: BorderRadius.circular(50),
-                        child: CachedNetworkImage(
-                            width: 50,
-                            height: 50,
-                            imageUrl: snapshot.data[index].thumbnail,
-                            placeholder: (context, url) => Image.asset('assets/images/avatar_placeholder.png',),
-                            errorWidget: (context, url, error) => Image.asset('assets/images/avatar_placeholder.png'),
-                            fit: BoxFit.fill,
-                          ), 
-                      ),
-                      // leading: CircleAvatar(
-                      //   radius: 30,
-                      //   backgroundImage: NetworkImage(snapshot.data[index].thumbnail),
-                      // ),
-                      title: Container(
-                        child: Row(
-                          children: <Widget>[
-                            Text('${snapshot.data[index].username}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                            SizedBox(width: 25,),
-                            Text('${DateFormatHelper.getDateTime(snapshot.data[index].createTime)}', style: TextStyle(color: Colors.grey))
-                        ],)
-                      ),
-                      subtitle: Text('${snapshot.data[index].comment}', style: TextStyle(color: Colors.grey, fontSize: 16),),
-                      trailing: (userId == snapshot.data[index].uid) ?  
-                        IconButton(icon: Icon(
-                          Icons.delete, color: Colors.black54,
-                        ),
-                        onPressed: () {
-                          _showDialog(context, snapshot.data[index]);
-                        }
-                      ): null,
-                    ),
-                  );                  
+                  return _buildCommentList(snapshot);
                 } else {
                   return Container();
-                }
-        
+                }   
+             }
+           );
+        } else {
+          return Container();
         }
-    );
-          }
       }
       )
     );
     }
 
-    //   child: FutureBuilder(
-    //     future: _commentProvider.getComments(id),
-    //     builder: (context, snapshot) {
-    //       if(snapshot.connectionState == ConnectionState.waiting){
-    //         return Center(child: CircularProgressIndicator(),);
-    //       } else if(snapshot.hasData && snapshot.data.length > 0){
-    //                     print('thumbnail: ${snapshot.data[0].thumbnail}');
-    //         return ListView.builder(
-    //           scrollDirection: Axis.vertical,
-    //           shrinkWrap: true,
-    //           itemCount: snapshot.data.length,
-    //           padding: EdgeInsets.symmetric(vertical: 16),
-    //           itemBuilder: (ctx, index) => 
-    //             ListTile(
-    //             contentPadding: EdgeInsets.symmetric(vertical: 6), 
-    //             leading: ClipRRect(
-    //               borderRadius: BorderRadius.circular(50),
-    //               child: CachedNetworkImage(
-    //                   width: 50,
-    //                   height: 50,
-    //                   imageUrl: snapshot.data[index].thumbnail,
-    //                   placeholder: (context, url) => Image.asset('assets/images/avatar_placeholder.png',),
-    //                   errorWidget: (context, url, error) => Image.asset('assets/images/avatar_placeholder.png'),
-    //                   fit: BoxFit.fill,
-    //                 ), 
-    //             ),
-    //             // leading: CircleAvatar(
-    //             //   radius: 30,
-    //             //   backgroundImage: NetworkImage(snapshot.data[index].thumbnail),
-    //             // ),
-    //             title: Container(
-    //               child: Row(
-    //                 children: <Widget>[
-    //                   Text('${snapshot.data[index].username}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-    //                   SizedBox(width: 25,),
-    //                   Text('${DateFormatHelper.getDateTime(snapshot.data[index].createTime)}', style: TextStyle(color: Colors.grey))
-    //               ],)
-    //             ),
-    //             subtitle: Text('${snapshot.data[index].comment}', style: TextStyle(color: Colors.grey, fontSize: 16),),
-    //             trailing: (userId == snapshot.data[index].uid) ?  
-    //               IconButton(icon: Icon(
-    //                 Icons.delete, color: Colors.black54,
-    //               ),
-    //               onPressed: () {
-    //                 _showDialog(context, snapshot.data[index]);
-    //               }
-    //             ): null,
-    //           ),
-    //         );
-    //       } else {
-    //         return Container();
-    //       }
-    //     }
-    //   ),
-    // );
-
+  Widget _buildCommentList(snapshot){
+    return ListView.builder(
+      scrollDirection: Axis.vertical,
+      shrinkWrap: true,
+      itemCount: snapshot.data.length,
+      padding: EdgeInsets.symmetric(vertical: 16),
+      itemBuilder: (ctx, index) => 
+        ListTile(
+        contentPadding: EdgeInsets.symmetric(vertical: 6), 
+        leading: ClipRRect(
+          borderRadius: BorderRadius.circular(50),
+          child: CachedNetworkImage(
+              width: 50,
+              height: 50,
+              imageUrl: snapshot.data[index].thumbnail,
+              placeholder: (context, url) => Image.asset('assets/images/avatar_placeholder.png',),
+              errorWidget: (context, url, error) => Image.asset('assets/images/avatar_placeholder.png'),
+              fit: BoxFit.fill,
+            ), 
+        ),
+        title: Container(
+          child: Row(
+            children: <Widget>[
+              Text('${snapshot.data[index].username}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+              SizedBox(width: 25,),
+              Text('${DateFormatHelper.getDateTime(snapshot.data[index].createTime)}', style: TextStyle(color: Colors.grey))
+          ],)
+        ),
+        subtitle: Text('${snapshot.data[index].comment}', style: TextStyle(color: Colors.grey, fontSize: 16),),
+        trailing: (userId == snapshot.data[index].uid) ?  
+          IconButton(icon: Icon(
+            Icons.delete, color: Colors.black54,
+          ),
+          onPressed: () {
+            _showDialog(context, snapshot.data[index]);
+          }
+        ): null,
+      ),
+    );  
+  }
   
   void _showSnackbar(BuildContext context, String message){
     _scaffoldKey.currentState.showSnackBar(

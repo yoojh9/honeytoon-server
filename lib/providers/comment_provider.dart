@@ -17,15 +17,10 @@ class CommentProvider extends ChangeNotifier {
   }
 
   Future<List<dynamic>> getCommentsWithUser(List<dynamic> comments) async {
-    print('getCommentsWithUser');
     for(Comment comment in comments){
-      print('toonId:${comment.toonId}');
-      print('comment:${comment}');
       var userData = await Database.userRef.document(comment.uid).get();
-      print('userData:${userData.data}');
       comment.username = userData.data['displayName'];
       comment.thumbnail = userData.data['thumbnail'];
-      print('loop : ${comment.thumbnail}');
     }
     return comments;
   }
