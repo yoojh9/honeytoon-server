@@ -15,7 +15,6 @@ class DateFormatHelper {
   }
   
   static String convertDateTimeToDate(String dateTimeStr){
-    print('dateTimeStr:$dateTimeStr');
     String dateWithT = dateTimeStr.substring(0, 8) + 'T' + dateTimeStr.substring(8);
     DateTime dateTime = DateTime.parse(dateWithT);
     return DateFormat('yyyy-MM-dd').format(dateTime);

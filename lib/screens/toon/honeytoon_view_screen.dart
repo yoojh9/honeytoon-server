@@ -69,7 +69,6 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
 
     this._memoizer.runOnce(() async {
       final uid = await AuthProvider.getCurrentFirebaseUserUid();
-      print('uid=$uid');
       setState(() {
         userId = uid;
       });
@@ -78,6 +77,8 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
   }
 
   Future<void> _addHoneytoonViewLog(args) async {
+    if(userId==null) return;
+    
       Current current = Current(
           uid: userId,
           workId: args['id'],
@@ -141,10 +142,10 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
       return;
     } else {
       args['data'].times = times.toString();
-      Navigator.of(ctx).pushNamed(
-        HoneytoonViewScreen.routeName,
+      Navigator.of(ctx).pushNamed(HoneytoonViewScreen.routeName,
         arguments: {
           'id': args['id'],
+          'authorId': args['authorId'],
           'data': args['data'],
           'total': args['total'],
           'images':null,
@@ -158,7 +159,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
     Navigator.of(context).pushNamed(HoneytoonDetailScreen.routeName,
     arguments: {
       'id': workId,
-      'uid': authorId,
+      'authorId': authorId,
     });
   }
 

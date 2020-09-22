@@ -23,7 +23,6 @@ class HoneytoonContentItem {
   }
 
   HoneytoonContentItem.fromMap(String documentId, Map snapshot){
-    print('snapshot:$snapshot');
     this.contentId = documentId;
     this.times = snapshot['times'];
     this.coverImgUrl = snapshot['cover_img'];

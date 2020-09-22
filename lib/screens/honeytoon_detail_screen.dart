@@ -135,7 +135,7 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
 
   Widget _buildHeaderIcon(ctx, userId, args) {
     return 
-    (userId!=null && userId == args['uid']) ?
+    (userId!=null && userId == args['authorId']) ?
       IconButton(
         icon: Icon(Icons.add),
         onPressed: () {
@@ -233,7 +233,7 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
                 child: GridTile(
                   child: GestureDetector(
                       onTap: () {
-                        _navigateViewPage(ctx, args['id'], args['uid'], _contentList[index]);
+                        _navigateViewPage(ctx, args['id'], args['authorId'], _contentList[index]);
                       },
 
                       child: CachedNetworkImage(

@@ -18,7 +18,7 @@ class FavoriteToonItem extends StatelessWidget {
 
   _navigateDetailPage(BuildContext ctx) {
     Navigator.of(ctx).pushNamed(HoneytoonDetailScreen.routeName,
-      arguments: {'id' : data.workId, 'uid': data.uid});
+      arguments: {'id' : data.workId, 'authorId': data.uid});
   }
 
   @override

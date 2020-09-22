@@ -13,7 +13,6 @@ class History {
     this.workId = documentId;
     if(snapshot['contents']!=null){
       this.timesList = snapshot['contents'];
-      print('timeList:${this.timesList}');
     }
     this.updateTime = snapshot['update_time'];
   }

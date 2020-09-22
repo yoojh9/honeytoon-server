@@ -123,7 +123,7 @@ class _HoneyToonListScreenState extends State<HoneyToonListScreen> {
         Navigator.of(context).pushNamed(HoneytoonDetailScreen.routeName,
             arguments: {
               'id': data.workId,
-              'uid': data.uid
+              'authorId': data.uid
             });
       },
       child: Card(

@@ -27,7 +27,7 @@ class _MyHoneytoonListViewState extends State<MyHoneytoonListView> {
   HoneytoonMetaProvider _metaProvider;
 
   void _navigateToDetail(BuildContext ctx, String uid, String workId){
-    Navigator.of(ctx).pushNamed(HoneytoonDetailScreen.routeName, arguments: {'uid': uid, 'id': workId});
+    Navigator.of(ctx).pushNamed(HoneytoonDetailScreen.routeName, arguments: {'authorId': uid, 'id': workId});
   }
 
   void _navigateToAddContentPage(BuildContext ctx, data) async{

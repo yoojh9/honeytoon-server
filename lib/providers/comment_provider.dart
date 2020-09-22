@@ -2,7 +2,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:honeytoon/helpers/database.dart';
-import 'package:honeytoon/models/user.dart';
 import '../models/comment.dart';
 
 class CommentProvider extends ChangeNotifier {
@@ -14,7 +13,6 @@ class CommentProvider extends ChangeNotifier {
   }
 
   Future<List<Comment>> getComments(String toonId) async {
-    print('toonId:$toonId');
     List<Comment> _comments;
     QuerySnapshot snapshot = await Database.commentRef.document(toonId)
         .collection('comment').orderBy('create_time', descending: true)
@@ -25,7 +23,6 @@ class CommentProvider extends ChangeNotifier {
       .toList();
 
     for(Comment comment in _comments) {
-      print('comment:$comment');
       var userData = await Database.userRef.document(comment.uid).get();
       comment.username = userData.data['displayName'];
       comment.thumbnail = userData.data['thumbnail'];
