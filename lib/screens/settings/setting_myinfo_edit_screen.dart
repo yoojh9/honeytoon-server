@@ -41,14 +41,14 @@ class _SettingMyInfoEditScreenState extends State<SettingMyInfoEditScreen> {
             FlatButton(
               child: Text('확인'),
               onPressed: (){
-                Navigator.of(context).pop();
-                _updateDisplayName(context, uid);
+                Navigator.of(ctx).pop();
+                _updateDisplayName(ctx, uid);
               },
             ),
             FlatButton(
               child: Text('취소'),
               onPressed: (){
-                Navigator.of(context).pop();
+                Navigator.of(ctx).pop();
               },
             ),
           ],

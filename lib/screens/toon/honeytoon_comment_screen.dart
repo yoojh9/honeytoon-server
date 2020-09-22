@@ -2,10 +2,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:honeytoon/providers/auth_provider.dart';
 import '../../models/comment.dart';
 import '../../providers/comment_provider.dart';
 import '../../helpers/dateFormatHelper.dart';
 import 'package:provider/provider.dart';
+import 'package:async/async.dart';
 
 class HoneytoonCommentScreen extends StatefulWidget {
   static const routeName = '/comment';
@@ -15,11 +17,16 @@ class HoneytoonCommentScreen extends StatefulWidget {
 }
 
 class _HoneytoonCommentScreenState extends State<HoneytoonCommentScreen> {
+  final AsyncMemoizer _memoizer = AsyncMemoizer();
+  String userId;
   CommentProvider _commentProvider;
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _textController = new TextEditingController();
+  List<dynamic> _commentList = [];
 
-  void _handleSubmitted(String id, String text) async {
+  void _handleSubmitted(String id) async {
     try {
+      final text = _textController.text;
       final user = await FirebaseAuth.instance.currentUser();
       Comment comment = Comment(toonId: id, uid: user.uid, comment: text, createTime: Timestamp.now());
       _commentProvider.setComment(comment);
@@ -36,13 +43,69 @@ class _HoneytoonCommentScreenState extends State<HoneytoonCommentScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    this._memoizer.runOnce(() async {
+      final uid = await AuthProvider.getCurrentFirebaseUserUid();
+      setState(() {
+        userId = uid;
+      });
+    });
+  }
+
+  Future<void> _showDialog(BuildContext context, data) async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext ctx) {
+        return AlertDialog(
+          title: Text('댓글 삭제'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('댓글을 삭제하실건가요?'),
+              ],
+            )
+          ),
+          actions: <Widget>[ 
+            FlatButton(
+              child: Text('확인'),
+              onPressed: (){
+                Navigator.of(ctx).pop();
+                _deleteComment(ctx, data);
+              },
+            ),
+            FlatButton(
+              child: Text('취소'),
+              onPressed: (){
+                Navigator.of(ctx).pop();
+              },
+            ),
+          ],
+        );
+      }  
+    );
+  }
+
+  void _deleteComment(BuildContext ctx, data) async {
+    try {
+      await _commentProvider.deleteComment(data);
+      _showSnackbar(ctx, '댓글을 삭제하였습니다');
+    } catch(error){
+      print(error);
+      _showSnackbar(ctx, '댓글 삭제에 실패했습니다');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
     final mediaQueryData = MediaQuery.of(context);
     final height = mediaQueryData.size.height - (kToolbarHeight + mediaQueryData.padding.top + mediaQueryData.padding.bottom);
-    _commentProvider = Provider.of<CommentProvider>(context);
+    _commentProvider = Provider.of<CommentProvider>(context, listen: true);
 
     return Scaffold(
+      key: _scaffoldKey,
       resizeToAvoidBottomInset : false,
       appBar: AppBar(
         title: Text('댓글'),
@@ -71,12 +134,13 @@ class _HoneytoonCommentScreenState extends State<HoneytoonCommentScreen> {
       child: TextField(
         controller: _textController,
         onSubmitted: (String value){
-          _handleSubmitted(id, value);
+          _handleSubmitted(id);
         },
         decoration: InputDecoration(
           hintText: '댓글을 입력해주세요', 
-          suffixIcon: Icon(Icons.add)
-        ),
+          suffixIcon: IconButton(icon: Icon(Icons.add), onPressed: (){ _handleSubmitted(id);}
+          ),
+        )
       ),
     );
   }
@@ -84,50 +148,140 @@ class _HoneytoonCommentScreenState extends State<HoneytoonCommentScreen> {
   Widget _buildComments(id, height){
     return Container(
       height: height * 0.75,
-      child: FutureBuilder(
-        future: _commentProvider.getComments(id),
+      child: StreamBuilder(
+        stream: _commentProvider.commentStream(id),
         builder: (context, snapshot) {
-          if(snapshot.connectionState == ConnectionState.waiting){
+          if(snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator(),);
           } else if(snapshot.hasData){
-            return ListView.builder(
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-              itemCount: snapshot.data.length,
-              padding: EdgeInsets.symmetric(vertical: 16),
-              itemBuilder: (ctx, index) => ListTile(
-                contentPadding: EdgeInsets.symmetric(vertical: 6), 
-                leading: ClipRRect(
-                  borderRadius: BorderRadius.circular(50),
-                  child: CachedNetworkImage(
-                      width: 50,
-                      height: 50,
-                      imageUrl: snapshot.data[index].thumbnail,
-                      placeholder: (context, url) => Image.asset('assets/images/avatar_placeholder.png',),
-                      errorWidget: (context, url, error) => Image.asset('assets/images/avatar_placeholder.png'),
-                      fit: BoxFit.fill,
-                    ), 
-                ),
-                // leading: CircleAvatar(
-                //   radius: 30,
-                //   backgroundImage: NetworkImage(snapshot.data[index].thumbnail),
-                // ),
-                title: Container(
-                  child: Row(
-                    children: <Widget>[
-                      Text('${snapshot.data[index].username}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                      SizedBox(width: 25,),
-                      Text('${DateFormatHelper.getDateTime(snapshot.data[index].createTime)}', style: TextStyle(color: Colors.grey))
-                  ],)
-                ),
-                subtitle: Text('${snapshot.data[index].comment}', style: TextStyle(color: Colors.grey, fontSize: 16),),
-              ),
-              
-            );
-          } else {
-            return null;
-          }
+            if(snapshot.data.documents.length > 0){
+              _commentList = snapshot.data.documents
+                .map((item) => Comment.fromMap(id, item.documentID, item.data))
+                .toList();
+            }
+            return FutureBuilder(
+              future: _commentProvider.getCommentsWithUser(_commentList),
+              builder: (context, snapshot){
+                if(snapshot.connectionState == ConnectionState.waiting){
+                  return Center(child: CircularProgressIndicator(),);
+                } else if(snapshot.hasData){
+                  return ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    itemCount: snapshot.data.length,
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    itemBuilder: (ctx, index) => 
+                      ListTile(
+                      contentPadding: EdgeInsets.symmetric(vertical: 6), 
+                      leading: ClipRRect(
+                        borderRadius: BorderRadius.circular(50),
+                        child: CachedNetworkImage(
+                            width: 50,
+                            height: 50,
+                            imageUrl: snapshot.data[index].thumbnail,
+                            placeholder: (context, url) => Image.asset('assets/images/avatar_placeholder.png',),
+                            errorWidget: (context, url, error) => Image.asset('assets/images/avatar_placeholder.png'),
+                            fit: BoxFit.fill,
+                          ), 
+                      ),
+                      // leading: CircleAvatar(
+                      //   radius: 30,
+                      //   backgroundImage: NetworkImage(snapshot.data[index].thumbnail),
+                      // ),
+                      title: Container(
+                        child: Row(
+                          children: <Widget>[
+                            Text('${snapshot.data[index].username}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                            SizedBox(width: 25,),
+                            Text('${DateFormatHelper.getDateTime(snapshot.data[index].createTime)}', style: TextStyle(color: Colors.grey))
+                        ],)
+                      ),
+                      subtitle: Text('${snapshot.data[index].comment}', style: TextStyle(color: Colors.grey, fontSize: 16),),
+                      trailing: (userId == snapshot.data[index].uid) ?  
+                        IconButton(icon: Icon(
+                          Icons.delete, color: Colors.black54,
+                        ),
+                        onPressed: () {
+                          _showDialog(context, snapshot.data[index]);
+                        }
+                      ): null,
+                    ),
+                  );                  
+                } else {
+                  return Container();
+                }
+        
         }
+    );
+          }
+      }
+      )
+    );
+    }
+
+    //   child: FutureBuilder(
+    //     future: _commentProvider.getComments(id),
+    //     builder: (context, snapshot) {
+    //       if(snapshot.connectionState == ConnectionState.waiting){
+    //         return Center(child: CircularProgressIndicator(),);
+    //       } else if(snapshot.hasData && snapshot.data.length > 0){
+    //                     print('thumbnail: ${snapshot.data[0].thumbnail}');
+    //         return ListView.builder(
+    //           scrollDirection: Axis.vertical,
+    //           shrinkWrap: true,
+    //           itemCount: snapshot.data.length,
+    //           padding: EdgeInsets.symmetric(vertical: 16),
+    //           itemBuilder: (ctx, index) => 
+    //             ListTile(
+    //             contentPadding: EdgeInsets.symmetric(vertical: 6), 
+    //             leading: ClipRRect(
+    //               borderRadius: BorderRadius.circular(50),
+    //               child: CachedNetworkImage(
+    //                   width: 50,
+    //                   height: 50,
+    //                   imageUrl: snapshot.data[index].thumbnail,
+    //                   placeholder: (context, url) => Image.asset('assets/images/avatar_placeholder.png',),
+    //                   errorWidget: (context, url, error) => Image.asset('assets/images/avatar_placeholder.png'),
+    //                   fit: BoxFit.fill,
+    //                 ), 
+    //             ),
+    //             // leading: CircleAvatar(
+    //             //   radius: 30,
+    //             //   backgroundImage: NetworkImage(snapshot.data[index].thumbnail),
+    //             // ),
+    //             title: Container(
+    //               child: Row(
+    //                 children: <Widget>[
+    //                   Text('${snapshot.data[index].username}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+    //                   SizedBox(width: 25,),
+    //                   Text('${DateFormatHelper.getDateTime(snapshot.data[index].createTime)}', style: TextStyle(color: Colors.grey))
+    //               ],)
+    //             ),
+    //             subtitle: Text('${snapshot.data[index].comment}', style: TextStyle(color: Colors.grey, fontSize: 16),),
+    //             trailing: (userId == snapshot.data[index].uid) ?  
+    //               IconButton(icon: Icon(
+    //                 Icons.delete, color: Colors.black54,
+    //               ),
+    //               onPressed: () {
+    //                 _showDialog(context, snapshot.data[index]);
+    //               }
+    //             ): null,
+    //           ),
+    //         );
+    //       } else {
+    //         return Container();
+    //       }
+    //     }
+    //   ),
+    // );
+
+  
+  void _showSnackbar(BuildContext context, String message){
+    _scaffoldKey.currentState.showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+        ),
       ),
     );
   }

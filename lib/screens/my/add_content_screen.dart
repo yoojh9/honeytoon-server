@@ -239,14 +239,14 @@ class _AddContentScreenState extends State<AddContentScreen> {
             FlatButton(
               child: Text('확인'),
               onPressed: (){
-                Navigator.of(context).pop();
-                _submitForm(context, args);
+                Navigator.of(ctx).pop();
+                _submitForm(ctx, args);
               },
             ),
             FlatButton(
               child: Text('취소'),
               onPressed: (){
-                Navigator.of(context).pop();
+                Navigator.of(ctx).pop();
               },
             ),
           ],

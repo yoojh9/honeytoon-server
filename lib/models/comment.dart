@@ -27,7 +27,8 @@ class Comment {
     return data;
   }
 
-  Comment.fromMap(String documentId, Map snapshot){
+  Comment.fromMap(String toonId, String documentId, Map snapshot){
+    this.toonId = toonId;
     this.commentId = documentId;
     this.uid = snapshot['uid'];
     this.comment = snapshot['comment'];

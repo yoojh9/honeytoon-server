@@ -12,22 +12,47 @@ class CommentProvider extends ChangeNotifier {
     await commentReference.setData(data);
   }
 
+  Stream<QuerySnapshot> commentStream(String toonId) {
+    return Database.commentRef.document(toonId).collection('comment').orderBy('create_time', descending: true).snapshots();
+  }
+
+  Future<List<dynamic>> getCommentsWithUser(List<dynamic> comments) async {
+    print('getCommentsWithUser');
+    for(Comment comment in comments){
+      print('toonId:${comment.toonId}');
+      print('comment:${comment}');
+      var userData = await Database.userRef.document(comment.uid).get();
+      print('userData:${userData.data}');
+      comment.username = userData.data['displayName'];
+      comment.thumbnail = userData.data['thumbnail'];
+      print('loop : ${comment.thumbnail}');
+    }
+    return comments;
+  }
+
   Future<List<Comment>> getComments(String toonId) async {
+
     List<Comment> _comments;
     QuerySnapshot snapshot = await Database.commentRef.document(toonId)
         .collection('comment').orderBy('create_time', descending: true)
         .getDocuments();
     _comments = snapshot.documents
       .map((document) =>
-        Comment.fromMap(document.documentID, document.data))
+        Comment.fromMap(toonId, document.documentID, document.data))
       .toList();
 
     for(Comment comment in _comments) {
+      print('comment:$comment');
       var userData = await Database.userRef.document(comment.uid).get();
       comment.username = userData.data['displayName'];
       comment.thumbnail = userData.data['thumbnail'];
     }
 
     return _comments;
+  }
+
+  Future<void> deleteComment(Comment comment) async {
+    print('toonId: ${comment.toonId}, commentId: ${comment.commentId}');
+    await Database.commentRef.document(comment.toonId).collection('comment').document(comment.commentId).delete();
   }
 }
