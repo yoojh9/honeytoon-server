@@ -54,8 +54,10 @@ class CurrentToonItem extends StatelessWidget {
                     children: [
                       Text(
                         '${data.title}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                         ),
                       ),
                       Text('${data.authorName}'),

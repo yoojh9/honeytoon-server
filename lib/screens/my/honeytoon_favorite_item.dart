@@ -38,7 +38,7 @@ class FavoriteToonItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('${data.title}', style: TextStyle(fontSize:20,),),
+                  Text('${data.title}', style: TextStyle(fontSize:18,), maxLines: 1, overflow: TextOverflow.ellipsis,),
                   Text('${data.authName}'),
                   Text('${DateFormatHelper.getDateTime(data.likeTime)}')
                 ]

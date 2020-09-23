@@ -189,10 +189,15 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
                               children: [
                                 Text(
                                   '${snapshot.data.title}',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
                                 ),
                                 Text('${snapshot.data.description}',
-                                  style: TextStyle(fontSize: 14, color: Colors.grey)
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                                  
                                 ),
                               ],
                             ),
