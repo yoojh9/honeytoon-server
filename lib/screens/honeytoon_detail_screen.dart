@@ -102,7 +102,7 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
     final Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
     final mediaQueryData = MediaQuery.of(context);
     final height = mediaQueryData.size.height -
-        (mediaQueryData.padding.top + mediaQueryData.padding.bottom);
+        (mediaQueryData.padding.top + mediaQueryData.padding.bottom + 50);
 
     return Scaffold(
         key: _scaffoldKey,
@@ -112,7 +112,7 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
           leading: IconButton(
               icon: Icon(Icons.arrow_back),
               onPressed: () {
-                Navigator.of(context).pushNamed(TemplateScreen.routeName);
+                Navigator.of(context).pushReplacementNamed(TemplateScreen.routeName);
               }),
           actions: <Widget>[             
             _buildHeaderIcon(context, userId, args)
@@ -185,18 +185,22 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
                     Expanded(
                       flex: 1,
                       child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            Text(
-                              '${snapshot.data.title}',
-                              style: TextStyle(fontSize: 20),
+                            Column(
+                              children: [
+                                Text(
+                                  '${snapshot.data.title}',
+                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
+                                ),
+                                Text('${snapshot.data.description}',
+                                  style: TextStyle(fontSize: 14, color: Colors.grey)
+                                ),
+                              ],
                             ),
-                            SizedBox(height: 10,),
                             Text('${snapshot.data.displayName}',
-                              style: TextStyle(fontSize: 16, color: Colors.grey)
+                              style: TextStyle(fontSize: 18, color: Colors.grey)
                             ),
-                            // SizedBox(height: 20),
-                            // Text('${snapshot.data.likes}'),
                           ]),
                     ),
                   ],

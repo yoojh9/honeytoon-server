@@ -37,7 +37,8 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
   void initState() {
     print('initState()');
     
-    _scrollController = ScrollController(initialScrollOffset: 0.0);
+    _scrollController = ScrollController();
+    
     _scrollController.addListener(_handleScroll);
 
     setState(() {
@@ -68,8 +69,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
   @override
   void dispose() {
     print('dispose');
-    _scrollController.removeListener(_handleScroll);
-    _scrollController.dispose();
+    _scrollController.removeListener(() { });
     super.dispose();
   }
 
@@ -104,6 +104,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
     return Scaffold(
         key: _scaffoldKey,
         body: CustomScrollView(
+          //controller: _scrollController,
           slivers: [
             SliverAppBar(
               expandedHeight: 30,
@@ -156,6 +157,8 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
                 child: CircularProgressIndicator(),
               );
             } else if (snapshot.hasData) {
+              args['data'].contentId = snapshot.data.contentId;
+
               return Container(
                   child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -210,6 +213,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
 
   Future<void> _addHoneytoonViewLog(args) async {
     if(userId==null) return;
+    else if(userId == args['authorId']) return;
     
       Current current = Current(
           uid: userId,
@@ -234,6 +238,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
   }
 
   void _onTap(BuildContext context, height, int index, args) {
+    print('args:${args['data'].contentId}');
     setState(() {
       if (index == 0) {
         _navigateOtherPage(context, args, -1);
