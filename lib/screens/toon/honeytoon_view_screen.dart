@@ -218,6 +218,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
       Current current = Current(
           uid: userId,
           workId: args['id'],
+          contentId: args['data'].contentId,
           times: args['data'].times,
           updateTime: Timestamp.now()
       );
@@ -238,7 +239,6 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
   }
 
   void _onTap(BuildContext context, height, int index, args) {
-    print('args:${args['data'].contentId}');
     setState(() {
       if (index == 0) {
         _navigateOtherPage(context, args, -1);

@@ -145,8 +145,8 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
     :
     IconButton(
       icon: (like) 
-          ? Icon(Icons.favorite)
-          : Icon(Icons.favorite_border),
+          ? Icon(Icons.favorite, color: Theme.of(ctx).primaryColor,)
+          : Icon(Icons.favorite_border, color: Theme.of(ctx).primaryColor,),
       onPressed: () {
         _tabLikeButton(args['id'], userId);
       },
@@ -173,10 +173,8 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
                             aspectRatio: 16 / 9,
                             child: CachedNetworkImage(
                                 imageUrl: snapshot.data.coverImgUrl,
-                                placeholder: (context, url) => Image.asset(
-                                    'assets/images/image_spinner.gif'),
-                                errorWidget: (context, url, error) =>
-                                    Icon(Icons.error),
+                                placeholder: (context, url) => Image.asset('assets/images/image_spinner.gif'),
+                                errorWidget: (context, url, error) => Icon(Icons.error),
                                 fit: BoxFit.cover
                             )
                           )
@@ -226,68 +224,91 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
                     HoneytoonContentItem.fromMap(item.documentID, item.data))
                 .toList();
           }
+          return _buildHoneytoonContentItem(args, history, _contentList);
 
-          return Container(
-            child: GridView.builder(
-              primary: false,
-              shrinkWrap: true,
-              itemCount: _contentList.length,
-              itemBuilder: (ctx, index) => ClipRRect(
-                borderRadius: BorderRadius.circular(5),
-                child: GridTile(
-                  child: GestureDetector(
-                      onTap: () {
-                        _navigateViewPage(ctx, args['id'], args['authorId'], _contentList[index]);
-                      },
-
-                      child: CachedNetworkImage(
-                        imageBuilder: (context, imageProvider) => 
-                         (history!=null && history.timesList.contains(_contentList[index].times)) ? 
-                        Container(
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: imageProvider,
-                              colorFilter: ColorFilter.mode(Colors.grey, BlendMode.lighten),
-                              fit: BoxFit.cover,
-                            )
-                          ),
-                        ):
-                        Container(
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: imageProvider,
-                              fit: BoxFit.cover,
-                            )
-                          ),
-                        ),
-                        imageUrl: _contentList[index].coverImgUrl,
-                        placeholder: (context, url) =>
-                            Image.asset('assets/images/image_spinner.gif'),
-                        errorWidget: (context, url, error) =>
-                            Icon(Icons.error),
-                        )
-                  ),
-                  footer: GridTileBar(
-                    backgroundColor: Colors.white70,
-                    title: Text(
-                      '${_contentList[index].times}화',
-                      textAlign: TextAlign.start,
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  ),
-                ),
-              ),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  childAspectRatio: 1.5 / 2,
-                  crossAxisSpacing: 5,
-                  mainAxisSpacing: 5),
-            ),
-          );
         } else {
           return Center(child: Text('허니툰을 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요'));
         }
       },
     );
+  }
+
+  Widget _buildHoneytoonContentItem(args, history, _contentList){
+    return Container(
+      child: GridView.builder(
+        primary: false,
+        shrinkWrap: true,
+        itemCount: _contentList.length,
+        itemBuilder: (ctx, index) => ClipRRect(
+          borderRadius: BorderRadius.circular(5),
+          child: GridTile(
+            child: GestureDetector(
+                onTap: () {
+                  _navigateViewPage(ctx, args['id'], args['authorId'], _contentList[index]);
+                },
+                child: Stack(
+                  children: 
+                  [
+                    CachedNetworkImage(
+                      imageBuilder: (context, imageProvider) => _buildImageDecoration(history, _contentList[index].times, imageProvider),
+                      imageUrl: _contentList[index].coverImgUrl,
+                      placeholder: (context, url) => Image.asset('assets/images/image_spinner.gif'),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                    ),
+                    (userId==args['authorId'])
+                    ?Positioned(
+                      top: 0.0, 
+                      right: 0.0, 
+                      child: InkWell(
+                        onTap: (){
+                          print('settings tap');
+                        },
+                        child: Icon(Icons.settings, size: 18, color: Colors.black87,),
+                      )
+                    )
+                    : Container()
+                  ]
+                )
+            ),
+            footer: GridTileBar(
+              backgroundColor: Colors.white70,
+              title: Text(
+                '${_contentList[index].times}화',
+                textAlign: TextAlign.start,
+                style: TextStyle(color: Colors.black),
+              ),
+            ),
+          ),
+        ),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            childAspectRatio: 1.5 / 2,
+            crossAxisSpacing: 5,
+            mainAxisSpacing: 5),
+      ),
+    );
+  }
+
+  Widget _buildImageDecoration(history, times, imageProvider){
+    if(history!=null && history.timesList.contains(times)){
+      return Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: imageProvider,
+            colorFilter: ColorFilter.mode(Colors.grey, BlendMode.lighten),
+            fit: BoxFit.cover,
+          )
+        ),
+      );
+    } else {
+      return Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: imageProvider,
+            fit: BoxFit.cover,
+          )
+        ),
+      );
+    }
   }
 }

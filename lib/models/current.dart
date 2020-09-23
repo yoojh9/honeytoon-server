@@ -7,16 +7,18 @@ class Current {
   String coverImgUrl;
   String authorName;
   String authorId;
+  String contentId;
   String times;
   int totalCount;
   Timestamp updateTime;
 
-  Current({this.uid, this.workId, this.times, this.updateTime});
+  Current({this.uid, this.workId, this.contentId, this.times, this.updateTime});
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['update_time'] = this.updateTime;
     data['times'] = this.times;
+    data['content_id'] = this.contentId;
     return data;
   }
 
@@ -25,6 +27,9 @@ class Current {
 
     if (currentSnapshot['times'] != null) {
       this.times = currentSnapshot['times'];
+    }
+    if(currentSnapshot['content_id']!=null){
+      this.contentId = currentSnapshot['content_id'];
     }
     if (toonSnapshot == null) return;
     if (toonSnapshot['title'] != null) {
