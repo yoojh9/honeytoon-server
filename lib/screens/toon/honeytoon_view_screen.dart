@@ -23,7 +23,7 @@ class HoneytoonViewScreen extends StatefulWidget {
 
 class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTickerProviderStateMixin {
   final AsyncMemoizer _memoizer = AsyncMemoizer();
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  var _scaffoldKey = GlobalKey<ScaffoldState>();
   ScrollController _scrollController;
   var _isVisible = true;
   int _currentIndex = 0;
@@ -31,15 +31,24 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
   String userId;
   MyProvider _myProvider;
   HoneytoonContentProvider _contentProvider;
-  TextEditingController _controller;
 
 
   @override
   void initState() {
+    print('initState()');
+    
+    _scrollController = ScrollController(initialScrollOffset: 0.0);
+    _scrollController.addListener(_handleScroll);
+
+    setState(() {
+      _giftPoint = 10;
+    });
+
     super.initState();
-    _controller = new TextEditingController(text: '0');
-    _scrollController = ScrollController();
-    _scrollController.addListener(() {
+  }
+
+  void _handleScroll(){
+     print('position:${_scrollController.position.userScrollDirection}');
       if (_scrollController.position.userScrollDirection ==
               ScrollDirection.reverse &&
           _isVisible) {
@@ -54,10 +63,14 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
           _isVisible = true;
         });
       }
-      setState(() {
-        _giftPoint = 10;
-      });
-    });
+  }
+
+  @override
+  void dispose() {
+    print('dispose');
+    _scrollController.removeListener(_handleScroll);
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -78,6 +91,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
 
   @override
   Widget build(BuildContext context) {
+    print('build');
     final Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
     final mediaQueryData = MediaQuery.of(context);
     final height = mediaQueryData.size.height -
@@ -89,27 +103,30 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
 
     return Scaffold(
         key: _scaffoldKey,
-        body: CustomScrollView(controller: _scrollController, slivers: [
-          SliverAppBar(
-            expandedHeight: 30,
-            backgroundColor: Colors.transparent,
-            floating: false,
-            pinned: false,
-            leading: IconButton(
-                icon: Icon(Icons.format_list_bulleted),
-                onPressed: () {
-                  _navigateDetailPage(context, args['id'], args['authorId']);
-                }),
-            flexibleSpace: FlexibleSpaceBar(
-              centerTitle: true,
-              title: Text(
-                '${args['data'].times}화',
-                style: TextStyle(fontSize: 20),
+        body: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              expandedHeight: 30,
+              backgroundColor: Colors.transparent,
+              floating: false,
+              pinned: false,
+              leading: IconButton(
+                  icon: Icon(Icons.format_list_bulleted),
+                  onPressed: () {
+                    _navigateDetailPage(context, args['id'], args['authorId']);
+                  }),
+              flexibleSpace: FlexibleSpaceBar(
+                centerTitle: true,
+                title: Text(
+                  '${args['data'].times}화',
+                  style: TextStyle(fontSize: 20),
+                ),
               ),
             ),
-          ),
-          SliverList(delegate: SliverChildListDelegate([buildImage(args)]))
-        ]),
+            SliverList(
+              delegate: SliverChildListDelegate([buildImage(args)])
+            )
+          ]),
         bottomNavigationBar:
             _buildBottomNavigationBar(height, width, args));
   }
@@ -142,17 +159,14 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
               return Container(
                   child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        ListView.builder(
-                            padding: EdgeInsets.zero,
-                            shrinkWrap: true,
-                            itemCount: snapshot.data.contentImgUrls.length,
-                            itemBuilder: (ctx, index) => CachedNetworkImage(
+                      children: 
+                        List.generate(snapshot.data.contentImgUrls.length, (index) => CachedNetworkImage(
                                 imageUrl: snapshot.data.contentImgUrls[index],
                                 placeholder: (context, url) => Image.asset('assets/images/image_spinner.gif'),
                                 errorWidget: (context, url, error) => Icon(Icons.error),
                                 fit: BoxFit.cover))
-                      ]));
+                      ));
+                      
             } else {
               return Center(
                 child: Text('허니툰을 불러오는데 문제가 발생했습니다. 잠시 후 다시 시도해주세요'),
@@ -259,7 +273,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
       return;
     } else {
       args['data'].times = times.toString();
-      Navigator.of(ctx).pushNamed(HoneytoonViewScreen.routeName,
+      Navigator.of(ctx).pushReplacementNamed(HoneytoonViewScreen.routeName,
         arguments: {
           'id': args['id'],
           'authorId': args['authorId'],
