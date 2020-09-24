@@ -9,6 +9,7 @@ import 'package:honeytoon/providers/auth_provider.dart';
 import 'package:honeytoon/providers/honeytoon_content_provider.dart';
 import 'package:honeytoon/providers/honeytoon_meta_provider.dart';
 import 'package:honeytoon/providers/my_provider.dart';
+import 'package:honeytoon/screens/my/edit_content_screen.dart';
 import 'package:honeytoon/screens/template_screen.dart';
 import './toon/honeytoon_view_screen.dart';
 import './my/add_content_screen.dart';
@@ -74,8 +75,8 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
 
   void _navigateToEditContentPage(BuildContext ctx, workId, HoneytoonContentItem data) async {
     var result = await Navigator.of(ctx).pushNamed(
-      AddContentScreen.routeName,
-      arguments: {'id': workId, 'cover_img': data.coverImgUrl}
+      EditContentScreen.routeName,
+      arguments: {'id': workId, 'content_id': data.contentId, 'cover_img': data.coverImgUrl}
     );
   }
 

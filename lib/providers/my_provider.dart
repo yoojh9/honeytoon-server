@@ -101,7 +101,6 @@ class MyProvider extends ChangeNotifier {
   Future<History> getHoneytoonHistory(uid, workId) async {
     final DocumentReference historyReference = Database.myRef.document(uid).collection('history').document(workId);
     DocumentSnapshot historySnapshot = await historyReference.get();
-    print('data: ${historySnapshot.data}');
     if(!historySnapshot.exists) return null;
     return History.fromMap(historySnapshot.documentID, historySnapshot.data);
   }

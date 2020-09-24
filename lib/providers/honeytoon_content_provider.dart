@@ -42,10 +42,30 @@ class HoneytoonContentProvider extends ChangeNotifier {
     });
   }
 
-  // Future<void> updateHoneytoonMeta(HoneytoonMeta meta) async {
-  //   Map data = meta.toJson();
-  //   DocumentReference document = await _api.updateDocument(meta.workId, data);
-  // }
+  Future<void> updateHoneytoonContent(HoneytoonContent content, String uid) async {
+    const point = -10;
+    Map data = content.toJson();
+    Map pointData = Point(uid: uid, type: PointType.REGIST, point:point, createTime: Timestamp.now()).toJson();
+
+    final DocumentReference _contentReference = Database.contentRef.document(content.toonId).collection('items').document(content.content.contentId);
+    final DocumentReference _metaReference = Database.metaRef.document(content.toonId);
+    final DocumentReference _userReference = Database.userRef.document(uid);
+    final DocumentReference _pointReference = Database.pointRef.document(uid).collection('point').document();
+
+    print('content:${content.content}');
+    print('data:$data');
+    Database.firestore.runTransaction((transaction) async {
+      await transaction.update(_contentReference, data);
+      await transaction.update(_metaReference, {'update_time':Timestamp.now()});
+      await transaction.update(_userReference, {'honey': FieldValue.increment(-10)});
+      await transaction.set(_pointReference, pointData);
+    }).then((_){
+      print('success');
+    }).catchError((error){
+      print('updateHoneytoonContent Error');
+      print(error.message);
+    });
+  }
 
   Stream<QuerySnapshot> streamMeta() {
     return Database.contentRef.getDocuments().asStream();

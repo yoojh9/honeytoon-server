@@ -34,11 +34,8 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
 
 
   @override
-  void initState() {
-    print('initState()');
-    
+  void initState() {    
     _scrollController = ScrollController();
-    
     _scrollController.addListener(_handleScroll);
 
     setState(() {
@@ -49,7 +46,6 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
   }
 
   void _handleScroll(){
-     print('position:${_scrollController.position.userScrollDirection}');
       if (_scrollController.position.userScrollDirection ==
               ScrollDirection.reverse &&
           _isVisible) {
@@ -68,7 +64,6 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
 
   @override
   void dispose() {
-    print('dispose');
     _scrollController.removeListener(() { });
     super.dispose();
   }
@@ -91,7 +86,6 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
 
   @override
   Widget build(BuildContext context) {
-    print('build');
     final Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
     final mediaQueryData = MediaQuery.of(context);
     final height = mediaQueryData.size.height -
@@ -292,7 +286,6 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
   }
 
   void _navigateDetailPage(BuildContext ctx, workId, authorId){
-    print('userId=$userId');
     Navigator.of(context).pushNamed(HoneytoonDetailScreen.routeName,
     arguments: {
       'id': workId,

@@ -10,15 +10,26 @@ class HoneytoonContentItem {
   Timestamp updateTime;
   List<String> contentImgUrls;
 
-  HoneytoonContentItem({this.times, this.coverImgUrl, this.contentImgUrls});
+  HoneytoonContentItem({this.times, this.coverImgUrl, this.contentId, this.contentImgUrls, this.createTime, this.updateTime});
 
   Map<String, dynamic> toJson(){
     final Map<String, dynamic> data = Map<String, dynamic>();
     data['times'] = this.times;
-    data['cover_img'] = this.coverImgUrl;
-    data['create_time'] = Timestamp.now();
-    data['update_time'] = Timestamp.now();
-    data['content_imgs'] = this.contentImgUrls;
+    if(this.coverImgUrl!=null){
+      data['cover_img'] = this.coverImgUrl;
+    }
+    if(this.contentId!=null){
+      data['content_id'] = this.contentId;
+    }
+    if(this.createTime!=null){
+      data['create_time'] = this.createTime;
+    }
+    if(this.updateTime!=null){
+      data['update_time'] = this.updateTime;
+    }
+    if(this.contentImgUrls!=null){
+      data['content_imgs'] = this.contentImgUrls;
+    }
     return data;
   }
 

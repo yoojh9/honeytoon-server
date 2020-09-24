@@ -12,8 +12,11 @@ class CoverImgWidget extends StatelessWidget {
   Future _getImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
-    coverImage = File(pickedFile.path);
-    setImage(coverImage);
+    
+    if(pickedFile!=null){
+      coverImage = File(pickedFile.path);
+      setImage(coverImage);
+    }
   }
 
   @override
