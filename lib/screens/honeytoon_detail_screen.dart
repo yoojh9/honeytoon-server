@@ -72,6 +72,13 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
     }
   }
 
+  void _navigateToEditContentPage(BuildContext ctx, workId, HoneytoonContentItem data) async {
+    var result = await Navigator.of(ctx).pushNamed(
+      AddContentScreen.routeName,
+      arguments: {'id': workId, 'cover_img': data.coverImgUrl}
+    );
+  }
+
   Future<void> _tabLikeButton(String workId, String uid) async {
     setState(() {
       like = !like;
@@ -87,7 +94,8 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
       arguments: {
         'id': workId,
         'authorId': authorId,
-        'data': data,
+        'times': data.times,
+        'contentId': data.contentId,
         'total': totalCount,
         'images': data.contentImgUrls,
       }
@@ -194,7 +202,7 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
                                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
                                 ),
                                 Text('${snapshot.data.description}',
-                                  maxLines: 2,
+                                  maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(fontSize: 14, color: Colors.grey),
                                   
@@ -261,12 +269,12 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
                       errorWidget: (context, url, error) => Icon(Icons.error),
                     ),
                     (userId==args['authorId'])
-                    ?Positioned(
+                    ? Positioned(
                       top: 0.0, 
                       right: 0.0, 
                       child: InkWell(
                         onTap: (){
-                          print('settings tap');
+                          _navigateToEditContentPage(ctx, args['id'], _contentList[index]);
                         },
                         child: Icon(Icons.settings, size: 18, color: Colors.black87,),
                       )

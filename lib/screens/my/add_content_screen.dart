@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:honeytoon/models/user.dart';
 import 'package:honeytoon/providers/honeytoon_meta_provider.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/honeytoon_content_provider.dart';
@@ -130,6 +131,12 @@ class _AddContentScreenState extends State<AddContentScreen> {
     super.initState();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -143,7 +150,7 @@ class _AddContentScreenState extends State<AddContentScreen> {
         appBar: _buildAppBar(context, args),
         key: _scaffoldKey,
         body: _buildForm(args)
-        );
+    );
   }
 
   Widget _buildForm(Map<String, dynamic> args){

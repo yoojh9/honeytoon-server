@@ -119,7 +119,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
               flexibleSpace: FlexibleSpaceBar(
                 centerTitle: true,
                 title: Text(
-                  '${args['data'].times}화',
+                  '${args['times']}화',
                   style: TextStyle(fontSize: 20),
                 ),
               ),
@@ -150,14 +150,14 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
                   .toList()));
     } else {
       return FutureBuilder(
-          future: _contentProvider.getHoneytoonContentByTimes(args['id'], args['data'].times),
+          future: _contentProvider.getHoneytoonContentByTimes(args['id'], args['times']),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(
                 child: CircularProgressIndicator(),
               );
             } else if (snapshot.hasData) {
-              args['data'].contentId = snapshot.data.contentId;
+              args['contentId'] = snapshot.data.contentId;
 
               return Container(
                   child: Column(
@@ -218,15 +218,15 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
       Current current = Current(
           uid: userId,
           workId: args['id'],
-          contentId: args['data'].contentId,
-          times: args['data'].times,
+          contentId: args['contentId'],
+          times: args['times'],
           updateTime: Timestamp.now()
       );
       
       History history = History(
         uid: userId,
         workId: args['id'],
-        times: args['data'].times,
+        times: args['times'],
         updateTime: Timestamp.now()
       );
 
@@ -244,7 +244,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
         _navigateOtherPage(context, args, -1);
       } else if (index == 1) {
         Navigator.of(context).pushNamed(HoneytoonCommentScreen.routeName,
-            arguments: {'id': args['data'].contentId});
+            arguments: {'id': args['contentId']});
       } else if (index == 2) {
         _modalBottomSheetMenu(context, height, args);
       } else if (index == 3) {
@@ -269,7 +269,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
   }
 
   void _navigateOtherPage(BuildContext ctx, args, timesIncrement) {
-    int times = int.parse(args['data'].times) + timesIncrement;
+    int times = int.parse(args['times']) + timesIncrement;
     if(times == 0) {
       _showSnackbar(context, '이전화가 없습니다.');
       return;
@@ -277,12 +277,13 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
       _showSnackbar(context, '마지막 화 입니다.');
       return;
     } else {
-      args['data'].times = times.toString();
+      args['times'] = times.toString();
       Navigator.of(ctx).pushReplacementNamed(HoneytoonViewScreen.routeName,
         arguments: {
           'id': args['id'],
           'authorId': args['authorId'],
-          'data': args['data'],
+          'times': args['times'],
+          'contentId': args['contentId'],
           'total': args['total'],
           'images':null,
         }
