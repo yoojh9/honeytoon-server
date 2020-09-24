@@ -111,7 +111,7 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
     final Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
     final mediaQueryData = MediaQuery.of(context);
     final height = mediaQueryData.size.height -
-        (mediaQueryData.padding.top + mediaQueryData.padding.bottom + 50);
+        (mediaQueryData.padding.top + mediaQueryData.padding.bottom);
 
     return Scaffold(
         key: _scaffoldKey,
@@ -172,6 +172,7 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
             totalCount = snapshot.data.totalCount;
             return Container(
                 height: height * 0.4,
+                margin: EdgeInsets.only(bottom: height * 0.03),
                 child: Column(
                   children: <Widget>[
                     Expanded(
@@ -179,7 +180,7 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: AspectRatio(
-                            aspectRatio: 16 / 9,
+                            aspectRatio: 1 / 1,
                             child: CachedNetworkImage(
                                 imageUrl: snapshot.data.coverImgUrl,
                                 placeholder: (context, url) => Image.asset('assets/images/image_spinner.gif'),

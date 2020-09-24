@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:honeytoon/models/user.dart';
@@ -175,15 +176,20 @@ class _EditContentScreenState extends State<EditContentScreen> {
                 ? CoverImgWidget(_coverImage, setImage)   
                 : GestureDetector(
                     onTap: _getImage,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: NetworkImage(args['cover_img']),
-                          fit: BoxFit.cover
-                        ),
-                        borderRadius: BorderRadius.circular(12)
+                      child: AspectRatio(
+                        aspectRatio: 1 / 1 ,
+                        child: CachedNetworkImage(
+                          imageUrl: args['cover_img'],
+                          imageBuilder: (context, imageProvider) => Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              image: DecorationImage(image: imageProvider, fit:BoxFit.cover)
+                            ) ,
+                          ),
+                          placeholder: (context, url) => Image.asset('assets/images/image_spinner.gif'),
+                          errorWidget: (context, url, error) => Icon(Icons.error),
                       ),
-                    ),
+                    )
                   ),
             ),
             Expanded(
@@ -200,7 +206,7 @@ class _EditContentScreenState extends State<EditContentScreen> {
                       children: [
                         Text(snapshot.data.title, style: Theme.of(context).textTheme.headline6),
                         Text('$count 화', style: Theme.of(context).textTheme.subtitle1),
-                        Text('회차 내용을 변경하려면 허니툰 변경 버튼을 눌러 새로 추가해주세요'),
+                        Text('회차 내용을 변경하려면 허니툰 변경 버튼을 눌러 추가해주세요'),
                         RaisedButton(
                           color: Theme.of(context).primaryColor,
                           shape: RoundedRectangleBorder(

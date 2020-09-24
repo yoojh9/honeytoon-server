@@ -61,6 +61,7 @@ class _TemplateScreenState extends State<TemplateScreen> {
           ? AppBar(
               backgroundColor: Colors.transparent,
               elevation: 0,
+              automaticallyImplyLeading: false,
               title: customSearchBar,
               actions: <Widget>[
                 IconButton(icon: customIcon, onPressed: (){
