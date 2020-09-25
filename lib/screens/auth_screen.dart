@@ -92,6 +92,9 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQueryData = MediaQuery.of(context);
+    final height = mediaQueryData.size.height - ( mediaQueryData.padding.top + mediaQueryData.padding.bottom);
+
     return Scaffold(
         key: _scaffoldKey,
         resizeToAvoidBottomInset : false,
@@ -107,8 +110,8 @@ class _AuthScreenState extends State<AuthScreen> {
           ? Center(child: CircularProgressIndicator(),)
           : Column(
             children: <Widget>[
-              _buildEmailLogin(),
-              _buildSnsLogin()
+              _buildEmailLogin(height),
+              _buildSnsLogin(height)  
             ],
           ),
         )
@@ -117,9 +120,9 @@ class _AuthScreenState extends State<AuthScreen> {
         );
   }
 
-  Widget _buildEmailLogin(){
+  Widget _buildEmailLogin(height){
     return Expanded(
-      flex: 1,
+      flex: 2,
       child: Container(
           margin: const EdgeInsets.symmetric(vertical: 16),
           child: Form(
@@ -127,7 +130,7 @@ class _AuthScreenState extends State<AuthScreen> {
             child: Column(
               children: [
                 Text('이메일로 로그인',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,)),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,)),
                 TextFormField(
                   controller: _emailController,
                   decoration: InputDecoration(
@@ -137,6 +140,9 @@ class _AuthScreenState extends State<AuthScreen> {
                     if(value.isEmpty) return '이메일을 입력해주세요';
                     return null;
                   },
+                ),
+                SizedBox(
+                  height: height * 0.02,
                 ),
                 TextFormField(
                   controller: _passwordController,
@@ -148,11 +154,11 @@ class _AuthScreenState extends State<AuthScreen> {
                   },
                 ),
                 SizedBox(
-                  height: 20,
+                  height: height * 0.02,
                 ),
                 ButtonTheme(
                   minWidth: double.infinity,
-                  height: 40,
+                  padding: EdgeInsets.symmetric(vertical: height * 0.02),
                   child: RaisedButton(
                       color: Theme.of(context).primaryColor,
                       child: Text(
@@ -178,7 +184,7 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  Widget _buildSnsLogin(){
+  Widget _buildSnsLogin(height){
     return Expanded(
       flex: 1,
       child: Container(
@@ -186,7 +192,7 @@ class _AuthScreenState extends State<AuthScreen> {
             children: 
             [ 
               Text('SNS 계정으로 로그인 / 가입', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              SizedBox(height: 10,),
+              SizedBox(height: height * 0.01,),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[

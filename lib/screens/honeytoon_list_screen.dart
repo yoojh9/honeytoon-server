@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/honeytoonMeta.dart';
 import '../providers/honeytoon_meta_provider.dart';
 import './honeytoon_detail_screen.dart';
 import '../widgets/honeytoon_list_header.dart';
@@ -74,11 +73,7 @@ class _HoneyToonListScreenState extends State<HoneyToonListScreen> {
     _metaProvider = Provider.of<HoneytoonMetaProvider>(context);
 
     final mediaQueryData = MediaQuery.of(context);
-    final height = mediaQueryData.size.height -
-        (kToolbarHeight +
-            kBottomNavigationBarHeight +
-            mediaQueryData.padding.top +
-            mediaQueryData.padding.bottom);
+    final height = mediaQueryData.size.height - (kToolbarHeight + kBottomNavigationBarHeight + mediaQueryData.padding.top + mediaQueryData.padding.bottom);
 
     return SafeArea(
       child: SingleChildScrollView(

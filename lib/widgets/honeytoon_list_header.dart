@@ -18,11 +18,9 @@ class _HoneytoonListHeaderState extends State<HoneytoonListHeader> {
   int _current = 0;
 
   static const List<String> imgList = [
-    'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=94a1e718d89ca60a6337a6008341ca50&auto=format&fit=crop&w=1950&q=80',
-    'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a0c8d632e977f94e5d312d9893258f59&auto=format&fit=crop&w=1355&q=80',
-    'https://images.unsplash.com/photo-1523205771623-e0faa4d2813d?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=89719a0d55dd05e2deae4120227e6efc&auto=format&fit=crop&w=1953&q=80',
-    'https://images.unsplash.com/photo-1508704019882-f9cf40e475b4?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=8c6e5e3aba713b17aa1fe71ab4f0ae5b&auto=format&fit=crop&w=1352&q=80',
-    'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a0c8d632e977f94e5d312d9893258f59&auto=format&fit=crop&w=1355&q=80'
+    'https://firebasestorage.googleapis.com/v0/b/honeytoon-server.appspot.com/o/main%2Fimage1.png?alt=media&token=3fa9f77d-e73d-4952-b0d6-2edd9dcf4519',
+    'https://firebasestorage.googleapis.com/v0/b/honeytoon-server.appspot.com/o/main%2Fimage2.png?alt=media&token=94cbc1aa-e9bc-4fd4-8ab5-9dff8e62301b',
+    'https://firebasestorage.googleapis.com/v0/b/honeytoon-server.appspot.com/o/main%2Fimage3.png?alt=media&token=3ddb8a06-b37c-4b52-a19e-84fe0b507dd0',
   ];
 
   final List<Widget> imageSliders = imgList
@@ -37,7 +35,7 @@ class _HoneytoonListHeaderState extends State<HoneytoonListHeader> {
                   child: Stack(
                     children: <Widget>[
                       CachedNetworkImage(
-                        width: 1000,
+                        //width: 1000,
                         imageUrl: item,
                         fit: BoxFit.fitWidth,
                         placeholder: (context, url) =>
@@ -85,7 +83,7 @@ class _HoneytoonListHeaderState extends State<HoneytoonListHeader> {
           items: imageSliders,
           options: CarouselOptions(
               initialPage: 0,
-              aspectRatio: 2 / 1,
+              aspectRatio: 2/1,
               viewportFraction: 1.0,
               enlargeCenterPage: true,
               //enlargeStrategy: CenterPageEnlargeStrategy.height,

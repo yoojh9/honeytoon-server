@@ -28,19 +28,17 @@ class PointScreen extends StatelessWidget {
             return LoginButtonPage();
           } else {
             return Column(children: [
-              _buildPointHeader(context, height, snapshot.data),
-              _buildPointHistory(context, height, snapshot.data.uid)
+              Expanded(child: _buildPointHeader(context, height, snapshot.data), flex: 1),
+              Expanded(child: _buildPointHistory(context, height, snapshot.data.uid), flex: 1),
             ]);
           }
         });
   }
 
   SingleChildScrollView _buildPointHistory(context, double height, String uid) {
-    PointProvider _pointProvider =
-        Provider.of<PointProvider>(context, listen: false);
+    PointProvider _pointProvider = Provider.of<PointProvider>(context, listen: false);
     return SingleChildScrollView(
       child: Container(
-        height: height * 0.5,
         child: FutureBuilder(
             future: _pointProvider.getPoints(uid),
             builder: (context, snapshot) {
@@ -115,7 +113,7 @@ class PointScreen extends StatelessWidget {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 15),
       alignment: Alignment.center,
-      height: height * 0.4,
+      //height: height * 0.4,
       child: Column(children: [
         Expanded(
             flex: 4,

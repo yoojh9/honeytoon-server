@@ -202,12 +202,12 @@ class _HoneytoonCommentScreenState extends State<HoneytoonCommentScreen> {
         title: Container(
           child: Row(
             children: <Widget>[
-              Text('${snapshot.data[index].username}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-              SizedBox(width: 25,),
-              Text('${DateFormatHelper.getDateTime(snapshot.data[index].createTime)}', style: TextStyle(color: Colors.grey))
+              Text('${snapshot.data[index].username}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              SizedBox(width: 10,),
+              Text('${DateFormatHelper.getDateTime(snapshot.data[index].createTime)}', style: TextStyle(color: Colors.grey, fontSize: 12))
           ],)
         ),
-        subtitle: Text('${snapshot.data[index].comment}', style: TextStyle(color: Colors.grey, fontSize: 16),),
+        subtitle: Text('${snapshot.data[index].comment}', style: TextStyle(color: Colors.grey, fontSize: 14),),
         trailing: (userId == snapshot.data[index].uid) ?  
           IconButton(icon: Icon(
             Icons.delete, color: Colors.black54,
