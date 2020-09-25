@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:honeytoon/providers/coupon_provider.dart';
@@ -31,6 +33,7 @@ void main() {
   KakaoContext.clientId = "a34461bb86a5d8782ab16e75419d5955";
   KakaoContext.javascriptClientId = "38549e1d4f65d4c9c19ac37cad047400";
   FirebaseAdMob.instance.initialize(appId: FirebaseAdMob.testAppId);
+  //FirebaseAdMob.instance.initialize(appId: Platform.isIOS ? 'ca-app-pub-3940256099942544~1458002511' : 'ca-app-pub-6013376310231208~8843617638');
   runApp(MyApp());
 }
 
