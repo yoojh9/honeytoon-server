@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import './add_contentmeta_screen.dart';
-import '../auth_screen.dart';
+import '../auth/auth_screen.dart';
 import '../../widgets/my_honeytoon_listview.dart';
 import '../../widgets/my_honeytoon_info.dart';
 import 'package:provider/provider.dart';

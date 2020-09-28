@@ -78,6 +78,10 @@ class AuthProvider with ChangeNotifier {
     return authResult;
   }
 
+  Future<void> resetPassword(String email) async {
+    await _auth.sendPasswordResetEmail(email: email);
+  }
+
   Future<void> addUserToDB(AuthResult authResult, User user, String providerType) async {
     await _db.collection('users').document(authResult.user.uid).setData({
       'displayName': user==null ? authResult.user.displayName : user.displayName,

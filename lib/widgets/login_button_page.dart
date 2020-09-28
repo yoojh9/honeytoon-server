@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../screens/auth_screen.dart';
+import '../screens/auth/auth_screen.dart';
 
 class LoginButtonPage extends StatelessWidget {
   void _loginPage(BuildContext ctx) async {

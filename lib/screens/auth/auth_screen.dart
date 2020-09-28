@@ -1,9 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../providers/auth_provider.dart';
+import 'package:honeytoon/screens/auth/reset_pwd_screen.dart';
+import '../../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
-import 'auth_join_screen.dart';
+import '../auth/auth_join_screen.dart';
 
 class AuthScreen extends StatefulWidget {
   static final routeName = 'auth-screen';
@@ -173,7 +174,9 @@ class _AuthScreenState extends State<AuthScreen> {
                   )
                 ),
                 Row(children: <Widget>[
-                  FlatButton(onPressed: (){}, child: Text('비밀번호를 잊으셨나요?', style: TextStyle(decoration: TextDecoration.underline))),
+                  FlatButton(onPressed: (){
+                    Navigator.of(context).pushReplacementNamed(ResetPwdScreen.routeName);
+                  }, child: Text('비밀번호를 잊으셨나요?', style: TextStyle(decoration: TextDecoration.underline))),
                   Spacer(),
                   FlatButton(onPressed: (){
                     Navigator.of(context).pushNamed(AuthJoinScreen.routeName);

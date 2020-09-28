@@ -8,7 +8,7 @@ import 'package:honeytoon/screens/settings/setting_section.dart';
 import 'package:provider/provider.dart';
 import 'setting_list.dart';
 import 'setting_tile.dart';
-import '../auth_screen.dart';
+import '../auth/auth_screen.dart';
 
 class SettingMyinfoScreen extends StatefulWidget {
   static const routeName = 'setting-myinfo';
