@@ -19,7 +19,7 @@ class _ResetPwdScreenState extends State<ResetPwdScreen> {
     try {
       await _authProvider.resetPassword(email);
       _showSnackbar(context, '비밀번호 재설정 이메일을 보냈습니다. 확인해주세요');
-      await Navigator.of(ctx).pop();
+      //await Navigator.of(ctx).pop();
     } catch(error){
       _showSnackbar(context, '이메일 전송에 실패했습니다. 관리자에게 문의하세요');
       print(error);
@@ -78,7 +78,7 @@ class _ResetPwdScreenState extends State<ResetPwdScreen> {
                   minWidth: double.infinity,
                   child: RaisedButton(
                     color: Theme.of(context).primaryColor,
-                    child: Text('이메일로 로그인', style: TextStyle(fontSize: 16)),
+                    child: Text('이메일 전송하기', style: TextStyle(fontSize: 16)),
                     onPressed: (){
                       _resetPassword(context);
                     }
