@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:honeytoon/models/user.dart';
 import 'package:honeytoon/screens/settings/setting_myinfo_edit_screen.dart';
@@ -19,8 +22,7 @@ class SettingMyinfoScreen extends StatefulWidget {
 
 class _SettingMyinfoScreenState extends State<SettingMyinfoScreen> {
   Future<User> _getUserInfo(BuildContext ctx) async {
-    final user =
-        await Provider.of<AuthProvider>(ctx, listen: false).getUserFromDB();
+    final user = await Provider.of<AuthProvider>(ctx, listen: false).getUserFromDB();
     return user;
   }
 
@@ -35,16 +37,17 @@ class _SettingMyinfoScreenState extends State<SettingMyinfoScreen> {
   @override
   Widget build(BuildContext context) {
     final mediaQueryData = MediaQuery.of(context);
-    final height = mediaQueryData.size.height -
-        (kToolbarHeight +
-            mediaQueryData.padding.top +
-            mediaQueryData.padding.bottom);
+    final height = mediaQueryData.size.height - (kToolbarHeight + mediaQueryData.padding.top + mediaQueryData.padding.bottom);
 
     return Scaffold(
         appBar: AppBar(
           title: Text('프로필'),
           backgroundColor: Colors.transparent,
           elevation: 0,
+          actions: [
+            IconButton(icon: Icon(Icons.more_vert), onPressed: (){_modalBottomSheetMenu(context, height);})
+          ],
+          
         ),
         body: StreamBuilder(
             stream: FirebaseAuth.instance.onAuthStateChanged,
@@ -63,8 +66,7 @@ class _SettingMyinfoScreenState extends State<SettingMyinfoScreen> {
                 );
               } else {
                 return FutureBuilder(
-                  future: Provider.of<AuthProvider>(context, listen: false)
-                      .getUserFromDB(),
+                  future: Provider.of<AuthProvider>(context, listen: false).getUserFromDB(),
                   builder: (context, futureSnapshot) {
                     if (futureSnapshot.connectionState ==
                         ConnectionState.waiting) {
@@ -112,10 +114,10 @@ class _SettingMyinfoScreenState extends State<SettingMyinfoScreen> {
                                 child: SettingList(
                                   sections: [
                                     SettingsSection(title: '계정', tiles: [
-                                      SettingsTile(
-                                        title: '닉네임변경',
-                                        onTap: (){ Navigator.of(context).pushNamed( SettingMyInfoEditScreen.routeName, arguments: {'user': futureSnapshot.data} );},
-                                      ),
+                                      // SettingsTile(
+                                      //   title: '닉네임변경',
+                                      //   onTap: (){ Navigator.of(context).pushNamed( SettingMyInfoEditScreen.routeName, arguments: {'user': futureSnapshot.data} );},
+                                      // ),
                                       SettingsTile(
                                           title: '로그아웃', onTap: _logout),
                                       SettingsTile(title: '탈퇴하기', onTap: () {}),
@@ -130,5 +132,55 @@ class _SettingMyinfoScreenState extends State<SettingMyinfoScreen> {
                 );
               }
             }));
+  }
+
+  void _modalBottomSheetMenu(BuildContext ctx, height){
+    Platform.isIOS ? _showIOSBottomModalMenu(ctx) : _showAndroidBottomModalMenu(ctx, height); 
+  }
+
+  void _showIOSBottomModalMenu(BuildContext ctx){
+    showCupertinoModalPopup(
+      context: ctx,
+      builder: (context) => CupertinoActionSheet(
+        actions: <Widget>[
+          CupertinoActionSheetAction(
+            child: const Text('변경'),
+            onPressed:(){
+              Navigator.of(ctx).pushNamed(SettingMyInfoEditScreen.routeName);
+            }
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          onPressed: (){Navigator.of(ctx).pop();}, child: Text('취소')
+        ),
+      )
+    );
+  }
+
+  void _showAndroidBottomModalMenu(BuildContext ctx, height){
+    showModalBottomSheet(
+        context: context, 
+        builder: (builder){
+          return Container(
+            height: height * 0.2,
+            child: Column(
+              children: [
+                Container(
+                  child: FlatButton(
+                    onPressed: (){}, 
+                    child: Text('변경', style: TextStyle(fontSize:12, color: Theme.of(context).primaryColor),)
+                )
+                ),
+                Container(
+                  child: FlatButton(
+                    onPressed: (){Navigator.of(ctx).pop();}, 
+                    child: Text('닫기',style: TextStyle(fontSize:12, color: Theme.of(context).primaryColor),)
+                  )
+                ),
+              ]
+            ),
+          );
+        }
+      );
   }
 }
