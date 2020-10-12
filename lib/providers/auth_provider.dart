@@ -15,7 +15,8 @@ class AuthProvider with ChangeNotifier {
 
   Future<FirebaseUser> kakaoLogin() async {
       print('kakao login start');
-      final installed = await isKakaoTalkInstalled();
+      bool installed = await isKakaoTalkInstalled();
+      print('installed? : $installed');
       final authCode = installed
           ? await AuthCodeClient.instance.requestWithTalk()
           : await AuthCodeClient.instance.request();
@@ -52,7 +53,7 @@ class AuthProvider with ChangeNotifier {
 
       await _db.collection('users').document(authResult.user.uid).get().then((snapshot) => {
         if (snapshot.exists) {
-          updateUserToDB(User.fromMap(snapshot.documentID, snapshot.data), 'FACEBOOK', )
+          signInUser(User.fromMap(snapshot.documentID, snapshot.data), 'FACEBOOK', )
         } else {
           addUserToDB(authResult, null, 'FACEBOOK')
         }
@@ -94,12 +95,12 @@ class AuthProvider with ChangeNotifier {
     });
   }
 
-  // displayName은 앱에서 수정할 수 있으므로 로그인 시 displayName을 update 하지 않는다
-  Future<void> updateUserToDB(User user, String providerType,) async {
+  // displayName, thumbnail 은 앱에서 수정할 수 있으므로 로그인 시 displayName을 update 하지 않는다
+  Future<void> signInUser(User user, String providerType,) async {
     await _db.collection('users').document(user.uid).updateData({
         'email': user.email,
         'provider': providerType,
-        'thumbnail': user.thumbnail,
+        //'thumbnail': user.thumbnail,
         'update_time': Timestamp.now(),
     });
   }

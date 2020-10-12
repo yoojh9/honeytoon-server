@@ -21,9 +21,23 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleIdentifier</key>
+			<string></string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>fb587393778816616</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>kakao</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>kakaoa34461bb86a5d8782ab16e75419d5955</string>
 			</array>
 		</dict>
 	</array>
@@ -34,11 +48,15 @@
 	<key>FacebookDisplayName</key>
 	<string>honeytoon</string>
 	<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-3940256099942544~1458002511</string>
+	<string>ca-app-pub-6013376310231208~9087160217</string>
 	<key>KAKAO_APP_KEY</key>
 	<string>a34461bb86a5d8782ab16e75419d5955</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+		<!-- kakao app key -->
+		<string>kakaoa34461bb86a5d8782ab16e75419d5955</string>
+		<!--kakao talk login-->
+	    <string>kakaokompassauth</string>	
 		<string>fbapi</string>
 		<string>fb-messenger-share-api</string>
 		<string>fbauth2</string>

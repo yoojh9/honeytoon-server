@@ -21,10 +21,6 @@ class SettingMyinfoScreen extends StatefulWidget {
 }
 
 class _SettingMyinfoScreenState extends State<SettingMyinfoScreen> {
-  Future<User> _getUserInfo(BuildContext ctx) async {
-    final user = await Provider.of<AuthProvider>(ctx, listen: false).getUserFromDB();
-    return user;
-  }
 
   Future<void> _loginPage(BuildContext ctx) async {
     await Navigator.of(ctx).pushNamed(AuthScreen.routeName);
@@ -146,7 +142,9 @@ class _SettingMyinfoScreenState extends State<SettingMyinfoScreen> {
           CupertinoActionSheetAction(
             child: const Text('변경'),
             onPressed:(){
-              Navigator.of(ctx).pushNamed(SettingMyInfoEditScreen.routeName);
+              Navigator.of(ctx).pop();
+              Navigator.of(ctx).popAndPushNamed(SettingMyInfoEditScreen.routeName);
+              //Navigator.of(ctx).pop();
             }
           ),
         ],

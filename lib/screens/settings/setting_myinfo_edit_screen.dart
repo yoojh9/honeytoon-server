@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:honeytoon/helpers/storage.dart';
+import 'package:honeytoon/models/user.dart';
 import 'package:honeytoon/providers/auth_provider.dart';
 import 'package:honeytoon/screens/auth/auth_screen.dart';
 import 'package:honeytoon/screens/settings/setting_myinfo_screen.dart';
@@ -22,6 +23,23 @@ class _SettingMyInfoEditScreenState extends State<SettingMyInfoEditScreen> {
   String uid;
   File _thumbnail;
   String _displayName;
+  User _user;
+
+  @override
+  void initState(){
+    super.initState();
+    _getUserInfo();
+    print(_user);
+  }
+
+  void _getUserInfo() async {
+    final user = await Provider.of<AuthProvider>(context, listen: false).getUserFromDB();
+    setState(() {
+      _user = user;
+    });
+  }
+
+  //String _displayName;
 
   Future _getImage() async {
     final picker = ImagePicker();
@@ -53,8 +71,11 @@ class _SettingMyInfoEditScreenState extends State<SettingMyInfoEditScreen> {
   }
 
   void _updateUserProfile(BuildContext ctx) async {
+    print('_updateUserProfile');
+    final uid = _user.uid;
     final _isValid = _formKey.currentState.validate();
     if (!_isValid) return;
+    _formKey.currentState.save();
 
     var _changeInfo = Map<String, dynamic>();
     if(_displayName!=null){
@@ -64,7 +85,7 @@ class _SettingMyInfoEditScreenState extends State<SettingMyInfoEditScreen> {
       String thumbnailUrl = await Storage.uploadImageToStorage(StorageType.USER_THUMBNAIL, uid, _thumbnail);
       _changeInfo['thumbnail'] = thumbnailUrl;
     }
-
+    print(_changeInfo);
     await Provider.of<AuthProvider>(ctx, listen: false).changeUserInfo(uid, _changeInfo);
     Navigator.of(ctx).pushReplacementNamed(SettingMyinfoScreen.routeName);
   }
@@ -78,6 +99,7 @@ class _SettingMyInfoEditScreenState extends State<SettingMyInfoEditScreen> {
     //_displayNameController.text = args['user'].displayName;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text('프로필 변경'),
         backgroundColor: Colors.transparent,
@@ -86,25 +108,18 @@ class _SettingMyInfoEditScreenState extends State<SettingMyInfoEditScreen> {
           FlatButton(onPressed: (){_updateUserProfile(context);}, child: Text('변경', style: TextStyle(fontSize: 18),))
         ],
       ),
-      body: FutureBuilder(
-        future: Provider.of<AuthProvider>(context, listen: false).getUserFromDB(),
-        builder: (context, futureSnapshot) {
-          if (futureSnapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (!(futureSnapshot.hasData)) {
-            return Center(
-              child: RaisedButton(
-                  color: Theme.of(context).primaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: Text('로그인'),
-                  onPressed: () => _loginPage(context)),
-            );
-          } else {
-            print(futureSnapshot.data.displayName);
-            uid = futureSnapshot.data.uid;
-            return Container(
+      body: 
+        _user == null ? Center(
+          child: RaisedButton(
+              color: Theme.of(context).primaryColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: Text('로그인'),
+              onPressed: () => _loginPage(context)),
+        )
+        :
+           Container(
               height: height * 0.35,
               margin: const EdgeInsets.all(16),
               child: Form(
@@ -120,7 +135,7 @@ class _SettingMyInfoEditScreenState extends State<SettingMyInfoEditScreen> {
                               child: CachedNetworkImage(
                                 height: height * 0.15,
                                 width: height * 0.15,
-                                imageUrl: futureSnapshot.data.thumbnail,
+                                imageUrl: _user.thumbnail,
                                 placeholder: (context, url) => Image.asset('assets/images/avatar_placeholder.png',),
                                 errorWidget: (context, url, error) => Image.asset('assets/images/avatar_placeholder.png'),
                                 fit: BoxFit.cover,
@@ -137,13 +152,13 @@ class _SettingMyInfoEditScreenState extends State<SettingMyInfoEditScreen> {
                     ),
 
                     TextFormField(
+                      initialValue: _displayName == null ? _user.displayName: _displayName,
                       textAlign: TextAlign.center,
-                      initialValue: futureSnapshot.data.displayName,
+                      textInputAction: TextInputAction.next,
                       style: TextStyle(
                         fontSize: 18,
                         color: Colors.black87
                       ),
-                      textInputAction: TextInputAction.send,
                       validator: (value) {
                         return _validateDisplayName(value);
                       },
@@ -154,24 +169,8 @@ class _SettingMyInfoEditScreenState extends State<SettingMyInfoEditScreen> {
                     Text('프로필 사진과 닉네임을 입력해주세요.', style: TextStyle(color: Colors.grey),)
                   ]
                   )
-                  // SizedBox(
-                  //   height: 30,
-                  // ),
-                  // ButtonTheme(
-                  //   minWidth: double.infinity,
-                  //   height: 40,
-                  //   child: RaisedButton(
-                  //     color: Theme.of(context).primaryColor,
-                  //     child: Text('변경하기',style: TextStyle(fontSize: 16),),
-                  //     onPressed: () {
-                  //       //_showDialog(context, args['user'].uid);
-                  //     },
-                  // )),
               ),
-      );
-      }
-    }
-   )
+      )
   );
   }
 }
