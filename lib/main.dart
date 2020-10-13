@@ -36,7 +36,7 @@ void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   KakaoContext.clientId = "a34461bb86a5d8782ab16e75419d5955";
   KakaoContext.javascriptClientId = "38549e1d4f65d4c9c19ac37cad047400";
-  //FirebaseAdMob.instance.initialize(appId: FirebaseAdMob.testAppId);
+  //await FirebaseAdMob.instance.initialize(appId: FirebaseAdMob.testAppId);
   await Firebase.initializeApp();
   await FirebaseAdMob.instance.initialize(appId: Platform.isIOS ? 'ca-app-pub-6013376310231208~9087160217' : 'ca-app-pub-6013376310231208~8843617638');
   runApp(MyApp());

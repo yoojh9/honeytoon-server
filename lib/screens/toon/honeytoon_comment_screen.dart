@@ -157,7 +157,7 @@ class _HoneytoonCommentScreenState extends State<HoneytoonCommentScreen> {
           } else if(snapshot.hasData){
             if(snapshot.data.documents.length > 0){
               _commentList = snapshot.data.documents
-                .map((item) => Comment.fromMap(id, item.documentID, item.data))
+                .map((item) => Comment.fromMap(id, item.id, item.data()))
                 .toList();
             }
             return FutureBuilder(

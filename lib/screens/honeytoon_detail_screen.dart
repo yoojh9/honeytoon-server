@@ -237,7 +237,7 @@ class _HoneytoonDetailScreenState extends State<HoneytoonDetailScreen> {
           if (snapshot.data.documents.length > 0) {
             _contentList = snapshot.data.documents
                 .map((item) =>
-                    HoneytoonContentItem.fromMap(item.documentID, item.data))
+                    HoneytoonContentItem.fromMap(item.id, item.data()))
                 .toList();
           }
           return _buildHoneytoonContentItem(args, history, _contentList);

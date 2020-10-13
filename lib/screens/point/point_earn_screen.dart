@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:honeytoon/models/admobTargetingInfo.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -20,15 +21,6 @@ class PointEarnScreen extends StatefulWidget {
 class _PointEarnScreenState extends State<PointEarnScreen>
     with TickerProviderStateMixin {
   PointProvider _pointProvider;
-
-  static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
-    testDevices: testDevice != null ? <String>[testDevice] : null,
-    keywords: <String>['fun'],
-    contentUrl: 'http://foo.com/bar.html',
-    childDirected: true,
-    nonPersonalizedAds: true,
-  );
-
   bool _checkPoint = false;
   Map<String, dynamic> _history = Map<String, dynamic>();
   String _dateKey = '';
@@ -94,7 +86,7 @@ class _PointEarnScreenState extends State<PointEarnScreen>
       }
     };
     await RewardedVideoAd.instance.load(
-        adUnitId: RewardedVideoAd.testAdUnitId, targetingInfo: targetingInfo);
+        adUnitId: RewardedVideoAd.testAdUnitId, targetingInfo: AdMobTargetingInfo.targetingInfo);
   }
 
   @override

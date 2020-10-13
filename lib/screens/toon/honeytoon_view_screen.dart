@@ -1,8 +1,10 @@
 import 'package:async/async.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:honeytoon/models/admobTargetingInfo.dart';
 import 'package:provider/provider.dart';
 import '../../models/current.dart';
 import '../../models/history.dart';
@@ -42,8 +44,33 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
     setState(() {
       _giftPoint = 10;
     });
-
+    interstitialAd();
     super.initState();
+  }
+
+  void interstitialAd() {
+    print('interstitialAd()');
+
+    final interstitialAdInstance = InterstitialAd(
+      adUnitId: InterstitialAd.testAdUnitId, 
+      targetingInfo: AdMobTargetingInfo.targetingInfo, 
+      listener: (MobileAdEvent event){
+        print('loaded');
+      }
+    );
+
+   interstitialAdInstance..load()..show();
+
+
+    // RewardedVideoAd.instance.listener = (RewardedVideoAdEvent event, {String rewardType, int rewardAmount}) async {
+    //   print('RewardedVideoAd event $event');
+    //   if (event == RewardedVideoAdEvent.loaded) {
+    //     print('loaded');
+    //     await RewardedVideoAd.instance.show();
+    //   }
+    // };
+    // await RewardedVideoAd.instance.load(
+    //     adUnitId: AdMobTargetingInfo.adUnitId, targetingInfo: AdMobTargetingInfo.targetingInfo);
   }
 
   void _handleScroll(){
@@ -72,11 +99,12 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    
+
     final Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
     _myProvider = Provider.of<MyProvider>(context, listen: false);
 
     this._memoizer.runOnce(() async {
+      //await interstitialAd();
       final uid = await AuthProvider.getCurrentFirebaseUserUid();
       setState(() {
         userId = uid;
