@@ -18,7 +18,7 @@ class _AuthScreenState extends State<AuthScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  var user;
+  User _firebaseUser;
   var _loading = false;
 
 
@@ -27,11 +27,11 @@ class _AuthScreenState extends State<AuthScreen> {
       setState(() {
         _loading = true;
       });
-      user = await FirebaseAuth.instance.currentUser();
-      if (user == null) {
-        user = await Provider.of<AuthProvider>(context, listen: false).kakaoLogin();
+      _firebaseUser = FirebaseAuth.instance.currentUser;
+      if (_firebaseUser == null) {
+        _firebaseUser = await Provider.of<AuthProvider>(context, listen: false).kakaoLogin();
       }     
-      Navigator.of(ctx).pop(user);      
+      Navigator.of(ctx).pop(_firebaseUser);      
     } catch(error){
       _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('카카오톡으로 로그인을 진행할 수 없습니다.'), duration: Duration(seconds: 2),));
       print(error);
@@ -47,12 +47,11 @@ class _AuthScreenState extends State<AuthScreen> {
       setState(() {
         _loading = true;
       });
-      user = await FirebaseAuth.instance.currentUser();
-      if (user == null) {
-        user = await Provider.of<AuthProvider>(context, listen: false)
-            .facebookLogin();
+      _firebaseUser = FirebaseAuth.instance.currentUser;
+      if (_firebaseUser == null) {
+        _firebaseUser = await Provider.of<AuthProvider>(context, listen: false).facebookLogin();
       }
-    Navigator.of(ctx).pop(user);
+    Navigator.of(ctx).pop(_firebaseUser);
     } catch(error){
       print(error);
     } finally {
@@ -69,8 +68,8 @@ class _AuthScreenState extends State<AuthScreen> {
       });
       final email = _emailController.text;
       final password = _passwordController.text;
-      user = await Provider.of<AuthProvider>(context, listen: false).emailLogin(email, password);
-      Navigator.of(ctx).pop(user);
+      _firebaseUser = await Provider.of<AuthProvider>(context, listen: false).emailLogin(email, password);
+      Navigator.of(ctx).pop(_firebaseUser);
     } on PlatformException catch (error) {
       if(error.code == "ERROR_WRONG_PASSWORD") {
         _showSnackbar(ctx, '비밀번호를 다시 확인해주세요');

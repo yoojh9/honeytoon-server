@@ -1,14 +1,13 @@
 import 'dart:convert';
-
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:honeytoon/helpers/dateFormatHelper.dart';
-import 'package:honeytoon/models/point.dart';
-import 'package:honeytoon/providers/point_provider.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../../helpers/dateFormatHelper.dart';
+import '../../models/point.dart';
+import '../../providers/point_provider.dart';
 
 // test device id for production
 const String testDevice = null;
@@ -76,13 +75,14 @@ class _PointEarnScreenState extends State<PointEarnScreen>
 
   void rewardVideo() async {
     print('rewardVideo()');
-    final _user = await FirebaseAuth.instance.currentUser();
+    User _firebaseUser = FirebaseAuth.instance.currentUser;
+
     RewardedVideoAd.instance.listener = (RewardedVideoAdEvent event,
         {String rewardType, int rewardAmount}) async {
       print('RewardedVideoAd event $event');
       if (event == RewardedVideoAdEvent.rewarded) {
         _pointProvider.setPoint(Point(
-            uid: _user.uid,
+            uid: _firebaseUser.uid,
             type: PointType.REWARD,
             point: rewardAmount,
             createTime: Timestamp.now()));

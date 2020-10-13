@@ -11,37 +11,28 @@ class MyProvider extends ChangeNotifier {
    */
   Future<void> likeHoneytoon(Likes like) async {
     final DocumentReference metaReference =
-        Database.metaRef.document(like.workId);
-    final DocumentReference likeReference = Database.myRef
-        .document(like.uid)
-        .collection('likes')
-        .document(like.workId);
+        Database.metaRef.doc(like.workId);
+    final DocumentReference likeReference = Database.myRef.doc(like.uid).collection('likes').doc(like.workId);
 
-    Database.firestore
-        .runTransaction((transaction) async {
-          await transaction.update(metaReference,
-              {'likes': FieldValue.increment(like.like ? 1 : -1)});
-          if (like.like) {
-            await transaction.set(likeReference, like.toJson());
-          } else {
-            await transaction.delete(likeReference);
-          }
-        })
-        .then((value) => {print('success')})
-        .catchError((error) {
-          print(error.message);
-        });
+    await Database.firestore.runTransaction((transaction) async {
+      transaction.update(metaReference,{'likes': FieldValue.increment(like.like ? 1 : -1)});
+      if (like.like) {
+        transaction.set(likeReference, like.toJson());
+      } else {
+        transaction.delete(likeReference);
+      }
+    })
+    .then((value) => {print('success')})
+    .catchError((error) {
+      print(error.message);
+    });
   }
 
   /*
    * 관심툰에 추가한 작품인지 확인 
    */
   Future<bool> ifLikeHoneytoon(Likes like) async {
-    final DocumentReference likeReference = Database.myRef
-        .document(like.uid)
-        .collection('likes')
-        .document(like.workId);
-
+    final DocumentReference likeReference = Database.myRef.doc(like.uid).collection('likes').doc(like.workId);
     DocumentSnapshot snapshot = await likeReference.get();
     return snapshot.exists;
   }
@@ -51,19 +42,13 @@ class MyProvider extends ChangeNotifier {
    */
   Future<List<Likes>> getLikeHoneytoon(String uid) async {
     List<Likes> _likes;
-    QuerySnapshot snapshot = await Database.myRef
-        .document(uid)
-        .collection('likes')
-        .orderBy('like_time', descending: true)
-        .getDocuments();
+    QuerySnapshot snapshot = await Database.myRef.doc(uid).collection('likes').orderBy('like_time', descending: true).get();
 
-    _likes = await Future.wait(snapshot.documents.map((likeSnapshot) async {
-        DocumentSnapshot toonSnapshot = await Database.metaRef.document(likeSnapshot.documentID).get();
-        
+    _likes = await Future.wait(snapshot.docs.map((likeSnapshot) async {
+        DocumentSnapshot toonSnapshot = await Database.metaRef.doc(likeSnapshot.id).get();
         if(!toonSnapshot.exists) return null;
-
-        DocumentSnapshot userSnapshot = await Database.userRef.document(toonSnapshot.data['uid']).get();
-      return Likes.fromMap(likeSnapshot.documentID, likeSnapshot.data['like_time'], toonSnapshot.data, userSnapshot.data);
+        DocumentSnapshot userSnapshot = await Database.userRef.doc(toonSnapshot.data()['uid']).get();
+      return Likes.fromMap(likeSnapshot.id, likeSnapshot.data()['like_time'], toonSnapshot.data(), userSnapshot.data());
     }).toList());
     return _likes;
   }
@@ -72,26 +57,21 @@ class MyProvider extends ChangeNotifier {
    * 최근 본 작품 추가 
    */
   Future<void> addCurrentHoneytoon(Current current) async {
-    final DocumentReference currentReference = Database.myRef
-        .document(current.uid)
-        .collection('current')
-        .document(current.workId);
-
-    await currentReference.setData(current.toJson());
+    final DocumentReference currentReference = Database.myRef.doc(current.uid).collection('current').doc(current.workId);
+    await currentReference.set(current.toJson());
   }
 
   Future<void> addHoneytoonHistory(History history) async {
-    final DocumentReference historyReference = Database.myRef.document(history.uid).collection('history').document(history.workId);
+    final DocumentReference historyReference = Database.myRef.doc(history.uid).collection('history').doc(history.workId);
     DocumentSnapshot historySnapshot = await historyReference.get();
-    print('exists:${historySnapshot.exists}');
-    print('id:${history.times}');
+
     if(historySnapshot.exists){
-      await historyReference.updateData({
+      await historyReference.update({
         'contents': FieldValue.arrayUnion([history.times]),
         'update_time': history.updateTime
       });
     } else {
-      await historyReference.setData({
+      await historyReference.set({
         'contents': [history.times],
         'update_time': history.updateTime
       });
@@ -99,10 +79,10 @@ class MyProvider extends ChangeNotifier {
   }
 
   Future<History> getHoneytoonHistory(uid, workId) async {
-    final DocumentReference historyReference = Database.myRef.document(uid).collection('history').document(workId);
+    final DocumentReference historyReference = Database.myRef.doc(uid).collection('history').doc(workId);
     DocumentSnapshot historySnapshot = await historyReference.get();
     if(!historySnapshot.exists) return null;
-    return History.fromMap(historySnapshot.documentID, historySnapshot.data);
+    return History.fromMap(historySnapshot.id, historySnapshot.data());
   }
 
   /*
@@ -110,21 +90,15 @@ class MyProvider extends ChangeNotifier {
    */
   Future<List<Current>> getCurrentHoneytoon(String uid) async {
     List<Current> _currentList;
-    QuerySnapshot snapshot = await Database.myRef
-        .document(uid)
-        .collection('current')
-        .orderBy('update_time', descending: true)
-        .getDocuments();
+    QuerySnapshot snapshot = await Database.myRef.doc(uid).collection('current').orderBy('update_time', descending: true).get();
   
-    _currentList = await Future.wait(snapshot.documents.map((currentSnapshot) async {
-      DocumentSnapshot toonSnapshot =
-          await Database.metaRef.document(currentSnapshot.documentID).get();
+    _currentList = await Future.wait(snapshot.docs.map((currentSnapshot) async {
+      DocumentSnapshot toonSnapshot = await Database.metaRef.doc(currentSnapshot.id).get();
       
       if(!toonSnapshot.exists) return null;
 
-      DocumentSnapshot userSnapshot = await Database.userRef.document(toonSnapshot.data['uid']).get();
-      return Current.fromMap(
-          currentSnapshot.documentID, currentSnapshot.data, toonSnapshot.data, userSnapshot.data);
+      DocumentSnapshot userSnapshot = await Database.userRef.doc(toonSnapshot.data()['uid']).get();
+      return Current.fromMap(currentSnapshot.id, currentSnapshot.data(), toonSnapshot.data(), userSnapshot.data());
     }).toList());
     return _currentList;
   }

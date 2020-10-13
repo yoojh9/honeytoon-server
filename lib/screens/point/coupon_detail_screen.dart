@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:honeytoon/models/coupon.dart';
+import '../../models/coupon.dart';
 
 class CouponDetailScreen extends StatelessWidget {
   static final routeName = 'coupon-detail';

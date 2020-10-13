@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:honeytoon/helpers/dateFormatHelper.dart';
-import 'package:honeytoon/models/honeytoonMeta.dart';
-import '../screens/honeytoon_detail_screen.dart';
 import 'package:provider/provider.dart';
+import '../helpers/dateFormatHelper.dart';
+import '../models/honeytoonMeta.dart';
+import '../screens/honeytoon_detail_screen.dart';
 import '../screens/my/add_content_screen.dart';
 import '../providers/honeytoon_meta_provider.dart';
 
@@ -94,7 +94,7 @@ class _MyHoneytoonListViewState extends State<MyHoneytoonListView> {
             return Center(child: Text('허니툰을 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요'));
           } else if(snapshot.hasData) {
             _myHoneytoon = snapshot.data.documents
-              .map((item) => HoneytoonMeta.fromMap(item.data, item.documentID))
+              .map((item) => HoneytoonMeta.fromMap(item.data(), item.documentID))
               .toList();
 
             return ListView.builder(

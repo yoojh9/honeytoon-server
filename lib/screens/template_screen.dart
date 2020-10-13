@@ -95,26 +95,10 @@ class _TemplateScreenState extends State<TemplateScreen> {
       bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
           items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.home,
-                ),
-                title: Text('Home')),
-            BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.attach_money,
-                ),
-                title: Text('Point')),
-            BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.person,
-                ),
-                title: Text('My')),
-            BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.settings,
-                ),
-                title: Text('Setting')),
+            BottomNavigationBarItem(icon: Icon(Icons.home,),label: 'Home'),
+            BottomNavigationBarItem(icon: Icon(Icons.attach_money,),label: 'Point'),
+            BottomNavigationBarItem(icon: Icon(Icons.person,),label: 'My'),
+            BottomNavigationBarItem(icon: Icon(Icons.settings,),label: 'Setting'),
           ],
           currentIndex: _currentIndex,
           onTap: _onTap,

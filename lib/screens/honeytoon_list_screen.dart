@@ -95,6 +95,7 @@ class _HoneyToonListScreenState extends State<HoneyToonListScreen> {
       child: FutureBuilder(
           future: _metaProvider.getHoneytoonMetaList(sort, _keyword),
           builder: (context, snapshot) {
+            print(snapshot.data);
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
             } else if (snapshot.hasData && snapshot.data.length > 0) {

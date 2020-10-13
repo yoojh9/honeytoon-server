@@ -10,6 +10,10 @@ class DateFormatHelper {
     return DateFormat('yyyyMMdd').format(timestamp.toDate());
   }
 
+  static String getDateWithFormat(Timestamp timestamp, String format){
+    return DateFormat(format).format(timestamp.toDate());
+  }
+
   static String getDateFromDateTime(DateTime datetime){
     return DateFormat('yyyyMMdd').format(datetime);
   }

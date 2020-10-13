@@ -1,26 +1,26 @@
 import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:kakao_flutter_sdk/auth.dart';
-import 'package:kakao_flutter_sdk/common.dart';
+import 'package:kakao_flutter_sdk/all.dart' as kakao;
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../models/user.dart';
+import '../models/auth.dart';
 
 class AuthProvider with ChangeNotifier {
   static final _auth = FirebaseAuth.instance;
-  static final _db = Firestore.instance;
+  static final _db = FirebaseFirestore.instance;
 
-  Future<FirebaseUser> kakaoLogin() async {
+  Future<User> kakaoLogin() async {
       print('kakao login start');
-      bool installed = await isKakaoTalkInstalled();
+      bool installed = await kakao.isKakaoTalkInstalled();
       print('installed? : $installed');
       final authCode = installed
-          ? await AuthCodeClient.instance.requestWithTalk()
-          : await AuthCodeClient.instance.request();
-      final token = await AuthApi.instance.issueAccessToken(authCode);
+          ? await kakao.AuthCodeClient.instance.requestWithTalk()
+          : await kakao.AuthCodeClient.instance.request();
+      final token = await kakao.AuthApi.instance.issueAccessToken(authCode);
 
       print('accessToken:${token.accessToken}');
 
@@ -31,7 +31,7 @@ class AuthProvider with ChangeNotifier {
 
   }
 
-  Future<FirebaseUser> facebookLogin() async {
+  Future<User> facebookLogin() async {
     try {
       final FacebookLogin facebookSignIn = FacebookLogin();
       final FacebookLoginResult result = await facebookSignIn.logIn(['email', 'public_profile']);
@@ -47,58 +47,56 @@ class AuthProvider with ChangeNotifier {
           break;
       }
 
-      AuthCredential credential =
-          FacebookAuthProvider.getCredential(accessToken: accessToken.token);
-      AuthResult authResult = await _auth.signInWithCredential(credential);
+      AuthCredential facebookCredential = FacebookAuthProvider.credential(accessToken.token);
+      UserCredential userCredential = await _auth.signInWithCredential(facebookCredential);
 
-      await _db.collection('users').document(authResult.user.uid).get().then((snapshot) => {
+      await _db.collection('users').doc(userCredential.user.uid).get().then((snapshot) => {
         if (snapshot.exists) {
-          signInUser(User.fromMap(snapshot.documentID, snapshot.data), 'FACEBOOK', )
+          signInUser(Auth.fromMap(snapshot.id, snapshot.data()), 'FACEBOOK', )
         } else {
-          addUserToDB(authResult, null, 'FACEBOOK')
+          addUserToDB(userCredential, null, 'FACEBOOK')
         }
       });
 
       print('success');
-      return authResult.user;
+      return userCredential.user;
     } on PlatformException catch (error) {
-      var message = 'An error occurred, please check your credentials!';
+      //var message = 'An error occurred, please check your credentials!';
       print(error);
     } catch (error) {
       print(error);
     }
   }
 
-  Future<FirebaseUser> emailLogin(email, password) async {
-    AuthResult authResult = await _auth.signInWithEmailAndPassword(email: email, password: password);
-    return authResult.user;
+  Future<User> emailLogin(email, password) async {
+    UserCredential userCredential = await _auth.signInWithEmailAndPassword(email: email, password: password);
+    return userCredential.user;
   }
 
-  Future<AuthResult> createUserWithEmailAndPassword(User user) async {
-    AuthResult authResult = await _auth.createUserWithEmailAndPassword(email: user.email, password: user.password);
-    return authResult;
+  Future<UserCredential> createUserWithEmailAndPassword(Auth auth) async {
+    return await _auth.createUserWithEmailAndPassword(email: auth.email, password: auth.password);
   }
 
   Future<void> resetPassword(String email) async {
     await _auth.sendPasswordResetEmail(email: email);
   }
 
-  Future<void> addUserToDB(AuthResult authResult, User user, String providerType) async {
-    await _db.collection('users').document(authResult.user.uid).setData({
-      'displayName': user==null ? authResult.user.displayName : user.displayName,
-      'email': user==null ? authResult.user.email : user.email,
+  Future<void> addUserToDB(UserCredential userCredential, Auth auth, String providerType) async {
+    await _db.collection('users').doc(userCredential.user.uid).set({
+      'displayName': auth==null ? userCredential.user.displayName : auth.displayName,
+      'email': auth==null ? userCredential.user.email : auth.email,
       'honey': 0,
       'earned_honey': 0,
       'provider': providerType,
-      'thumbnail': user==null ? authResult.user.photoUrl : user.thumbnail,
+      'thumbnail': auth==null ? userCredential.user.photoURL : auth.thumbnail,
       'update_time': Timestamp.now()
     });
   }
 
   // displayName, thumbnail 은 앱에서 수정할 수 있으므로 로그인 시 displayName을 update 하지 않는다
-  Future<void> signInUser(User user, String providerType,) async {
-    await _db.collection('users').document(user.uid).updateData({
-        'email': user.email,
+  Future<void> signInUser(Auth auth, String providerType,) async {
+    await _db.collection('users').doc(auth.uid).update({
+        'email': auth.email,
         'provider': providerType,
         //'thumbnail': user.thumbnail,
         'update_time': Timestamp.now(),
@@ -106,16 +104,16 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> changeUserInfo(uid, changeInfo) async {
-    await _db.collection('users').document(uid).updateData(changeInfo);
+    await _db.collection('users').doc(uid).update(changeInfo);
   }
 
-  Future<User> getUserFromDB() async {
-    final firebaseUser = await _auth.currentUser();
+  Future<Auth> getUserFromDB() async {
+    User firebaseUser = _auth.currentUser;
     if (firebaseUser == null || firebaseUser.uid == null) {
       return null;
     }
     final userData =
-        await _db.collection('users').document(firebaseUser.uid).get();
+        await _db.collection('users').doc(firebaseUser.uid).get();
     
     // User user = User(
     //     uid: userData.documentID,
@@ -126,17 +124,17 @@ class AuthProvider with ChangeNotifier {
     //     honey: userData.data['honey'],
     //     works: userData.data['works']);
 
-    return User.fromMap(userData.documentID, userData.data);
+    return Auth.fromMap(userData.id, userData.data());
   }
 
-  Future<User> getUserFromDBwithRank() async {
-    User user = await getUserFromDB();
-    final rank = await _db.collection('ranks').document(user.uid).get();
+  Future<Auth> getUserFromDBwithRank() async {
+    Auth _auth = await getUserFromDB();
+    final rank = await _db.collection('ranks').doc(_auth.uid).get();
 
     if(rank.exists){
-      user.rank = rank.data['rank'];
+      _auth.rank = rank.data()['rank'];
     }
-    return user;
+    return _auth;
   }
 
   Future<String> getFirebaseToken(String kakaoToken) async {
@@ -152,19 +150,18 @@ class AuthProvider with ChangeNotifier {
     return data['firebase_token'];
   }
 
-  Future<FirebaseUser> signInWithCustomToken(String token) async {
-    final authResult = await _auth.signInWithCustomToken(token: token);
-    print(authResult.user);
-    return authResult.user;
+  Future<User> signInWithCustomToken(String token) async {
+    UserCredential _userCredential = await _auth.signInWithCustomToken(token);
+    print(_userCredential.user);
+    return _userCredential.user;
   }
 
-  static Future<FirebaseUser> getCurrentFirebaseUser() async {
-    FirebaseUser currentUser = await _auth.currentUser();
-    return currentUser;
+  static Future<User> getCurrentFirebaseUser() async {
+    return _auth.currentUser;
   }
 
   static Future<String> getCurrentFirebaseUserUid() async {
-    FirebaseUser currentUser = await _auth.currentUser();
-    return currentUser == null ? null : currentUser.uid;
+    User user = _auth.currentUser;
+    return user == null ? null : user.uid;
   }
 }

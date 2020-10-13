@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:honeytoon/helpers/storage.dart';
-import 'package:honeytoon/models/user.dart';
+import 'package:honeytoon/models/auth.dart';
 import 'package:honeytoon/providers/auth_provider.dart';
 import 'package:honeytoon/screens/template_screen.dart';
 import 'package:image_picker/image_picker.dart';
@@ -25,7 +25,7 @@ class _AuthJoinScreenState extends State<AuthJoinScreen> {
 
   File _thumbnail;
   final _descriptionFocusNode = FocusNode();
-  var user = User();
+  Auth auth = Auth();
   bool _isLoading = false;
   bool _disposed = false;
 
@@ -43,7 +43,7 @@ class _AuthJoinScreenState extends State<AuthJoinScreen> {
   }
 
   void _submitForm(BuildContext ctx) async {
-    AuthResult authResult;
+    UserCredential userCredential;
     try {
       final _isValid = _formKey.currentState.validate();
       if (!_isValid) return;
@@ -54,12 +54,12 @@ class _AuthJoinScreenState extends State<AuthJoinScreen> {
         });
       }
       _formKey.currentState.save();
-      authResult = await _authProvider.createUserWithEmailAndPassword(user);
+      userCredential = await _authProvider.createUserWithEmailAndPassword(auth);
       String thumbnailUrl = await Storage.uploadImageToStorage(
-          StorageType.USER_THUMBNAIL, authResult.user.uid, _thumbnail);
-      user.thumbnail = thumbnailUrl;
+          StorageType.USER_THUMBNAIL, userCredential.user.uid, _thumbnail);
+      auth.thumbnail = thumbnailUrl;
 
-      await _authProvider.addUserToDB(authResult, user, 'EMAIL');
+      await _authProvider.addUserToDB(userCredential, auth, 'EMAIL');
       if (!_disposed) {
         setState(() {
           _isLoading = false;
@@ -155,7 +155,7 @@ class _AuthJoinScreenState extends State<AuthJoinScreen> {
                                   return _validateDisplayName(value);
                                 },
                                 onSaved: (value) {
-                                  user.displayName = value;
+                                  auth.displayName = value;
                                 },
                               ),
                               TextFormField(
@@ -172,7 +172,7 @@ class _AuthJoinScreenState extends State<AuthJoinScreen> {
                                   return _validateEmail(value);
                                 },
                                 onSaved: (value) {
-                                  user.email = value;
+                                  auth.email = value;
                                 },
                               ),
                               TextFormField(
@@ -194,7 +194,7 @@ class _AuthJoinScreenState extends State<AuthJoinScreen> {
                                   }
                                 },
                                 onSaved: (value) {
-                                  user.password = value;
+                                  auth.password = value;
                                 },
                               ),
                               TextFormField(

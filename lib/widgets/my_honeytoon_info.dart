@@ -1,16 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import '../models/user.dart';
+import '../models/auth.dart';
 
 class MyHonetoonInfo extends StatelessWidget {
   const MyHonetoonInfo({
     Key key,
     @required this.height,
-    @required this.user,
+    @required this.auth,
   }) : super(key: key);
 
   final double height;
-  final User user;
+  final Auth auth;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,7 @@ class MyHonetoonInfo extends StatelessWidget {
               child: Column(
                   children: <Widget>[
                     SizedBox(height: circleRadius/2,),
-                    Text(user.displayName, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),),
+                    Text(auth.displayName, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),),
                     Padding(
                       padding: const EdgeInsets.only(left: 16, right: 16, top: 20),
                       child: Row(
@@ -47,19 +47,19 @@ class MyHonetoonInfo extends StatelessWidget {
                           Column(
                             children: <Widget>[
                               Text('작가랭킹', style: TextStyle( fontSize: 16.0,  color: Colors.black54,),),
-                              Text("${user.rank <= 0? '-': user.rank}위"  , style: TextStyle( fontSize: 16.0, color: Colors.black87, fontFamily: ''),),
+                              Text("${auth.rank <= 0? '-': auth.rank}위"  , style: TextStyle( fontSize: 16.0, color: Colors.black87, fontFamily: ''),),
                             ],
                           ),
                           Column(
                             children: <Widget>[
                               Text('작품정보', style: TextStyle( fontSize: 16.0,  color: Colors.black54),),
-                              Text("${user.works==null || user.works.length==0 ? '-': user.works.length}개", style: TextStyle( fontSize: 16.0, color: Colors.black87, fontFamily: ''),),
+                              Text("${auth.works==null || auth.works.length==0 ? '-': auth.works.length}개", style: TextStyle( fontSize: 16.0, color: Colors.black87, fontFamily: ''),),
                             ],
                           ),
                           Column(
                             children: <Widget>[
                               Text('꿀단지', style: TextStyle( fontSize: 16.0,  color: Colors.black54),),
-                              Text("${user.honey==null ? 0 : user.honey}꿀", style: TextStyle( fontSize: 16.0, color: Colors.black87, fontFamily: ''),),
+                              Text("${auth.honey==null ? 0 : auth.honey}꿀", style: TextStyle( fontSize: 16.0, color: Colors.black87, fontFamily: ''),),
                             ],
                           ),
                         ],
@@ -92,7 +92,7 @@ class MyHonetoonInfo extends StatelessWidget {
                     child: CachedNetworkImage(
                       width: circleRadius,
                       height: circleRadius,
-                      imageUrl: user.thumbnail,
+                      imageUrl: auth.thumbnail,
                       placeholder: (context, url) => Image.asset('assets/images/avatar_placeholder.png',),
                       errorWidget: (context, url, error) => Image.asset('assets/images/avatar_placeholder.png'),
                       fit: BoxFit.cover

@@ -2,12 +2,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:honeytoon/providers/auth_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:async/async.dart';
+import '../../providers/auth_provider.dart';
 import '../../models/comment.dart';
 import '../../providers/comment_provider.dart';
 import '../../helpers/dateFormatHelper.dart';
-import 'package:provider/provider.dart';
-import 'package:async/async.dart';
+
 
 class HoneytoonCommentScreen extends StatefulWidget {
   static const routeName = '/comment';
@@ -27,7 +28,7 @@ class _HoneytoonCommentScreenState extends State<HoneytoonCommentScreen> {
   void _handleSubmitted(String id) async {
     try {
       final text = _textController.text;
-      final user = await FirebaseAuth.instance.currentUser();
+      final user = FirebaseAuth.instance.currentUser;
       Comment comment = Comment(toonId: id, uid: user.uid, comment: text, createTime: Timestamp.now());
       _commentProvider.setComment(comment);
       _textController.clear();

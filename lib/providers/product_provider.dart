@@ -11,29 +11,25 @@ class ProductProvider extends ChangeNotifier {
 
   Future<List<Brand>> getBrands() async {
     List<Brand> _brands;
-    QuerySnapshot snapshot = await Database.brandRef.getDocuments();
-    _brands = snapshot.documents.map((document) => Brand.fromMap(document.documentID, document.data))
-      .toList();
+    QuerySnapshot snapshot = await Database.brandRef.get();
+    _brands = snapshot.docs.map((document) => Brand.fromMap(document.id, document.data())).toList();
     return _brands;
   }
 
   Future<List<Product>> getProducts(brandCode) async {
     List<Product> _products;
     if(brandCode!=null && brandCode!=""){
-      QuerySnapshot snapshot = await Database.productRef.document(brandCode).collection('product').getDocuments();
-      _products = snapshot.documents
-          .map((document) => Product.fromMap(document.documentID, document.data))
-          .toList();
+      QuerySnapshot snapshot = await Database.productRef.doc(brandCode).collection('product').get();
+      _products = snapshot.docs.map((document) => Product.fromMap(document.id, document.data())).toList();
     }
     return _products;
   }
 
   Future<Product> getProductById(id, brandCode) async {
     Product _product;
-    DocumentSnapshot snapshot = await Database.productRef.document(brandCode).collection('product').document(id).get();
-    _product = Product.fromMap(snapshot.documentID, snapshot.data);
+    DocumentSnapshot snapshot = await Database.productRef.doc(brandCode).collection('product').doc(id).get();
+    _product = Product.fromMap(snapshot.id, snapshot.data());
     return _product;
   }
-
   
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'shopping_list_screen.dart';
+import './shopping_list_screen.dart';
 import './point_earn_screen.dart';
 import './point_screen.dart';
 

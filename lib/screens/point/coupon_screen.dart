@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:honeytoon/models/coupon.dart';
-import 'package:honeytoon/providers/coupon_provider.dart';
-import 'package:honeytoon/screens/point/coupon_detail_screen.dart';
-import 'package:honeytoon/widgets/login_button_page.dart';
 import 'package:provider/provider.dart';
+import '../../models/coupon.dart';
+import '../../providers/coupon_provider.dart';
+import './coupon_detail_screen.dart';
+import '../../widgets/login_button_page.dart';
+
 
 class CouponScreen extends StatefulWidget {
   static final routeName = 'coupon-screen';
@@ -25,8 +26,8 @@ class _CouponScreenState extends State<CouponScreen> {
   }
 
   void _getCouponList() async {
-    final user = await FirebaseAuth.instance.currentUser();
-    List<Coupon> coupons = await _couponProvider.getCouponList(user.uid);
+    User _firebaseUser = await FirebaseAuth.instance.currentUser;
+    List<Coupon> coupons = await _couponProvider.getCouponList(_firebaseUser.uid);
     List<Coupon> notUsed = List<Coupon>();
     List<Coupon> used = List<Coupon>();
 
@@ -60,17 +61,17 @@ class _CouponScreenState extends State<CouponScreen> {
           elevation: 0,
           title: Text('내 쿠폰함'),
         ),
-        body: StreamBuilder<FirebaseUser>(
-            stream: FirebaseAuth.instance.onAuthStateChanged,
-            builder: (BuildContext context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator();
-              } else if (!snapshot.hasData) {
-                return LoginButtonPage();
-              } else {
-                return _buildCouponList(context);
-              }
-            }));
+        body: StreamBuilder<User>(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (BuildContext context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            } else if (!snapshot.hasData) {
+              return LoginButtonPage();
+            } else {
+              return _buildCouponList(context);
+            }
+        }));
   }
 
 
@@ -114,6 +115,7 @@ class _CouponScreenState extends State<CouponScreen> {
           child: Text('사용 완료 | 유효기간 만료'),
           alignment: Alignment.centerLeft,
         ),
+        
         _usedCoupons.length == 0 ? 
         Center(
             child: Text('사용 완료 또는 유효기간이 만료된 쿠폰이 없습니다')

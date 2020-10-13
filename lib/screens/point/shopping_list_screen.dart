@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:honeytoon/providers/product_provider.dart';
 import 'package:provider/provider.dart';
+import '../../providers/product_provider.dart';
 import './shopping_item_screen.dart';
 
 class ShoppingListScreen extends StatefulWidget {

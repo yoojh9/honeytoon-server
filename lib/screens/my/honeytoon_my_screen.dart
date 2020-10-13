@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../providers/auth_provider.dart';
 import './add_contentmeta_screen.dart';
 import '../auth/auth_screen.dart';
 import '../../widgets/my_honeytoon_listview.dart';
 import '../../widgets/my_honeytoon_info.dart';
-import 'package:provider/provider.dart';
-import '../../providers/auth_provider.dart';
 
 class HoneytoonMyScreen extends StatefulWidget {
   @override
@@ -32,8 +32,7 @@ class _HoneytoonMyScreenState extends State<HoneytoonMyScreen> {
         (mediaQueryData.padding.top + mediaQueryData.padding.bottom + 50);
 
     return FutureBuilder(
-        future:
-            Provider.of<AuthProvider>(context, listen: false).getUserFromDBwithRank(),
+        future: Provider.of<AuthProvider>(context, listen: false).getUserFromDBwithRank(),
         builder: (context, futureSnapshot) {
           if (futureSnapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -42,7 +41,7 @@ class _HoneytoonMyScreenState extends State<HoneytoonMyScreen> {
               key: _scaffoldKey,
               body: SingleChildScrollView(
                 child: Column(children: [
-                  MyHonetoonInfo(height: height, user: futureSnapshot.data),
+                  MyHonetoonInfo(height: height, auth: futureSnapshot.data),
                   FlatButton.icon(
                     icon: Icon(
                       Icons.add,

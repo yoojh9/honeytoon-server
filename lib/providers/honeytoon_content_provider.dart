@@ -10,9 +10,9 @@ class HoneytoonContentProvider extends ChangeNotifier {
   Future<List<HoneytoonContentItem>> getHoneytoonContentList(String toonId) async {
     List<HoneytoonContentItem> _items;
 
-    QuerySnapshot result = await Database.contentRef.document(toonId).collection('items').orderBy('create_time' ,descending: true).getDocuments();
-    _items = result.documents
-      .map((document) => HoneytoonContentItem.fromMap(document.documentID, document.data))
+    QuerySnapshot result = await Database.contentRef.doc(toonId).collection('items').orderBy('create_time' ,descending: true).get();
+    _items = result.docs
+      .map((document) => HoneytoonContentItem.fromMap(document.id, document.data()))
       .toList();
 
     return _items;
@@ -23,17 +23,16 @@ class HoneytoonContentProvider extends ChangeNotifier {
     Map data = content.toJson();
     Map pointData = Point(uid: uid, type: PointType.REGIST, point:point, createTime: Timestamp.now()).toJson();
 
-    final DocumentReference _contentReference = Database.contentRef.document(content.toonId)
-        .collection('items').document();
-    final DocumentReference _metaReference = Database.metaRef.document(content.toonId);
-    final DocumentReference _userReference = Database.userRef.document(uid);
-    final DocumentReference _pointReference = Database.pointRef.document(uid).collection('point').document();
+    final DocumentReference _contentReference = Database.contentRef.doc(content.toonId).collection('items').doc();
+    final DocumentReference _metaReference = Database.metaRef.doc(content.toonId);
+    final DocumentReference _userReference = Database.userRef.doc(uid);
+    final DocumentReference _pointReference = Database.pointRef.doc(uid).collection('point').doc();
 
-    Database.firestore.runTransaction((transaction) async {
-      await transaction.set(_contentReference, data);
-      await transaction.update(_metaReference, {'total_count': content.count, 'update_time': Timestamp.now()});
-      await transaction.update(_userReference, {'honey': FieldValue.increment(-10)});
-      await transaction.set(_pointReference, pointData);
+    await Database.firestore.runTransaction((transaction) async {
+       transaction.set(_contentReference, data);
+       transaction.update(_metaReference, {'total_count': content.count, 'update_time': Timestamp.now()});
+       transaction.update(_userReference, {'honey': FieldValue.increment(-10)});
+       transaction.set(_pointReference, pointData);
     }).then((_){
       print('success');
     }).catchError((error){
@@ -47,18 +46,16 @@ class HoneytoonContentProvider extends ChangeNotifier {
     Map data = content.toJson();
     Map pointData = Point(uid: uid, type: PointType.REGIST, point:point, createTime: Timestamp.now()).toJson();
 
-    final DocumentReference _contentReference = Database.contentRef.document(content.toonId).collection('items').document(content.content.contentId);
-    final DocumentReference _metaReference = Database.metaRef.document(content.toonId);
-    final DocumentReference _userReference = Database.userRef.document(uid);
-    final DocumentReference _pointReference = Database.pointRef.document(uid).collection('point').document();
+    final DocumentReference _contentReference = Database.contentRef.doc(content.toonId).collection('items').doc(content.content.contentId);
+    final DocumentReference _metaReference = Database.metaRef.doc(content.toonId);
+    final DocumentReference _userReference = Database.userRef.doc(uid);
+    final DocumentReference _pointReference = Database.pointRef.doc(uid).collection('point').doc();
 
-    print('content:${content.content}');
-    print('data:$data');
-    Database.firestore.runTransaction((transaction) async {
-      await transaction.update(_contentReference, data);
-      await transaction.update(_metaReference, {'update_time':Timestamp.now()});
-      await transaction.update(_userReference, {'honey': FieldValue.increment(-10)});
-      await transaction.set(_pointReference, pointData);
+    await Database.firestore.runTransaction((transaction) async {
+      transaction.update(_contentReference, data);
+      transaction.update(_metaReference, {'update_time':Timestamp.now()});
+      transaction.update(_userReference, {'honey': FieldValue.increment(-10)});
+      transaction.set(_pointReference, pointData);
     }).then((_){
       print('success');
     }).catchError((error){
@@ -68,18 +65,18 @@ class HoneytoonContentProvider extends ChangeNotifier {
   }
 
   Stream<QuerySnapshot> streamMeta() {
-    return Database.contentRef.getDocuments().asStream();
+    return Database.contentRef.get().asStream();
   }
 
   Stream<QuerySnapshot> streamHoneytoonContents(String toonId) {
-    return Database.contentRef.document(toonId).collection('items').orderBy('create_time' ,descending: true).snapshots();
+    return Database.contentRef.doc(toonId).collection('items').orderBy('create_time' ,descending: true).snapshots();
   }
 
   Future<HoneytoonContentItem> getHoneytoonContentByTimes(String toonId, String times) async {
     HoneytoonContentItem _contentItem;
-    QuerySnapshot snapshot =  await Database.contentRef.document(toonId).collection('items').where('times', isEqualTo: times).getDocuments();
-    DocumentSnapshot document = snapshot.documents.firstWhere((element) => element['times'] == times);
-    _contentItem = HoneytoonContentItem.fromMap(document.documentID, document.data);
+    QuerySnapshot snapshot =  await Database.contentRef.doc(toonId).collection('items').where('times', isEqualTo: times).get();
+    DocumentSnapshot document = snapshot.docs.firstWhere((element) => element['times'] == times);
+    _contentItem = HoneytoonContentItem.fromMap(document.id, document.data());
     return _contentItem;
   }
 }

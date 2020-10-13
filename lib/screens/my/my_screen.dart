@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import './honeytoon_current_screen.dart';
 import './honeytoon_my_screen.dart';
-import 'honeytoon_favorite_screen.dart';
+import './honeytoon_favorite_screen.dart';
 
 class MyScreen extends StatefulWidget {
   @override

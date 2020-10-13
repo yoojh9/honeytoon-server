@@ -26,7 +26,7 @@ class _AddContentMetaScreenState extends State<AddContentMetaScreen> {
 
   Future<void> _submitForm(BuildContext ctx) async {
     try {
-      final user = await FirebaseAuth.instance.currentUser();
+      User _firebaseUser = await FirebaseAuth.instance.currentUser;
       final _isValid = _formKey.currentState.validate();
       
       if (!_isValid){
@@ -43,9 +43,9 @@ class _AddContentMetaScreenState extends State<AddContentMetaScreen> {
 
       Navigator.of(ctx).pop('작품 등록이 진행중입니다. 작품은 잠시 후 추가됩니다.');
 
-      String downloadUrl = await Storage.uploadImageToStorage(StorageType.META_COVER, user.uid, _coverImage);
+      String downloadUrl = await Storage.uploadImageToStorage(StorageType.META_COVER, _firebaseUser.uid, _coverImage);
       honeytoonMeta.coverImgUrl = downloadUrl;
-      honeytoonMeta.uid = user.uid;
+      honeytoonMeta.uid = _firebaseUser.uid;
       honeytoonMeta.createTime = Timestamp.now();
       honeytoonMeta.updateTime = Timestamp.now();
       honeytoonMeta.totalCount = 0;

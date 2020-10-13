@@ -1,10 +1,10 @@
 
 import 'package:flutter/material.dart';
-import 'package:honeytoon/models/user.dart';
-import 'package:honeytoon/providers/auth_provider.dart';
-import 'package:honeytoon/providers/coupon_provider.dart';
-import 'package:honeytoon/screens/point/coupon_screen.dart';
 import 'package:provider/provider.dart';
+import '../../models/auth.dart';
+import '../../providers/auth_provider.dart';
+import '../../providers/coupon_provider.dart';
+import './coupon_screen.dart';
 
 class ShoppingItemScreen extends StatefulWidget {
   static final routeName = 'shopping-item';
@@ -14,7 +14,7 @@ class ShoppingItemScreen extends StatefulWidget {
 }
 
 class _ShoppingItemScreenState extends State<ShoppingItemScreen> {
-  User _user;
+  Auth _auth;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -26,21 +26,21 @@ class _ShoppingItemScreenState extends State<ShoppingItemScreen> {
   void getUser() async {
     final user = await Provider.of<AuthProvider>(context, listen: false).getUserFromDB();
     setState(() {
-      _user = user;
+      _auth = user;
     });
   }
 
   bool isPurchaseable(_price){
-    int honey = _user==null? 0 : _user.honey;
+    int honey = _auth==null? 0 : _auth.honey;
     if(honey >= _price) return true;
     return false;
   }
 
   void _tapBuyCouponBtn(ctx, product) async {
-    if(_user.honey < product.honey) {
+    if(_auth.honey < product.honey) {
       _showSnackbar(ctx, '해당 상품을 구매할 수 없습니다.');
     } else {
-      await Provider.of<CouponProvider>(ctx, listen: false).buyCoupon(_user, product);
+      await Provider.of<CouponProvider>(ctx, listen: false).buyCoupon(_auth, product);
        Navigator.of(ctx).pushNamed(CouponScreen.routeName);
     }
   }

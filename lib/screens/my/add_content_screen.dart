@@ -2,14 +2,14 @@ import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:honeytoon/models/user.dart';
-import 'package:honeytoon/providers/honeytoon_meta_provider.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/honeytoon_meta_provider.dart';
 import '../../providers/honeytoon_content_provider.dart';
 import '../../models/honeytoonContent.dart';
 import '../../models/honeytoonContentItem.dart';
+import '../../models/auth.dart';
 import '../../helpers/storage.dart';
 import '../../widgets/cover_img_widget.dart';
 
@@ -59,8 +59,8 @@ class _AddContentScreenState extends State<AddContentScreen> {
 
     try {
       final id = args['id'];
-      User user =  await _authProvider.getUserFromDB();
-      bool _result = await checkPoint(user);
+      Auth _auth =  await _authProvider.getUserFromDB();
+      bool _result = await checkPoint(_auth);
 
       if(!_result){
         _showErrorSnackbar(ctx, '작품을 등록할 포인트가 부족합니다.');
@@ -73,7 +73,7 @@ class _AddContentScreenState extends State<AddContentScreen> {
       final contentItem = HoneytoonContentItem(times: total.toString(), coverImgUrl: downloadUrl, contentImgUrls: contentImageList, createTime: Timestamp.now(), updateTime: Timestamp.now());
       final content = HoneytoonContent(toonId: id, content: contentItem, count: total);
   
-      await _contentProvider.createHoneytoonContent(content, user.uid);
+      await _contentProvider.createHoneytoonContent(content, _auth.uid);
       
     } catch (error){
       print('error: $error');
@@ -81,8 +81,8 @@ class _AddContentScreenState extends State<AddContentScreen> {
     }
   }
 
-  Future<bool> checkPoint(User user) async {
-    if(user.honey < 10){
+  Future<bool> checkPoint(Auth auth) async {
+    if(auth.honey < 10){
       return false;
     }
     return true;

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Database {
-  static final firestore = Firestore.instance;
+  static final firestore = FirebaseFirestore.instance;
   static final contentRef = firestore.collection(Collections.CONTENT);
   static final metaRef = firestore.collection(Collections.TOON);
   static final userRef = firestore.collection(Collections.USER);

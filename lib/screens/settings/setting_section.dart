@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:honeytoon/screens/settings/cupertino_settings_section.dart';
-import './setting_tile.dart';
 import 'package:flutter/widgets.dart';
+import './cupertino_settings_section.dart';
+import './setting_tile.dart';
 
 class SettingsSection extends StatelessWidget {
   final String title;

@@ -1,18 +1,19 @@
+import 'package:async/async.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:honeytoon/models/current.dart';
-import 'package:honeytoon/models/history.dart';
-import 'package:honeytoon/models/user.dart';
-import 'package:honeytoon/providers/honeytoon_content_provider.dart';
-import 'package:honeytoon/providers/point_provider.dart';
-import 'package:honeytoon/screens/honeytoon_detail_screen.dart';
+import 'package:provider/provider.dart';
+import '../../models/current.dart';
+import '../../models/history.dart';
+import '../../models/auth.dart';
+import '../../providers/honeytoon_content_provider.dart';
+import '../../providers/point_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/my_provider.dart';
-import 'package:provider/provider.dart';
+import '../honeytoon_detail_screen.dart';
 import './honeytoon_comment_screen.dart';
-import 'package:async/async.dart';
+
 
 class HoneytoonViewScreen extends StatefulWidget {
   static final routeName = 'honeytoon-view';
@@ -187,13 +188,13 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
                 type: BottomNavigationBarType.fixed,
                 items: const <BottomNavigationBarItem>[
                   BottomNavigationBarItem(
-                      icon: Icon(Icons.arrow_back), title: Text('이전화'),),
+                      icon: Icon(Icons.arrow_back), label: '이전화',),
                   BottomNavigationBarItem(
-                      icon: Icon(Icons.mode_comment), title: Text('댓글')),
+                      icon: Icon(Icons.mode_comment), label: '댓글'),
                   BottomNavigationBarItem(
-                      icon: Icon(Icons.attach_money), title: Text('선물하기')),
+                      icon: Icon(Icons.attach_money), label: '선물하기'),
                   BottomNavigationBarItem(
-                      icon: Icon(Icons.arrow_forward), title: Text('다음화')),
+                      icon: Icon(Icons.arrow_forward), label: '다음화'),
                 ],
                 currentIndex: _currentIndex,
                 onTap: (index) {
@@ -251,8 +252,8 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
     AuthProvider  _authProvider = Provider.of<AuthProvider>(context, listen: false);
     PointProvider _pointProvider = Provider.of<PointProvider>(context, listen: false);
 
-    User user = await _authProvider.getUserFromDB();
-    if(user.honey < _giftPoint) {
+    Auth _auth = await _authProvider.getUserFromDB();
+    if(_auth.honey < _giftPoint) {
       Navigator.pop(context);
       _showSnackbar(context, '보유한 꿀단지 수가 부족하여 선물할 수 없습니다.');
     } else {

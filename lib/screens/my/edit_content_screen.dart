@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:honeytoon/models/user.dart';
+import 'package:honeytoon/models/auth.dart';
 import 'package:honeytoon/providers/honeytoon_meta_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
@@ -62,8 +62,8 @@ class _EditContentScreenState extends State<EditContentScreen> {
     try {
       final id = args['id'];
       final contentId = args['content_id'];
-      User user =  await _authProvider.getUserFromDB();
-      bool _result = await checkPoint(user);
+      Auth _auth =  await _authProvider.getUserFromDB();
+      bool _result = await checkPoint(_auth);
       HoneytoonContentItem contentItem = HoneytoonContentItem(times: total.toString(), contentId: contentId, updateTime: Timestamp.now());
 
       if(!_result){
@@ -84,7 +84,7 @@ class _EditContentScreenState extends State<EditContentScreen> {
 
       final content = HoneytoonContent(toonId: id, content: contentItem);
   
-      await _contentProvider.updateHoneytoonContent(content, user.uid);
+      await _contentProvider.updateHoneytoonContent(content, _auth.uid);
 
     } catch (error){
       print('error: $error');
@@ -92,8 +92,8 @@ class _EditContentScreenState extends State<EditContentScreen> {
     }
   }
 
-  Future<bool> checkPoint(User user) async {
-    if(user.honey < 10){
+  Future<bool> checkPoint(Auth auth) async {
+    if(auth.honey < 10){
       return false;
     }
     return true;

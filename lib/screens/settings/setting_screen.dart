@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:honeytoon/screens/settings/setting_privacy_screen.dart';
-import 'package:honeytoon/screens/settings/setting_section.dart';
-import 'setting_list.dart';
-import 'setting_tile.dart';
+import './setting_privacy_screen.dart';
+import './setting_section.dart';
+import './setting_list.dart';
+import './setting_tile.dart';
 import './setting_myinfo_screen.dart';
 
 class SettingScreen extends StatefulWidget {

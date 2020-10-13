@@ -8,39 +8,36 @@ class CommentProvider extends ChangeNotifier {
   
   Future<void> setComment(Comment comment) async {
     Map data = comment.toJson();
-    final DocumentReference commentReference = Database.commentRef.document(comment.toonId).collection('comment').document();
-    await commentReference.setData(data);
+    final DocumentReference commentReference = Database.commentRef.doc(comment.toonId).collection('comment').doc();
+    await commentReference.set(data);
   }
 
   Stream<QuerySnapshot> commentStream(String toonId) {
-    return Database.commentRef.document(toonId).collection('comment').orderBy('create_time', descending: true).snapshots();
+    return Database.commentRef.doc(toonId).collection('comment').orderBy('create_time', descending: true).snapshots();
   }
 
   Future<List<dynamic>> getCommentsWithUser(List<dynamic> comments) async {
     for(Comment comment in comments){
-      var userData = await Database.userRef.document(comment.uid).get();
-      comment.username = userData.data['displayName'];
-      comment.thumbnail = userData.data['thumbnail'];
+      var userData = await Database.userRef.doc(comment.uid).get();
+      comment.username = userData.data()['displayName'];
+      comment.thumbnail = userData.data()['thumbnail'];
     }
     return comments;
   }
 
   Future<List<Comment>> getComments(String toonId) async {
-
     List<Comment> _comments;
-    QuerySnapshot snapshot = await Database.commentRef.document(toonId)
-        .collection('comment').orderBy('create_time', descending: true)
-        .getDocuments();
-    _comments = snapshot.documents
+    QuerySnapshot snapshot = await Database.commentRef.doc(toonId).collection('comment').orderBy('create_time', descending: true).get();
+    _comments = snapshot.docs
       .map((document) =>
-        Comment.fromMap(toonId, document.documentID, document.data))
+        Comment.fromMap(toonId, document.id, document.data()))
       .toList();
 
     for(Comment comment in _comments) {
       print('comment:$comment');
-      var userData = await Database.userRef.document(comment.uid).get();
-      comment.username = userData.data['displayName'];
-      comment.thumbnail = userData.data['thumbnail'];
+      var userData = await Database.userRef.doc(comment.uid).get();
+      comment.username = userData.data()['displayName'];
+      comment.thumbnail = userData.data()['thumbnail'];
     }
 
     return _comments;
@@ -48,6 +45,6 @@ class CommentProvider extends ChangeNotifier {
 
   Future<void> deleteComment(Comment comment) async {
     print('toonId: ${comment.toonId}, commentId: ${comment.commentId}');
-    await Database.commentRef.document(comment.toonId).collection('comment').document(comment.commentId).delete();
+    await Database.commentRef.doc(comment.toonId).collection('comment').doc(comment.commentId).delete();
   }
 }

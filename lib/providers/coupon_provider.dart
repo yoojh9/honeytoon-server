@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:honeytoon/models/auth.dart';
 import 'package:honeytoon/models/coupon.dart';
 import '../helpers/database.dart';
 import '../helpers/dateFormatHelper.dart';
@@ -15,14 +16,14 @@ class CouponProvider extends ChangeNotifier {
   /*
    * 쿠폰 구매
    */
-  Future<void> buyCoupon(user, Product product) async {
+  Future<void> buyCoupon(Auth auth, Product product) async {
     try {
-      final trid = getGiftishowTransactionId(user.uid);
-      final userRef = Database.userRef.document(user.uid);
-      final couponRef = Database.couponRef.document(user.uid).collection('coupons').document(trid);
-      final pointRef = Database.pointRef.document(user.uid).collection('point').document();
+      final trid = getGiftishowTransactionId(auth.uid);
+      final userRef = Database.userRef.doc(auth.uid);
+      final couponRef = Database.couponRef.doc(auth.uid).collection('coupons').doc(trid);
+      final pointRef = Database.pointRef.doc(auth.uid).collection('point').doc();
       
-      await couponRef.setData({'goods_code': product.code, 'goods_name': product.name, 'goods_image': product.image, 'goods_content': product.content, 'success':'', 'create_time': Timestamp.now(), 'use': 'N'});
+      await couponRef.set({'goods_code': product.code, 'goods_name': product.name, 'goods_image': product.image, 'goods_content': product.content, 'success':'', 'create_time': Timestamp.now(), 'use': 'N'});
 
       http.Response response = await requestSendCoupon(product.code, trid);
       final body = jsonDecode(response.body);
@@ -31,15 +32,14 @@ class CouponProvider extends ChangeNotifier {
         final couponInfo = await requestCouponInfo(trid); // 발행한 쿠폰 정보 조회
         final validDate = DateFormatHelper.convertDateTimeToDate(couponInfo['validPrdEndDt']);
 
-        Database.firestore.runTransaction((transaction) async {        
+        await FirebaseFirestore.instance.runTransaction((transaction) async {        
           final data = body['result']['result'];
-
-          await transaction.update(couponRef, {'success':'Y','orderNo': data['orderNo'], 'pinNo': data['pinNo'], 'couponImgUrl': data['couponImgUrl'], 'validDate': validDate});
-          await transaction.update(userRef, {'honey': FieldValue.increment(-(product.honey))});
-          await transaction.set(pointRef, {'create_time': Timestamp.now(), 'point': -product.honey, 'type': 2});
+          transaction.update(couponRef, {'success':'Y','orderNo': data['orderNo'], 'pinNo': data['pinNo'], 'couponImgUrl': data['couponImgUrl'], 'validDate': validDate});
+          transaction.update(userRef, {'honey': FieldValue.increment(-(product.honey))});
+          transaction.set(pointRef, {'create_time': Timestamp.now(), 'point': -product.honey, 'type': 2});
         });
       } else {
-        await couponRef.updateData({'success':'N', 'response': body['result']});
+        await couponRef.update({'success':'N', 'response': body['result']});
       }
     } catch(error){
       print('error: ${error}');
@@ -51,9 +51,9 @@ class CouponProvider extends ChangeNotifier {
    */
   Future<List<Coupon>> getCouponList(uid) async{
     List<Coupon> _coupons;
-    final couponRef = Database.couponRef.document(uid).collection('coupons');
-    QuerySnapshot snapshot = await couponRef.getDocuments();
-    _coupons = snapshot.documents.map((document) => Coupon.fromMap(document.documentID, document.data)).toList();
+    final couponRef = Database.couponRef.doc(uid).collection('coupons');
+    QuerySnapshot snapshot = await couponRef.get();
+    _coupons = snapshot.docs.map((document) => Coupon.fromMap(document.id, document.data())).toList();
     return _coupons;
   }
 

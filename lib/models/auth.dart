@@ -1,4 +1,4 @@
-class User {
+class Auth {
   String uid;
   String displayName;
   String email;
@@ -9,7 +9,7 @@ class User {
   int rank = -1;
   var works = [];
 
-  User(
+  Auth(
       {this.uid,
       this.displayName,
       this.email,
@@ -20,7 +20,7 @@ class User {
       this.rank,
       this.works});
 
-  User.fromMap(String documentId, Map snapshot) {
+  Auth.fromMap(String documentId, Map snapshot) {
     this.uid = documentId;
     if (snapshot['displayName'] != null) {
       this.displayName = snapshot['displayName'];

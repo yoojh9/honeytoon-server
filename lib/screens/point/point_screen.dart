@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:honeytoon/models/point.dart';
-import 'package:honeytoon/models/user.dart';
-import 'package:honeytoon/providers/auth_provider.dart';
-import 'package:honeytoon/widgets/login_button_page.dart';
-import '../../providers/point_provider.dart';
 import 'package:provider/provider.dart';
+import '../../models/point.dart';
+import '../../models/auth.dart';
+import '../../providers/auth_provider.dart';
+import '../../widgets/login_button_page.dart';
+import '../../providers/point_provider.dart';
 import './coupon_screen.dart';
 import '../../helpers/dateFormatHelper.dart';
 
@@ -19,7 +19,7 @@ class PointScreen extends StatelessWidget {
 
     final height = mediaQueryData.size.height - (kToolbarHeight + kBottomNavigationBarHeight + kTextTabBarHeight);
 
-    return FutureBuilder<User>(
+    return FutureBuilder<Auth>(
         future: Provider.of<AuthProvider>(context).getUserFromDB(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -66,7 +66,7 @@ class PointScreen extends StatelessWidget {
                           _buildPointType(snapshot.data[index], snapshot.data[index].otherDisplayName),
                           Spacer(),
                           Text(
-                              '${DateFormatHelper.getDateTime(snapshot.data[index].createTime)}'),
+                              '${DateFormatHelper.getDateWithFormat(snapshot.data[index].createTime, 'yyyy-MM-dd')}'),
                         ])),
                   ),
                 );

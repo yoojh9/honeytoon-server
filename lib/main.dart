@@ -1,18 +1,20 @@
 import 'dart:io';
 
 import 'package:firebase_admob/firebase_admob.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:honeytoon/providers/coupon_provider.dart';
-import 'package:honeytoon/providers/product_provider.dart';
-import 'package:honeytoon/screens/auth/auth_join_screen.dart';
-import 'package:honeytoon/screens/auth/reset_pwd_screen.dart';
-import 'package:honeytoon/screens/my/edit_content_screen.dart';
-import 'package:honeytoon/screens/point/coupon_detail_screen.dart';
-import 'package:honeytoon/screens/settings/setting_myinfo_edit_screen.dart';
-import 'package:honeytoon/screens/settings/setting_privacy_screen.dart';
 import 'package:kakao_flutter_sdk/link.dart';
+import 'package:provider/provider.dart';
+import './providers/coupon_provider.dart';
+import './providers/product_provider.dart';
+import './screens/auth/auth_join_screen.dart';
+import './screens/auth/reset_pwd_screen.dart';
+import './screens/my/edit_content_screen.dart';
+import './screens/point/coupon_detail_screen.dart';
+import './screens/settings/setting_myinfo_edit_screen.dart';
+import './screens/settings/setting_privacy_screen.dart';
 import './screens/honeytoon_list_screen.dart';
-import 'screens/auth/auth_screen.dart';
+import './screens/auth/auth_screen.dart';
 import './screens/point/shopping_item_screen.dart';
 import './screens/template_screen.dart';
 import './screens/point/coupon_screen.dart';
@@ -28,18 +30,20 @@ import './providers/honeytoon_meta_provider.dart';
 import './providers/my_provider.dart';
 import './providers/comment_provider.dart';
 import './providers/point_provider.dart';
-import 'package:provider/provider.dart';
 
-void main() {
+
+void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   KakaoContext.clientId = "a34461bb86a5d8782ab16e75419d5955";
   KakaoContext.javascriptClientId = "38549e1d4f65d4c9c19ac37cad047400";
   //FirebaseAdMob.instance.initialize(appId: FirebaseAdMob.testAppId);
-  FirebaseAdMob.instance.initialize(appId: Platform.isIOS ? 'ca-app-pub-6013376310231208~9087160217' : 'ca-app-pub-6013376310231208~8843617638');
+  await Firebase.initializeApp();
+  await FirebaseAdMob.instance.initialize(appId: Platform.isIOS ? 'ca-app-pub-6013376310231208~9087160217' : 'ca-app-pub-6013376310231208~8843617638');
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {

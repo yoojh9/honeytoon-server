@@ -4,14 +4,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:honeytoon/models/user.dart';
-import 'package:honeytoon/screens/settings/setting_myinfo_edit_screen.dart';
-import '../../providers/auth_provider.dart';
-import 'package:honeytoon/screens/settings/setting_section.dart';
 import 'package:provider/provider.dart';
-import 'setting_list.dart';
-import 'setting_tile.dart';
+import '../../providers/auth_provider.dart';
 import '../auth/auth_screen.dart';
+import './setting_myinfo_edit_screen.dart';
+import './setting_section.dart';
+import './setting_list.dart';
+import './setting_tile.dart';
+
 
 class SettingMyinfoScreen extends StatefulWidget {
   static const routeName = 'setting-myinfo';
@@ -46,7 +46,7 @@ class _SettingMyinfoScreenState extends State<SettingMyinfoScreen> {
           
         ),
         body: StreamBuilder(
-            stream: FirebaseAuth.instance.onAuthStateChanged,
+            stream: FirebaseAuth.instance.authStateChanges(),
             builder: (_, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator());

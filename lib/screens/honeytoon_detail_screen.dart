@@ -2,18 +2,19 @@ import 'package:async/async.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:honeytoon/models/history.dart';
-import 'package:honeytoon/models/honeytoonContentItem.dart';
-import 'package:honeytoon/models/likes.dart';
-import 'package:honeytoon/providers/auth_provider.dart';
-import 'package:honeytoon/providers/honeytoon_content_provider.dart';
-import 'package:honeytoon/providers/honeytoon_meta_provider.dart';
-import 'package:honeytoon/providers/my_provider.dart';
-import 'package:honeytoon/screens/my/edit_content_screen.dart';
-import 'package:honeytoon/screens/template_screen.dart';
+import 'package:provider/provider.dart';
+import '../models/history.dart';
+import '../models/honeytoonContentItem.dart';
+import '../models/likes.dart';
+import '../providers/auth_provider.dart';
+import '../providers/honeytoon_content_provider.dart';
+import '../providers/honeytoon_meta_provider.dart';
+import '../providers/my_provider.dart';
+import './my/edit_content_screen.dart';
+import './template_screen.dart';
 import './toon/honeytoon_view_screen.dart';
 import './my/add_content_screen.dart';
-import 'package:provider/provider.dart';
+
 
 class HoneytoonDetailScreen extends StatefulWidget {
   static final routeName = 'honeytoon-detail';

@@ -1,10 +1,10 @@
 import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import '../auth/auth_screen.dart';
-import '../../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
+import '../auth/auth_screen.dart';
 import '../../providers/my_provider.dart';
+import '../../providers/auth_provider.dart';
 import './honeytoon_current_item.dart';
 
 class HoneytoonCurrentScreen extends StatefulWidget {
