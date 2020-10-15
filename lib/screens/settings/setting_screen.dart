@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:honeytoon/models/license.dart';
+import 'package:honeytoon/screens/settings/setting_terms_of_service.dart';
 import './setting_privacy_screen.dart';
 import './setting_section.dart';
 import './setting_list.dart';
@@ -14,10 +16,8 @@ class _SettingScreenState extends State<SettingScreen> {
   bool lockInBackground = true;
   bool notificationsEnabled = true;
 
-
   @override
   Widget build(BuildContext context) {
-
     return SettingList(
           sections: [
             SettingsSection(
@@ -38,16 +38,14 @@ class _SettingScreenState extends State<SettingScreen> {
                 SettingsTile(title: '버전 정보', subtitle: '1.0.3',),
                 //SettingsTile(title: '공지사항',),
                 //SettingsTile(title: '자주 묻는 질문',),
-                SettingsTile(title: '이용약관',),
+                SettingsTile(title: '이용약관', onTap: (){Navigator.of(context).pushNamed(SettingTermsScreen.routeName);}),
                 SettingsTile(title: '개인정보취급방침', onTap: (){Navigator.of(context).pushNamed(SettingPrivacyScreen.routeName);},),
-                SettingsTile(title: '오픈소스 라이선스',),
-                
+                SettingsTile(title: '오픈소스 라이선스', onTap: (){License.showLicensePage(context: context);}),
               ],
             ),
-
-
           ]
-
     );
   }
+
+  
 }
