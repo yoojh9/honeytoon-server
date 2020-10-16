@@ -191,14 +191,21 @@ class _HoneytoonCommentScreenState extends State<HoneytoonCommentScreen> {
         contentPadding: EdgeInsets.symmetric(vertical: 6), 
         leading: ClipRRect(
           borderRadius: BorderRadius.circular(50),
-          child: CachedNetworkImage(
+          child: 
+          snapshot.data[index].thumbnail != null
+            ? CachedNetworkImage(
               width: 50,
               height: 50,
               imageUrl: snapshot.data[index].thumbnail,
               placeholder: (context, url) => Image.asset('assets/images/avatar_placeholder.png',),
               errorWidget: (context, url, error) => Image.asset('assets/images/avatar_placeholder.png'),
-              fit: BoxFit.fill,
-            ), 
+              fit: BoxFit.cover,
+            )
+            : CircleAvatar(
+              radius: 30,
+              backgroundImage: AssetImage('assets/images/avatar_placeholder.png'),
+              //radius: 50,
+            ),
         ),
         title: Container(
           child: Row(

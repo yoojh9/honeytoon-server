@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:honeytoon/screens/auth/reset_pwd_screen.dart';
+import 'package:honeytoon/screens/settings/setting_myinfo_edit_screen.dart';
 import '../../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import '../auth/auth_join_screen.dart';
@@ -51,7 +54,7 @@ class _AuthScreenState extends State<AuthScreen> {
       if (_firebaseUser == null) {
         _firebaseUser = await Provider.of<AuthProvider>(context, listen: false).facebookLogin();
       }
-    Navigator.of(ctx).pop(_firebaseUser);
+    Navigator.of(ctx).pushReplacementNamed(SettingMyInfoEditScreen.routeName);
     } catch(error){
       print(error);
     } finally {
@@ -59,6 +62,26 @@ class _AuthScreenState extends State<AuthScreen> {
         _loading = false;
       });
     }
+  }
+
+  void _loginApple(BuildContext ctx) async {
+    try {
+      setState(() {
+        _loading = true;
+      });
+      _firebaseUser = FirebaseAuth.instance.currentUser;
+      if (_firebaseUser == null) {
+        _firebaseUser = await Provider.of<AuthProvider>(context, listen: false).appleLogin();
+        print('_firebaseUser:$_firebaseUser');
+      }
+      Navigator.of(ctx).pushReplacementNamed(SettingMyInfoEditScreen.routeName);
+    } catch(error){
+      print(error);
+    } finally {
+      setState(() {
+        _loading = false;
+      });
+    }    
   }
 
   void _loginEmail(BuildContext ctx) async {
@@ -214,6 +237,15 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                       onTap: () => _loginFacebook(context)),
                   SizedBox(width: 20),
+                  Platform.isIOS
+                    ? GestureDetector(
+                        child: CircleAvatar(
+                          backgroundImage: AssetImage(
+                              'assets/images/apple_login_icon.png'),
+                          radius: 30,
+                        ),
+                        onTap: () => _loginApple(context))
+                    : Container()
                 ]),
             ]
           ),

@@ -1,11 +1,15 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:io';
+import 'dart:math';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk/all.dart' as kakao;
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'dart:convert';
 import '../models/auth.dart';
 
@@ -50,11 +54,11 @@ class AuthProvider with ChangeNotifier {
       AuthCredential facebookCredential = FacebookAuthProvider.credential(accessToken.token);
       UserCredential userCredential = await _auth.signInWithCredential(facebookCredential);
 
-      await _db.collection('users').doc(userCredential.user.uid).get().then((snapshot) => {
+      await _db.collection('users').doc(userCredential.user.uid).get().then((snapshot) async {
         if (snapshot.exists) {
-          signInUser(Auth.fromMap(snapshot.id, snapshot.data()), 'FACEBOOK', )
+          await signInUser(Auth.fromMap(snapshot.id, snapshot.data()), 'FACEBOOK');
         } else {
-          addUserToDB(userCredential, null, 'FACEBOOK')
+          await addUserToDB(userCredential, null, 'FACEBOOK');
         }
       });
 
@@ -67,6 +71,69 @@ class AuthProvider with ChangeNotifier {
       print(error);
     }
   }
+
+  Future<User> appleLogin() async {
+    print('appleLogin()');
+    final nonce = _createNonce(32);
+    try {
+    final nativeAppleCredential = await _createAppleOAuthCredential(nonce);
+    print('credential:$nativeAppleCredential');
+    
+    final appleCredential = OAuthCredential(
+      providerId: "apple.com", // MUST be "apple.com"
+      signInMethod: "oauth",   // MUST be "oauth"
+      accessToken: nativeAppleCredential.identityToken, // propagate Apple ID token to BOTH accessToken and idToken parameters
+      idToken: nativeAppleCredential.identityToken,
+      rawNonce: nonce
+    );
+
+    UserCredential userCredential = await _auth.signInWithCredential(appleCredential);
+    await _db.collection('users').doc(userCredential.user.uid).get().then((snapshot) => {
+
+      if (snapshot.exists) {
+        signInUser(Auth.fromMap(snapshot.id, snapshot.data()), 'APPLE', )
+      } else {
+
+        addUserToDB(userCredential, null, 'APPLE')
+      }
+    });
+    print('success');
+    return userCredential.user;
+    
+    } catch(error){
+      print(error);
+      return null;
+    }
+  }
+
+  /*
+   * apple social sign in
+   */
+  Future<AuthorizationCredentialAppleID> _createAppleOAuthCredential(nonce) async {
+    final nativeAppleCredential = Platform.isIOS
+      ? await SignInWithApple.getAppleIDCredential(
+          scopes: [
+            AppleIDAuthorizationScopes.email,
+            AppleIDAuthorizationScopes.fullName,
+          ],
+          nonce: sha256.convert(utf8.encode(nonce)).toString(),
+        )
+      : await SignInWithApple.getAppleIDCredential(
+          scopes: [
+            AppleIDAuthorizationScopes.email,
+            AppleIDAuthorizationScopes.fullName,
+          ],
+          webAuthenticationOptions: WebAuthenticationOptions(
+            redirectUri: Uri.parse(
+                'https://honeytoon-server.firebaseapp.com/__/auth/handler'),
+            clientId: 'com.jeonghyun.honeytoonapp',
+          ),
+          nonce: sha256.convert(utf8.encode(nonce)).toString(),
+        );
+    print(nativeAppleCredential);
+    return nativeAppleCredential;
+  }
+
 
   Future<User> emailLogin(email, password) async {
     UserCredential userCredential = await _auth.signInWithEmailAndPassword(email: email, password: password);
@@ -82,6 +149,7 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> addUserToDB(UserCredential userCredential, Auth auth, String providerType) async {
+    print('addUserToDB');
     await _db.collection('users').doc(userCredential.user.uid).set({
       'displayName': auth==null ? userCredential.user.displayName : auth.displayName,
       'email': auth==null ? userCredential.user.email : auth.email,
@@ -163,5 +231,26 @@ class AuthProvider with ChangeNotifier {
   static Future<String> getCurrentFirebaseUserUid() async {
     User user = _auth.currentUser;
     return user == null ? null : user.uid;
+  }
+
+  String _createNonce(int length){
+    final random = Random();
+    final charCodes = List<int>.generate(length, (_) {
+      int codeUnit;
+
+      switch(random.nextInt(3)){
+        case 0:
+          codeUnit = random.nextInt(10) + 48;
+          break;
+        case 1:
+          codeUnit = random.nextInt(26) + 65;
+          break;
+        case 2:
+          codeUnit = random.nextInt(26) + 97;
+          break;
+      }
+      return codeUnit;
+    });
+    return String.fromCharCodes(charCodes);
   }
 }

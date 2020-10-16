@@ -87,17 +87,24 @@ class MyHonetoonInfo extends StatelessWidget {
             child: Center(
                 child: Container(
                   padding: EdgeInsets.all(5),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(circleRadius),
-                    child: CachedNetworkImage(
-                      width: circleRadius,
-                      height: circleRadius,
-                      imageUrl: auth.thumbnail,
-                      placeholder: (context, url) => Image.asset('assets/images/avatar_placeholder.png',),
-                      errorWidget: (context, url, error) => Image.asset('assets/images/avatar_placeholder.png'),
-                      fit: BoxFit.cover
-                    ),   
-                  ),
+                  child: 
+                    auth.thumbnail !=null
+                    ? ClipRRect(
+                      borderRadius: BorderRadius.circular(circleRadius),
+                      child: CachedNetworkImage(
+                        width: circleRadius,
+                        height: circleRadius,
+                        imageUrl: auth.thumbnail,
+                        placeholder: (context, url) => Image.asset('assets/images/avatar_placeholder.png',),
+                        errorWidget: (context, url, error) => Image.asset('assets/images/avatar_placeholder.png'),
+                        fit: BoxFit.cover
+                      ),   
+                    )
+                    : CircleAvatar(
+                      radius: circleRadius,
+                      backgroundImage: AssetImage('assets/images/avatar_placeholder.png'),
+                      //radius: 50,
+                    ),
                 ),
               ),
             ),

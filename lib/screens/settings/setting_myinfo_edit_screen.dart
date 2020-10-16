@@ -20,10 +20,14 @@ class SettingMyInfoEditScreen extends StatefulWidget {
 
 class _SettingMyInfoEditScreenState extends State<SettingMyInfoEditScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   String uid;
   File _thumbnail;
   String _displayName;
   Auth _auth;
+  String _thumbnailUrl;
+  var _loading = false;
+
 
   @override
   void initState(){
@@ -36,6 +40,8 @@ class _SettingMyInfoEditScreenState extends State<SettingMyInfoEditScreen> {
     final user = await Provider.of<AuthProvider>(context, listen: false).getUserFromDB();
     setState(() {
       _auth = user;
+      _thumbnailUrl = user.thumbnail;
+      _displayName = user.displayName;
     });
   }
 
@@ -71,23 +77,47 @@ class _SettingMyInfoEditScreenState extends State<SettingMyInfoEditScreen> {
   }
 
   void _updateUserProfile(BuildContext ctx) async {
-    print('_updateUserProfile');
-    final uid = _auth.uid;
-    final _isValid = _formKey.currentState.validate();
-    if (!_isValid) return;
-    _formKey.currentState.save();
+    try {
+      final uid = _auth.uid;
+      final _isValid = _formKey.currentState.validate();
+      if (!_isValid) return;
+      _formKey.currentState.save();
 
-    var _changeInfo = Map<String, dynamic>();
-    if(_displayName!=null){
-      _changeInfo['displayName'] = _displayName;
-    } 
-    if(_thumbnail!=null) {
-      String thumbnailUrl = await Storage.uploadImageToStorage(StorageType.USER_THUMBNAIL, uid, _thumbnail);
-      _changeInfo['thumbnail'] = thumbnailUrl;
+      var _changeInfo = Map<String, dynamic>();
+      if(_displayName!=null){
+        _changeInfo['displayName'] = _displayName;
+      } 
+      setState(() {
+        _loading = true;
+      });
+      if(_thumbnail!=null) {
+        String thumbnailUrl = await Storage.uploadImageToStorage(StorageType.USER_THUMBNAIL, uid, _thumbnail);
+        _changeInfo['thumbnail'] = thumbnailUrl;
+        _thumbnailUrl = thumbnailUrl;
+      }
+      await Provider.of<AuthProvider>(ctx, listen: false).changeUserInfo(uid, _changeInfo);
+      Navigator.of(ctx).pushReplacementNamed(SettingMyinfoScreen.routeName);
+    } catch(error){
+      print(error);
+    } finally {
+      setState(() {
+        _loading = false;
+      });
     }
-    print(_changeInfo);
-    await Provider.of<AuthProvider>(ctx, listen: false).changeUserInfo(uid, _changeInfo);
-    Navigator.of(ctx).pushReplacementNamed(SettingMyinfoScreen.routeName);
+  }
+
+  void _navigateToPage(BuildContext ctx){
+    if(_displayName == null || _thumbnailUrl==null){
+      _showSnackbar(ctx, '프로필 정보를 입력해주세요');
+      return;
+    }
+    Navigator.of(ctx).pop();
+  }
+
+  void _showSnackbar(BuildContext context, String message){
+    _scaffoldKey.currentState.showSnackBar(
+      SnackBar(content: Text(message))
+    );
   }
 
   @override
@@ -99,9 +129,11 @@ class _SettingMyInfoEditScreenState extends State<SettingMyInfoEditScreen> {
     //_displayNameController.text = args['user'].displayName;
 
     return Scaffold(
+      key: _scaffoldKey,
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text('프로필 변경'),
+        leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: (){_navigateToPage(context);}),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
@@ -109,68 +141,79 @@ class _SettingMyInfoEditScreenState extends State<SettingMyInfoEditScreen> {
         ],
       ),
       body: 
-        _auth == null ? Center(
-          child: RaisedButton(
-              color: Theme.of(context).primaryColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: Text('로그인'),
-              onPressed: () => _loginPage(context)),
-        )
-        :
-           Container(
-              height: height * 0.35,
-              margin: const EdgeInsets.all(16),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Container(
-                      height: height * 0.15,
-                      child: GestureDetector(
-                          child: _thumbnail == null ? 
-                            ClipOval(
-                              child: CachedNetworkImage(
-                                height: height * 0.15,
-                                width: height * 0.15,
-                                imageUrl: _auth.thumbnail,
-                                placeholder: (context, url) => Image.asset('assets/images/avatar_placeholder.png',),
-                                errorWidget: (context, url, error) => Image.asset('assets/images/avatar_placeholder.png'),
-                                fit: BoxFit.cover,
-                              )
-                            )
-                          :
-                          CircleAvatar(
-                            radius: 50,
-                            backgroundImage: FileImage(_thumbnail),
-                            //radius: 50,
-                          ),
-                          onTap: _getImage,
-                        ),
-                    ),
-
-                    TextFormField(
-                      initialValue: _displayName == null ? _auth.displayName: _displayName,
-                      textAlign: TextAlign.center,
-                      textInputAction: TextInputAction.next,
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.black87
-                      ),
-                      validator: (value) {
-                        return _validateDisplayName(value);
-                      },
-                      onSaved: (value){
-                        _displayName = value;
-                      },
-                    ),
-                    Text('프로필 사진과 닉네임을 입력해주세요.', style: TextStyle(color: Colors.grey),)
-                  ]
-                  )
-              ),
-      )
+        _auth == null 
+          ? Center(
+            child: RaisedButton(
+                color: Theme.of(context).primaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Text('로그인'),
+                onPressed: () => _loginPage(context)),
+          )
+          : _loading 
+            ? Center(child: CircularProgressIndicator(),)
+            : _buildMyInfoForm(height)
   );
+  }
+
+  Widget _buildMyInfoForm(height){
+    return Container(
+        height: height * 0.35,
+        margin: const EdgeInsets.all(16),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Container(
+                height: height * 0.15,
+                child: GestureDetector(
+                    child: _thumbnail == null ? 
+                      _auth.thumbnail == null 
+                      ? CircleAvatar(
+                        backgroundImage: AssetImage('assets/images/avatar_placeholder.png'),
+                        radius: 50,
+                      )
+
+                      : ClipOval(
+                        child: CachedNetworkImage(
+                          height: height * 0.15,
+                          width: height * 0.15,
+                          imageUrl: _auth.thumbnail,
+                          placeholder: (context, url) => Image.asset('assets/images/avatar_placeholder.png',),
+                          errorWidget: (context, url, error) => Image.asset('assets/images/avatar_placeholder.png'),
+                          fit: BoxFit.cover,
+                        )
+                      )
+                    :
+                    ClipOval(
+                      child: Image.file(_thumbnail, fit: BoxFit.cover, height: height * 0.15, width: height*0.15),
+                    ),
+                    onTap: _getImage,
+                  ),
+              ),
+
+              TextFormField(
+                initialValue: _displayName == null ? _auth.displayName: _displayName,
+                textAlign: TextAlign.center,
+                textInputAction: TextInputAction.next,
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.black87
+                ),
+                maxLength: 7,
+                validator: (value) {
+                  return _validateDisplayName(value);
+                },
+                onSaved: (value){
+                  _displayName = value;
+                },
+              ),
+              Text('프로필 사진과 닉네임을 입력해주세요.', style: TextStyle(color: Colors.grey),)
+            ]
+            )
+        ),
+    );
   }
 }

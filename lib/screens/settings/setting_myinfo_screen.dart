@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:honeytoon/screens/template_screen.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../auth/auth_screen.dart';
@@ -38,6 +39,7 @@ class _SettingMyinfoScreenState extends State<SettingMyinfoScreen> {
     return Scaffold(
         appBar: AppBar(
           title: Text('프로필'),
+          leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: (){Navigator.of(context).pushReplacementNamed(TemplateScreen.routeName);}),
           backgroundColor: Colors.transparent,
           elevation: 0,
           actions: [
@@ -48,9 +50,11 @@ class _SettingMyinfoScreenState extends State<SettingMyinfoScreen> {
         body: StreamBuilder(
             stream: FirebaseAuth.instance.authStateChanges(),
             builder: (_, snapshot) {
+              print('snapshot.hasData:${snapshot.hasData}');
+              print('snapshot.data:${snapshot.data}');
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator());
-              } else if (!(snapshot.hasData)) {
+              } else if (snapshot.data==null) {
                 return Center(
                   child: RaisedButton(
                       color: Theme.of(context).primaryColor,
@@ -64,10 +68,9 @@ class _SettingMyinfoScreenState extends State<SettingMyinfoScreen> {
                 return FutureBuilder(
                   future: Provider.of<AuthProvider>(context, listen: false).getUserFromDB(),
                   builder: (context, futureSnapshot) {
-                    if (futureSnapshot.connectionState ==
-                        ConnectionState.waiting) {
+                    if (futureSnapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
-                    } else if (!(futureSnapshot.hasData)) {
+                    } else if (futureSnapshot.data==null) {
                       return Center(
                         child: RaisedButton(
                             color: Theme.of(context).primaryColor,
@@ -78,6 +81,7 @@ class _SettingMyinfoScreenState extends State<SettingMyinfoScreen> {
                             onPressed: () => _loginPage(context)),
                       );
                     } else {
+                      print('imageUrl:${futureSnapshot.data.thumbnail}');
                       return Container(
                         height: height,
                         child: Column(
@@ -88,7 +92,8 @@ class _SettingMyinfoScreenState extends State<SettingMyinfoScreen> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceAround,
                                   children: <Widget>[
-                                    ClipOval(
+                                    futureSnapshot.data.thumbnail != null
+                                    ? ClipOval(
                                       child: CachedNetworkImage(
                                         width: height * 0.15,
                                         height: height * 0.15,
@@ -97,8 +102,13 @@ class _SettingMyinfoScreenState extends State<SettingMyinfoScreen> {
                                         errorWidget: (context, url, error) => Image.asset('assets/images/avatar_placeholder.png', width: height * 0.15),
                                         fit: BoxFit.cover,
                                       ),
+                                    )
+                                    : CircleAvatar(
+                                      radius: 50,
+                                      backgroundImage: AssetImage('assets/images/avatar_placeholder.png'),
+                                      //radius: 50,
                                     ),
-                                    Text(futureSnapshot.data.displayName,
+                                    Text(futureSnapshot.data.displayName == null ? '' : futureSnapshot.data.displayName,
                                         style: TextStyle(
                                           fontSize: 20,
                                         )),
