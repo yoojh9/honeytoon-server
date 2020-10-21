@@ -22,6 +22,7 @@ class SettingMyinfoScreen extends StatefulWidget {
 }
 
 class _SettingMyinfoScreenState extends State<SettingMyinfoScreen> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   Future<void> _loginPage(BuildContext ctx) async {
     await Navigator.of(ctx).pushNamed(AuthScreen.routeName);
@@ -31,12 +32,26 @@ class _SettingMyinfoScreenState extends State<SettingMyinfoScreen> {
     await FirebaseAuth.instance.signOut();
   }
 
+  Future<void> _leave(BuildContext ctx) async {
+    User user = FirebaseAuth.instance.currentUser;
+    try {
+      await user.delete();
+      //throw Error;
+    } catch(error){
+      _showSnackbar(context, "회원 탈퇴를 위해 재인증이 필요합니다. 로그인 후 다시 진행해주세요.");
+      await _logout();
+    }
+    //await Provider.of<AuthProvider>(context, listen: false).deleteUser(user);
+    //await _logout();
+  }
+
   @override
   Widget build(BuildContext context) {
     final mediaQueryData = MediaQuery.of(context);
     final height = mediaQueryData.size.height - (kToolbarHeight + mediaQueryData.padding.top + mediaQueryData.padding.bottom);
 
     return Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           title: Text('프로필'),
           leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: (){Navigator.of(context).pushReplacementNamed(TemplateScreen.routeName);}),
@@ -50,8 +65,6 @@ class _SettingMyinfoScreenState extends State<SettingMyinfoScreen> {
         body: StreamBuilder(
             stream: FirebaseAuth.instance.authStateChanges(),
             builder: (_, snapshot) {
-              print('snapshot.hasData:${snapshot.hasData}');
-              print('snapshot.data:${snapshot.data}');
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator());
               } else if (snapshot.data==null) {
@@ -81,7 +94,6 @@ class _SettingMyinfoScreenState extends State<SettingMyinfoScreen> {
                             onPressed: () => _loginPage(context)),
                       );
                     } else {
-                      print('imageUrl:${futureSnapshot.data.thumbnail}');
                       return Container(
                         height: height,
                         child: Column(
@@ -126,7 +138,7 @@ class _SettingMyinfoScreenState extends State<SettingMyinfoScreen> {
                                       // ),
                                       SettingsTile(
                                           title: '로그아웃', onTap: _logout),
-                                      SettingsTile(title: '탈퇴하기', onTap: () {}),
+                                      SettingsTile(title: '탈퇴하기', onTap: (){ _showDialog(context);}),
                                     ])
                                   ],
                                 ))
@@ -190,5 +202,46 @@ class _SettingMyinfoScreenState extends State<SettingMyinfoScreen> {
           );
         }
       );
+  }
+
+  void _showSnackbar(BuildContext context, String message){
+    _scaffoldKey.currentState.showSnackBar(
+      SnackBar(content: Text(message))
+    );
+  }
+
+  Future<void> _showDialog(BuildContext context) async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext ctx) {
+        return AlertDialog(
+          title: Text('회원 탈퇴'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('정말 허니툰을 탈퇴하실건가요?'),
+                Text('탈퇴 시 포인트는 모두 삭제됩니다.'),
+                Text('탈퇴 처리는 최대 3일 소요됩니다.')
+              ],
+            )
+          ),
+          actions: <Widget>[ 
+            FlatButton(
+              child: Text('확인'),
+              onPressed: (){
+                Navigator.of(ctx).pop();
+                _leave(context);
+              },
+            ),
+            FlatButton(
+              child: Text('취소'),
+              onPressed: (){
+                Navigator.of(ctx).pop();
+              },
+            ),
+          ],
+        );
+      }  
+    );
   }
 }

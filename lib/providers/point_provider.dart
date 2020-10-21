@@ -39,7 +39,6 @@ class PointProvider extends ChangeNotifier {
 
     _points = await Future.wait(pointSnapshot.docs.map((point) async {
       PointType _pointType = PointType.values[point.data()['type']];
-
       if(_pointType == PointType.GIFT_SEND || _pointType == PointType.CHEER){
         DocumentSnapshot userSnapshot = await Database.userRef.doc(point.data()['otherUid']).get();
         return Point.fromMapWithUser(point.id, point.data(), userSnapshot.data());

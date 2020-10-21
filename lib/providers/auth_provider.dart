@@ -130,7 +130,6 @@ class AuthProvider with ChangeNotifier {
           ),
           nonce: sha256.convert(utf8.encode(nonce)).toString(),
         );
-    print(nativeAppleCredential);
     return nativeAppleCredential;
   }
 
@@ -149,7 +148,6 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> addUserToDB(UserCredential userCredential, Auth auth, String providerType) async {
-    print('addUserToDB');
     await _db.collection('users').doc(userCredential.user.uid).set({
       'displayName': auth==null ? userCredential.user.displayName : auth.displayName,
       'email': auth==null ? userCredential.user.email : auth.email,
@@ -180,9 +178,8 @@ class AuthProvider with ChangeNotifier {
     if (firebaseUser == null || firebaseUser.uid == null) {
       return null;
     }
-    final userData =
-        await _db.collection('users').doc(firebaseUser.uid).get();
-    
+    final userData = await _db.collection('users').doc(firebaseUser.uid).get();
+    print('userData: ${userData.data()}');
     // User user = User(
     //     uid: userData.documentID,
     //     displayName: userData.data['displayName'],
@@ -222,6 +219,14 @@ class AuthProvider with ChangeNotifier {
     UserCredential _userCredential = await _auth.signInWithCustomToken(token);
     print(_userCredential.user);
     return _userCredential.user;
+  }
+
+  Future<void> deleteUser(User user) async {
+    await _db.collection('inactive').doc(user.uid).set({
+      "flag": 0,
+      "create_date": DateTime.now(),
+      "complete_date": null
+    });
   }
 
   static Future<User> getCurrentFirebaseUser() async {

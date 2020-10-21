@@ -48,7 +48,7 @@ class MyProvider extends ChangeNotifier {
         DocumentSnapshot toonSnapshot = await Database.metaRef.doc(likeSnapshot.id).get();
         if(!toonSnapshot.exists) return null;
         DocumentSnapshot userSnapshot = await Database.userRef.doc(toonSnapshot.data()['uid']).get();
-      return Likes.fromMap(likeSnapshot.id, likeSnapshot.data()['like_time'], toonSnapshot.data(), userSnapshot.data());
+        return Likes.fromMap(likeSnapshot.id, likeSnapshot.data()['like_time'], toonSnapshot.data(), userSnapshot.data());
     }).toList());
     return _likes;
   }

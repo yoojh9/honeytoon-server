@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/point.dart';
@@ -46,7 +48,8 @@ class PointScreen extends StatelessWidget {
                 return Center(
                   child: CircularProgressIndicator(),
                 );
-              } else {
+              }  else {
+                print('_point.snapshot:${snapshot.data}');
                 return ListView.builder(
                   primary: false,
                   shrinkWrap: true,
