@@ -22,9 +22,11 @@ class _AuthJoinScreenState extends State<AuthJoinScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _password = TextEditingController();
   final TextEditingController _confirmPassword = TextEditingController();
+  final _emailFocusNode = FocusNode();
+  final _passwordFocusNode = FocusNode();
+  final _password2FocusNode = FocusNode();
 
   File _thumbnail;
-  final _descriptionFocusNode = FocusNode();
   Auth auth = Auth();
   bool _isLoading = false;
   bool _disposed = false;
@@ -97,7 +99,9 @@ class _AuthJoinScreenState extends State<AuthJoinScreen> {
 
   @override
   void dispose() {
-    _descriptionFocusNode.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
+    _password2FocusNode.dispose();
     _disposed = true;
     super.dispose();
   }
@@ -149,7 +153,7 @@ class _AuthJoinScreenState extends State<AuthJoinScreen> {
                                 textInputAction: TextInputAction.next,
                                 onFieldSubmitted: (_) {
                                   FocusScope.of(context)
-                                      .requestFocus(_descriptionFocusNode);
+                                      .requestFocus(_emailFocusNode);
                                 },
                                 validator: (value) {
                                   return _validateDisplayName(value);
@@ -159,11 +163,12 @@ class _AuthJoinScreenState extends State<AuthJoinScreen> {
                                 },
                               ),
                               TextFormField(
+                                focusNode: _emailFocusNode,
                                 keyboardType: TextInputType.emailAddress,
                                 textInputAction: TextInputAction.next,
                                 onFieldSubmitted: (_) {
                                   FocusScope.of(context)
-                                      .requestFocus(_descriptionFocusNode);
+                                      .requestFocus(_passwordFocusNode);
                                 },
                                 decoration: InputDecoration(
                                   labelText: "이메일",
@@ -176,13 +181,14 @@ class _AuthJoinScreenState extends State<AuthJoinScreen> {
                                 },
                               ),
                               TextFormField(
+                                focusNode: _passwordFocusNode,
                                 controller: _password,
                                 obscureText: true,
                                 textInputAction: TextInputAction.next,
                                 decoration: InputDecoration(labelText: "비밀번호"),
                                 onFieldSubmitted: (_) {
                                   FocusScope.of(context)
-                                      .requestFocus(_descriptionFocusNode);
+                                      .requestFocus(_password2FocusNode);
                                 },
                                 validator: (value) {
                                   if (value.isEmpty) {
@@ -198,15 +204,14 @@ class _AuthJoinScreenState extends State<AuthJoinScreen> {
                                 },
                               ),
                               TextFormField(
+                                focusNode: _password2FocusNode,
                                 controller: _confirmPassword,
                                 obscureText: true,
                                 textInputAction: TextInputAction.done,
                                 decoration:
                                     InputDecoration(labelText: "비밀번호 확인"),
-                                focusNode: _descriptionFocusNode,
                                 onFieldSubmitted: (_) {
-                                  FocusScope.of(context)
-                                      .requestFocus(_descriptionFocusNode);
+                                  _submitForm(context);
                                 },
                                 validator: (value) {
                                   if (value.isEmpty) {
