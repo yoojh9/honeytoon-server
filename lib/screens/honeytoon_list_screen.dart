@@ -145,10 +145,10 @@ class _HoneyToonListScreenState extends State<HoneyToonListScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text("${data.title}",
-                            maxLines: 1, style: TextStyle(fontSize: 12)),
+                            maxLines: 1,),
                         Text(
                           "${data.displayName}",
-                          style: TextStyle(fontSize: 10, color: Colors.grey),
+                          style: TextStyle(color: Colors.grey),
                         )
                       ],
                     )))

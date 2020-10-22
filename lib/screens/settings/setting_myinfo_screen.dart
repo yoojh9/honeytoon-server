@@ -35,6 +35,7 @@ class _SettingMyinfoScreenState extends State<SettingMyinfoScreen> {
   Future<void> _leave(BuildContext ctx) async {
     User user = FirebaseAuth.instance.currentUser;
     try {
+      await Provider.of<AuthProvider>(ctx, listen: false).deleteUser(user);
       await user.delete();
       //throw Error;
     } catch(error){
@@ -137,8 +138,8 @@ class _SettingMyinfoScreenState extends State<SettingMyinfoScreen> {
                                       //   onTap: (){ Navigator.of(context).pushNamed( SettingMyInfoEditScreen.routeName, arguments: {'user': futureSnapshot.data} );},
                                       // ),
                                       SettingsTile(
-                                          title: '로그아웃', onTap: _logout),
-                                      SettingsTile(title: '탈퇴하기', onTap: (){ _showDialog(context);}),
+                                          title: '로그아웃', onTap: (){_showLogoutDialog(context);}),
+                                      SettingsTile(title: '탈퇴하기', onTap: (){ _showLeaveDialog(context);}),
                                     ])
                                   ],
                                 ))
@@ -210,7 +211,40 @@ class _SettingMyinfoScreenState extends State<SettingMyinfoScreen> {
     );
   }
 
-  Future<void> _showDialog(BuildContext context) async {
+  Future<void> _showLogoutDialog(BuildContext context) async {
+     return showDialog(
+      context: context,
+      builder: (BuildContext ctx) {
+        return AlertDialog(
+          title: Text('로그아웃'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('로그아웃 하실건가요?'),
+              ],
+            )
+          ),
+          actions: <Widget>[ 
+            FlatButton(
+              child: Text('확인'),
+              onPressed: (){
+                Navigator.of(ctx).pop();
+                _logout();
+              },
+            ),
+            FlatButton(
+              child: Text('취소'),
+              onPressed: (){
+                Navigator.of(ctx).pop();
+              },
+            ),
+          ],
+        );
+      }  
+    );   
+  }
+
+  Future<void> _showLeaveDialog(BuildContext context) async {
     return showDialog(
       context: context,
       builder: (BuildContext ctx) {

@@ -86,7 +86,7 @@ class _PointEarnScreenState extends State<PointEarnScreen>
       }
     };
     await RewardedVideoAd.instance.load(
-        adUnitId: RewardedVideoAd.testAdUnitId, targetingInfo: AdMobTargetingInfo.targetingInfo);
+        adUnitId: AdMobTargetingInfo.rewardAdUnitId, targetingInfo: AdMobTargetingInfo.targetingInfo);
   }
 
   @override

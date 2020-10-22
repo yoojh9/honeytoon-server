@@ -28,7 +28,7 @@ class _HoneytoonListSortState extends State<HoneytoonListSort> {
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
         GestureDetector(
-          child: Text('신규순', 
+          child: Text('신규순',
             style: TextStyle(
               fontWeight: sortType == 1? FontWeight.bold : FontWeight.normal,
               color: sortType == 1? Theme.of(context).primaryColor: Colors.black

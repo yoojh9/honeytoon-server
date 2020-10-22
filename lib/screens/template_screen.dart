@@ -17,7 +17,7 @@ class TemplateScreen extends StatefulWidget {
 class _TemplateScreenState extends State<TemplateScreen> {
   int _currentIndex = 0;
   Icon customIcon = Icon(Icons.search);
-  Widget customSearchBar = Text('허니툰');
+  Widget customSearchBar = Text('허니툰',);
   StreamController<String> _controller = StreamController<String>.broadcast();
 
   Widget _buildWidget(index){

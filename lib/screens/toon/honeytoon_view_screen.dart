@@ -52,7 +52,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
     print('interstitialAd()');
 
     final interstitialAdInstance = InterstitialAd(
-      adUnitId: InterstitialAd.testAdUnitId, 
+      adUnitId: AdMobTargetingInfo.interstitialAdUnitId, 
       targetingInfo: AdMobTargetingInfo.targetingInfo, 
       listener: (MobileAdEvent event){
         print('loaded');
@@ -169,7 +169,7 @@ class _HoneytoonViewScreenState extends State<HoneytoonViewScreen> with SingleTi
                       placeholder: (context, url) =>
                           Image.asset('assets/images/image_spinner.gif'),
                       errorWidget: (context, url, error) => Icon(Icons.error),
-                      fit: BoxFit.fitWidth))
+                      fit: BoxFit.fill))
                   .toList()));
     } else {
       return FutureBuilder(
