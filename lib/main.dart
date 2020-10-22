@@ -4,6 +4,7 @@ import 'package:firebase_admob/firebase_admob.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:honeytoon/providers/version_provider.dart';
 import 'package:honeytoon/screens/settings/setting_terms_of_service.dart';
 import 'package:kakao_flutter_sdk/link.dart';
 import 'package:provider/provider.dart';
@@ -87,6 +88,9 @@ class _MyAppState extends State<MyApp> {
         ),
         ChangeNotifierProvider(
           create: (ctx) => CouponProvider()
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => VersionProvider()
         )
       ],
       child: MaterialApp(
